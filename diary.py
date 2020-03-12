@@ -4,8 +4,8 @@ try:
     import sys
     from msvcrt import getch
     from math import floor
-    filename='D:\\Works\\python\\Diary\\diary.txt'
-    version='2.0_D'
+    filename='D:\\desktop\\diary'
+    version='2.0'
 except Exception as e: input('include error'+str(e))
 
 class entry:
