@@ -1,5 +1,5 @@
 # Diary
-A CLI diary app.
+A CLI diary app. Requires you to specify your diary document in code and set up environment variables to access it from your terminal
 
 After having added the .py extension and the program directory to path, the Diary interface could be called with one of three ways to start it up.
 
