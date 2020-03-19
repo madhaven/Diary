@@ -4,8 +4,9 @@ try:
     import sys
     from msvcrt import getch
     from math import floor
-    filename='D:\\Works\\python\\Diary\\diary.txt'
-    version='2.3_debug'
+    filename = 'D:\\Works\\python\\Diary\\diary.txt'
+    version = '2.3_debug'
+    testing = False
 except Exception as e: input('include error'+str(e))
 
 class entry:
@@ -22,14 +23,14 @@ class entry:
     def record(self):
         #method that records an entry, an entry ends when the Return key is pressed
         try:
-            entry=[] 
-            t=time() #takes a timestamp
-            self.timestamp=ctime() #records time as a string
+            entry = [] 
+            t = time() #takes a timestamp
+            self.timestamp = ctime() #records time as a string
             while True:
                 char=str(getch())[2:-1] #takes a string that the user pressed
                 t2 = time() #srecords time again
                 if (t2-t)>60: t2, t=(t2-t)-int(t2-t)+5, t2
-                else: t2, t=t2-t, t2 #formats time
+                else: t2, t = t2-t, t2 #formats time
                 
                 if char=='\\r':
                     #onpress of Return key
@@ -45,19 +46,19 @@ class entry:
                         return True
                     else: 
                         return False
-                elif char=='\\\\':
+                elif char == '\\\\':
                     #print("hola")
                     #onpress of escape seq
                     print('\\', end='', flush=True) #print single \ instead of \\
-                    char="\\"
-                elif char=='\\t':
+                    char = "\\"
+                elif char == '\\t':
                     #onpress of tabspace
                     print('\t', end='', flush=True) #print tabspace instead of \t literally
-                    char='\t'
-                elif char=='\\x08':
+                    char = '\t'
+                elif char == '\\x08':
                     #onpress of backspace I think 
                     print('\b \b', end='', flush=True) #mame the necassae changes on screen 
-                    char='\b'
+                    char = '\b'
                 else: print(char, end='', flush=True) #normal character
                 entry.append([char, t2]) #add character to the entry array.
         except Exception as e: input(e)
@@ -65,7 +66,7 @@ class entry:
     def write(self, file=filename):
         #write the current entry to file and reset the object, I think
         with open(file, 'a') as f:
-            if f.tell() !=0: f.write('\n\n')
+            if f.tell() != 0: f.write('\n\n')
             f.write(self.timestamp+' '+self.text+self.time)
         self.text, self.time = '', ''
         
@@ -76,8 +77,10 @@ class entry:
             if self.printdate:print('\n'+self.timestamp, flush=True)
 #            print(self.timestamp, end=' ', flush=True)
             for x in range(len(self.text)):
-                if (self.text[x] =='\b'): print('\b \b', end='', flush=True)
-                else: print(self.text[x], end='', flush=True)
+                if self.text[x] == '\b':
+                    print('\b \b', end='', flush=True)
+                else:
+                    print(self.text[x], end='', flush=True)
                 sleep(self.time[x])
         except KeyboardInterrupt as e:
             print("\nDiary closed")
@@ -107,11 +110,11 @@ def readall(file=filename):
     return entries
 def readdate(year, month, date, file=filename):
     for x in readall():
-        if int(x.timestamp[20:]) == int(year) and x.timestamp[4:7].lower() == month.lower() and int(x.timestamp[8:10]) == int(date):
+        if int(x.timestamp[20:]) == int(year) and x.timestamp[4:7].lower() == month[:3].lower() and int(x.timestamp[8:10]) == int(date):
             x.print()
 def readmonth(year, month, file=filename):
     for x in readall():
-        if x.timestamp[20:] == year and x.timestamp[4:7].lower() == month.lower():
+        if x.timestamp[20:] == year and x.timestamp[4:7].lower() == month[:3].lower():
             x.print()
 def readyear(year, file=filename):
     for x in readall():
@@ -144,16 +147,17 @@ def main():
     except Exception as e: input(str(e)+'\n'+'Contact github.com/madhaven')
 
 if __name__ == '__main__':
+    if testing:
+        print(sys.argv)
     arglen = len(sys.argv)
     if arglen == 1: 
-        #just run the app cuz no other attribs are specified
+        if testing: print("running the app cuz no other attribs are specified")
         main()
     elif arglen >= 2:
         if sys.argv[1].lower() == 'version': 
-            #print the version of the app;
             print("Diary.py v"+version+"\nproduct of Jay Creations")
         elif sys.argv[1].lower() == 'read':
-            #read diary logs acc to following parameters
+            if testing: print("reading diary logs acc to parameters")
             if arglen >= 3:
                 if sys.argv[2].lower() == 'yesterday':
                     yesterday = datetime.now() - timedelta(1)
@@ -166,20 +170,26 @@ if __name__ == '__main__':
                         if (not set(sys.argv[2]) - set('1234567890')):
                             readyear(sys.argv[2]) #Y
                     elif arglen >= 4:
-                        if not bool(set(sys.argv[3]) & set('1234567890')):
+                        if not bool(set(sys.argv[3]) & set('1234567890')): 
+                            if testing: print("month isn't a number")
 #                            print((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())))
 #                            print( (int(sys.argv[2])*12)+month(sys.argv[3]))
 #                            input()
                             if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) >= (int(sys.argv[2])*12)+month(sys.argv[3])):
+                                if testing:print("Month and Year are less or equal to todays")
                                 if arglen == 4:#YM
                                     readmonth(sys.argv[2], sys.argv[3])
                                     exit()
                                 elif arglen == 5:#YMD
-                                    if strftime('%d', localtime()) >= sys.argv[4]:
-                                        readdate(sys.argv[2], sys.argv[3], sys.argv[4])
+                                    if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) == (int(sys.argv[2])*12)+month(sys.argv[3])):
+                                        if testing:print("Month and Year are equal to todays")
+                                        if strftime('%d', localtime()) < sys.argv[4]:
+                                            if testing:print("Date is greater than todays, exiting")
+                                            exit()
+                                    if testing:print("Reading specific date logs, cuz date is less than than or equal to todays")
+                                    readdate(sys.argv[2], sys.argv[3], sys.argv[4])
                                     exit()
-                else:
-                    print('Try using the format : read [YYYY [Mmm [DD]]]')
+                print('Try using the format : read [YYYY [Mmm [DD]]]')
                 exit()
             else:
                 allentries = readall()
