@@ -5,7 +5,7 @@ try:
     from msvcrt import getch
     from math import floor
     filename='D:\\Works\\python\\Diary\\diary.txt'
-    version='2.1_debug'
+    version='2.2_debug'
 except Exception as e: input('include error'+str(e))
 
 class entry:
@@ -45,11 +45,19 @@ class entry:
                         return True
                     else: 
                         return False
+                elif char=='\\\\':
+                    #print("hola")
+                    #onpress of escape seq
+                    print('\\', end='', flush=True) #print single \ instead of \\
+                    char="\\"
+                elif char=='\\t':
+                    #onpress of tabspace
+                    print('\t', end='', flush=True) #print tabspace instead of \t literally
+                    char='\t'
                 elif char=='\\x08':
                     #onpress of backspace I think 
                     print('\b \b', end='', flush=True) #mame the necassae changes on screen 
                     char='\b'
-                elif char=="\\":print("\\", end='', flush=True) #onpress of the slashcharachter 
                 else: print(char, end='', flush=True) #normal character
                 entry.append([char, t2]) #add character to the entry array.
         except Exception as e: input(e)
