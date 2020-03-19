@@ -14,3 +14,4 @@ diary read yesterday
 helps you to read specific days or collections of days.
 
 <br>```diary version``` helps you checkout what version Diary is running on.
+<br>```diary search [string [string2 [...]]]``` helps you search for strings in your file. The ```searchall``` also works in a similar fashion except that it fetches those entries that simultaneously have all the search strings in it.
