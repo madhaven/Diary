@@ -5,7 +5,7 @@ try:
     from msvcrt import getch
     from math import floor
     filename='D:\\Works\\python\\Diary\\diary.txt'
-    version='2.2_debug'
+    version='2.3_debug'
 except Exception as e: input('include error'+str(e))
 
 class entry:
@@ -141,52 +141,78 @@ def main():
             stoprequest = ent.record()
             ent.write(filename)
             if stoprequest: break
-    except Exception as e: input(str(e)+'\n'+'Contact @_mad_haven')
+    except Exception as e: input(str(e)+'\n'+'Contact github.com/madhaven')
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1: 
+    arglen = len(sys.argv)
+    if arglen == 1: 
         #just run the app cuz no other attribs are specified
         main()
-    elif len(sys.argv) >= 2:
-        if sys.argv[1] == 'version': 
-            #print the versions of the app;
+    elif arglen >= 2:
+        if sys.argv[1].lower() == 'version': 
+            #print the version of the app;
             print("Diary.py v"+version+"\nproduct of Jay Creations")
-        elif sys.argv[1] == 'read':
+        elif sys.argv[1].lower() == 'read':
             #read diary logs acc to following parameters
-            if len(sys.argv) >= 3:
+            if arglen >= 3:
                 if sys.argv[2].lower() == 'yesterday':
-                    yesterday = datetime.now()-timedelta(1)
+                    yesterday = datetime.now() - timedelta(1)
                     readdate(yesterday.strftime('%Y'), yesterday.strftime('%b'), yesterday.strftime('%d'))
                 elif sys.argv[2].lower() == 'today':
                     today = datetime.now()
                     readdate(today.strftime('%Y'), today.strftime('%b'), today.strftime('%d'))
                 elif strftime('%Y', localtime()) >= sys.argv[2]:
-                    if len(sys.argv) == 3: 
+                    if arglen == 3: 
                         if (not set(sys.argv[2]) - set('1234567890')):
                             readyear(sys.argv[2]) #Y
-                    elif len(sys.argv) >= 4:
+                    elif arglen >= 4:
                         if not bool(set(sys.argv[3]) & set('1234567890')):
 #                            print((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())))
 #                            print( (int(sys.argv[2])*12)+month(sys.argv[3]))
 #                            input()
                             if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) >= (int(sys.argv[2])*12)+month(sys.argv[3])):
-                                if len(sys.argv) == 4:#YM
+                                if arglen == 4:#YM
                                     readmonth(sys.argv[2], sys.argv[3])
                                     exit()
-                                elif len(sys.argv) == 5:#YMD
+                                elif arglen == 5:#YMD
                                     if strftime('%d', localtime()) >= sys.argv[4]:
                                         readdate(sys.argv[2], sys.argv[3], sys.argv[4])
                                     exit()
-                else:print('Try using the format : read [YYYY [Mmm [DD]]]')
+                else:
+                    print('Try using the format : read [YYYY [Mmm [DD]]]')
                 exit()
             else:
-                allentries=readall()
+                allentries = readall()
                 input('Press Enter to read through '+str(len(allentries))+' diary entries...')
                 for x in allentries:
                     x.print()
                 exit()
+        elif sys.argv[1][:6].lower() == 'search':
+            if arglen >= 3:
+                search, count = [], 0
+                #build an array of strings to search for
+                for x in range(2, arglen):
+                    search.append(sys.argv[x])
+                allentries = readall()
+                for x in allentries:
+                    for y in range(len(search)):
+                        if sys.argv[1].lower() == 'search':
+                            if search[y].lower() in x.text.lower():
+                                print(x.timestamp,'|',x.text, end='')
+                                count += 1
+                                break
+                        elif sys.argv[1].lower() == 'searchall':
+                            if search[y].lower() not in x.text.lower():
+                                break
+                            elif y == len(search)-1:
+                                print(x.timestamp,'|',x.text, end='')
+                                count+=1
+                print(count, "entries found")
+            else:
+                print('Try using the formats\nsearch [search_text [search_text2 [...]]]\nsearchall [search_text [search_text2 [...]]]\n searchall matches all strings together')
+                
         elif sys.argv[1] == 'export':
-            if len(sys.argv) == 3:
+            if arglen == 3:
                 if (sys.argv[2] == 'txt') or (sys.argv[2] == 'text'):
                     fn = input('Filename to save as : ')
                     f = open(fn, 'w')
