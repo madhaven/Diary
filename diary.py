@@ -5,7 +5,7 @@ try:
     from msvcrt import getch
     from math import floor
     filename = 'D:\\Works\\python\\Diary\\diary.txt'
-    version = '2.3_debug'
+    version = '2.6_debug'
     testing = False
 except Exception as e: input('include error'+str(e))
 
@@ -85,6 +85,15 @@ class entry:
         except KeyboardInterrupt as e:
             print("\nDiary closed")
             exit()
+    
+    def tostring(self):
+        '''used in search ops where backspace characters need not be considered in the entry'''
+        text = ''
+        for x in self.text:
+            if x == '\b': text = text[:-1]
+            else: text = text + x
+        return text;
+            
 
 def readall(file=filename):
     entries=[] #list of entry Objects to be returned to the caller. 
@@ -162,19 +171,23 @@ if __name__ == '__main__':
                 if sys.argv[2].lower() == 'yesterday':
                     yesterday = datetime.now() - timedelta(1)
                     readdate(yesterday.strftime('%Y'), yesterday.strftime('%b'), yesterday.strftime('%d'))
+                    exit()
                 elif sys.argv[2].lower() == 'today':
                     today = datetime.now()
                     readdate(today.strftime('%Y'), today.strftime('%b'), today.strftime('%d'))
+                    exit()
                 elif strftime('%Y', localtime()) >= sys.argv[2]:
                     if arglen == 3: 
                         if (not set(sys.argv[2]) - set('1234567890')):
                             readyear(sys.argv[2]) #Y
+                            exit()
                     elif arglen >= 4:
                         if not bool(set(sys.argv[3]) & set('1234567890')): 
-                            if testing: print("month isn't a number")
-#                            print((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())))
-#                            print( (int(sys.argv[2])*12)+month(sys.argv[3]))
-#                            input()
+                            if testing:
+                                print("month isn't a number")
+                                print((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())))
+                                print( (int(sys.argv[2])*12)+month(sys.argv[3]))
+                                input()
                             if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) >= (int(sys.argv[2])*12)+month(sys.argv[3])):
                                 if testing:print("Month and Year are less or equal to todays")
                                 if arglen == 4:#YM
@@ -197,29 +210,35 @@ if __name__ == '__main__':
                 for x in allentries:
                     x.print()
                 exit()
-        elif sys.argv[1][:6].lower() == 'search':
+        elif sys.argv[1].lower() in ('search', 'find', 'searchall', 'findall'):
             if arglen >= 3:
                 search, count = [], 0
                 #build an array of strings to search for
                 for x in range(2, arglen):
                     search.append(sys.argv[x])
                 allentries = readall()
-                for x in allentries:
-                    for y in range(len(search)):
-                        if sys.argv[1].lower() == 'search':
-                            if search[y].lower() in x.text.lower():
-                                print(x.timestamp,'|',x.text, end='')
+                
+                if sys.argv[1].lower() in ('search', 'find'):
+                    for entry in allentries:
+                        for y in range(len(search)):
+#                            for xx in search[y].lower(): print(xx, end='-');
+#                            for xx in entry.tostring().lower(): print(xx, end='-');
+                            if search[y].lower() in entry.tostring().lower():
+                                print(entry.timestamp,'|',entry.text, end='')
                                 count += 1
                                 break
-                        elif sys.argv[1].lower() == 'searchall':
-                            if search[y].lower() not in x.text.lower():
+                elif sys.argv[1].lower() in ('searchall', 'findall'):
+                    for entry in allentries:
+                        for y in range(len(search)):
+                            if search[y].lower() not in entry.tostring().lower():
                                 break
                             elif y == len(search)-1:
-                                print(x.timestamp,'|',x.text, end='')
+                                print(entry.timestamp,'|',entry.text, end='')
                                 count+=1
+                                
                 print(count, "entries found")
             else:
-                print('Try using the formats\nsearch [search_text [search_text2 [...]]]\nsearchall [search_text [search_text2 [...]]]\n searchall matches all strings together')
+                print('Try using the formats\nsearch [search_text [search_text2 [...]]]\nsearchall [search_text [search_text2 [...]]]\n searchall matches all strings together\nfind and findall also works in a similar fashion')
                 
         elif sys.argv[1] == 'export':
             if arglen == 3:
