@@ -4,10 +4,11 @@ try:
     import sys
     from msvcrt import getch
     from math import floor
-    filename = 'D:\\Works\\python\\Diary\\diary.txt'
-    version = '2.7_debug'
+    version = '2.8_debug'
     testing = False
 except Exception as e: input('include error'+str(e))
+try: from info import *
+except: filename = 'diary.txt'
 
 class entry:
     '''
@@ -167,17 +168,19 @@ def readall(file=filename):
 def readdate(year, month, date, file=filename):
     '''Select records from a specific date'''
     for record in readall():
-        if int(record.timestamp[20:]) == int(year) and
+        if (
+                int(record.timestamp[20:]) == int(year) and
                 record.timestamp[4:7].lower() == month[:3].lower() and
-                int(record.timestamp[8:10]) == int(date):
+                int(record.timestamp[8:10]) == int(date)):
             record.print()
 
 
 def readmonth(year, month, file=filename):
     '''Select records from a specific month'''
     for record in readall():
-        if record.timestamp[20:] == year and
-                record.timestamp[4:7].lower() == month[:3].lower():
+        if (
+                record.timestamp[20:] == year and
+                record.timestamp[4:7].lower() == month[:3].lower()):
             record.print()
 
 
@@ -200,10 +203,16 @@ def month(mon):
     }[mon[:3].lower()]
 
 
-def log(string, pause):
+def log(string, pause=False):
     '''to log values while testing'''
-    if testing: print(string)
+    if testing: 
+        if type(string) == str:
+            print(string)
+        else:
+            for one in string:
+                print(one)
     if pause:input()
+andpause = True
 
 
 def main():
@@ -220,95 +229,132 @@ def main():
 if __name__ == '__main__':
     log(sys.argv)
     arglen = len(sys.argv)
+    
+    #no cli arguments
     if arglen == 1: 
         log("running the app cuz no other attribs are specified")
         main()
+    
+    #one or more arguments
     elif arglen >= 2:
+        
+        #version option
         if sys.argv[1].lower() == 'version': 
             print("Diary.py v"+version+"\nproduct of Jay Creations")
+        
+        #read option
         elif sys.argv[1].lower() == 'read':
             log("reading diary logs acc to parameters")
+            
+            #one or more Read-arguments
             if arglen >= 3:
-                if sys.argv[2].lower() == 'yesterday':
-                    yesterday = datetime.now() - timedelta(1)
+                
+                #read today or yesterday
+                if sys.argv[2].lower() in ('yesterday', 'today'):
+                    day = (
+                        datetime.now(), datetime.now()-timedelta(1)
+                    )[sys.argv[2].lower() == 'yesterday']
                     readdate(
-                        yesterday.strftime('%Y'),
-                        yesterday.strftime('%b'),
-                        yesterday.strftime('%d')
+                        day.strftime('%Y'),
+                        day.strftime('%b'),
+                        day.strftime('%d')
                     )
                     exit()
-                elif sys.argv[2].lower() == 'today':
-                    today = datetime.now()
-                    readdate(
-                        today.strftime('%Y'),
-                        today.strftime('%b'),
-                        today.strftime('%d')
-                    )
-                    exit()
-                elif strftime('%Y', localtime()) >= sys.argv[2]:
-                    if arglen == 3: 
+                
+                #if requested year is not from future
+                elif sys.argv[2] <= strftime('%Y', localtime()):
+                    
+                    #read Year
+                    if arglen == 3:
                         if (not set(sys.argv[2]) - set('1234567890')):
-                            readyear(sys.argv[2]) #Y
+                            readyear(sys.argv[2])
                             exit()
+                    
+                    #two or more Read-arguments
                     elif arglen >= 4:
+                        
+                        #if month don't have numbers in it
                         if not bool(set(sys.argv[3]) & set('1234567890')): 
-                            if testing:
-                                print("month isn't a number")
-                                print((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())))
-                                print( (int(sys.argv[2])*12)+month(sys.argv[3]))
-                                input()
+                            log(
+                                "month isn't a number",
+                                int(strftime('%Y', localtime()))*12+int(strftime('%m', localtime())),
+                                (int(sys.argv[2])*12)+month(sys.argv[3]),
+                                andpause
+                            )
+                            
+                            #if query month and year are valid
                             if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) >= (int(sys.argv[2])*12)+month(sys.argv[3])):
-                                if testing:print("Month and Year are less or equal to todays")
-                                if arglen == 4:#YM
+                                log("Month and Year are less or equal to todays")
+                                
+                                #read Month
+                                if arglen == 4:
                                     readmonth(sys.argv[2], sys.argv[3])
                                     exit()
-                                elif arglen == 5:#YMD
+                                
+                                #read Date
+                                elif arglen == 5:
+                                    
+                                    #if query date is more than todays
                                     if ((int(strftime('%Y', localtime()))*12)+int(strftime('%m', localtime())) == (int(sys.argv[2])*12)+month(sys.argv[3])):
-                                        if testing:print("Month and Year are equal to todays")
+                                        log("Month and Year are equal to todays")
                                         if strftime('%d', localtime()) < sys.argv[4]:
-                                            if testing:print("Date is greater than todays, exiting")
+                                            log("Date is greater than todays, exit-ing")
                                             exit()
-                                    if testing:print("Reading specific date logs, cuz date is less than than or equal to todays")
+                                    log("Reading specific date logs, cuz date is less than than or equal to todays")
                                     readdate(sys.argv[2], sys.argv[3], sys.argv[4])
                                     exit()
-                print('Try using the format : read [YYYY [Mmm [DD]]]')
+                
+                #argument errors / missing elses route here
+                print('Try using the format : read [YYYY [Mon [DD]]]')
                 exit()
+            
+            #no Read-arguments
             else:
                 allentries = readall()
-                input('Press Enter to read through '+str(len(allentries))+' diary entries...')
-                for x in allentries:
-                    x.print()
+                if 'q' in input('Press Q to skip '+str(len(allentries))+' diary entries...').lower():
+                    exit()
+                for x in allentries: x.print()
                 exit()
+        
+        #Search/Find option
         elif sys.argv[1].lower() in ('search', 'find', 'searchall', 'findall'):
+            
+            #one or more Search arguments
             if arglen >= 3:
-                search, count = [], 0
                 #build an array of strings to search for
+                search, count = [], 0
                 for x in range(2, arglen):
                     search.append(sys.argv[x])
                 allentries = readall()
                 
+                #loose search
                 if sys.argv[1].lower() in ('search', 'find'):
                     for entry in allentries:
                         for y in range(len(search)):
 #                            for xx in search[y].lower(): print(xx, end='-');
 #                            for xx in entry.tostring().lower(): print(xx, end='-');
                             if search[y].lower() in entry.tostring().lower():
-                                print(entry.timestamp,'|',entry.text, end='')
+                                print(entry.timestamp,'|',entry.tostring(), end='')
                                 count += 1
                                 break
+                
+                #strict search
                 elif sys.argv[1].lower() in ('searchall', 'findall'):
                     for entry in allentries:
                         for y in range(len(search)):
                             if search[y].lower() not in entry.tostring().lower():
                                 break
                             elif y == len(search)-1:
-                                print(entry.timestamp,'|',entry.text, end='')
+                                print(entry.timestamp,'|',entry.tostring(), end='')
                                 count+=1
                                 
                 print(count, "entries found")
+            
+            #no search arguments
             else:
                 print('Try using the formats\nsearch [search_text [search_text2 [...]]]\nsearchall [search_text [search_text2 [...]]]\n searchall matches all strings together\nfind and findall also works in a similar fashion')
                 
+        #Export option ?
         elif sys.argv[1] == 'export':
             if arglen == 3:
                 if (sys.argv[2] == 'txt') or (sys.argv[2] == 'text'):

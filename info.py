@@ -1,0 +1,1 @@
+filename = 'D:\\Works\\python\\Diary\\diary.txt'
