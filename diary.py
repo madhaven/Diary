@@ -8,7 +8,7 @@ try:
     testing = False
 except Exception as e: input('include error'+str(e))
 try: from info import *
-except: filename = 'diary.txt'
+except: filename = 'diary'
 
 class entry:
     '''
