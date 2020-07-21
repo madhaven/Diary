@@ -5,176 +5,245 @@ try:
     from msvcrt import getch
     from math import floor
     filename = 'D:\\Works\\python\\Diary\\diary.txt'
-    version = '2.6_debug'
+    version = '2.7_debug'
     testing = False
 except Exception as e: input('include error'+str(e))
 
 class entry:
-    #class to store each and every entry that the user makes
+    '''
+    class to store an entry that the user makes
+    '''
     
-    def __init__(self):
+    def __init__(self, text='', timestamp='', printdate=False):
         #initiailization, set all variables to emptyy strings and printdate to False and initialize the filename taken from globals
-        self.timestamp = ''
-        self.text = ''
+        self.text = text
+        self.timestamp = timestamp
         self.time = ''
-        self.printdate = False
+        self.printdate = printdate
         self.file = filename
-        
+    
+    
     def record(self):
-        #method that records an entry, an entry ends when the Return key is pressed
+        '''
+        method that records an entry, an entry ends when the Return key is pressed
+        returns True to wait for next entry, False otherwise
+        '''
         try:
-            entry = [] 
-            t = time() #takes a timestamp
-            self.timestamp = ctime() #records time as a string
+            entry = []
+            #record time as a timestamp and as string
+            t, self.timestamp = time(), ctime()
+            
             while True:
-                char=str(getch())[2:-1] #takes a string that the user pressed
-                t2 = time() #srecords time again
-                if (t2-t)>60: t2, t=(t2-t)-int(t2-t)+5, t2
-                else: t2, t = t2-t, t2 #formats time
+                #get pressed character
+                char=str(getch())[2:-1]
                 
+                #format time
+                t2 = time()
+                if (t2-t)>60: t2, t=(t2-t)-int(t2-t)+5, t2
+                else: t2, t = t2-t, t2
+                
+                #Return key pressed
                 if char=='\\r':
-                    #onpress of Return key
-                    if len(entry) == 0:
-                        continue; #do nothing when the text is empty
-                    print() #add a new line
+                    
+                    #do nothing if text is empty
+                    if len(entry) == 0: continue
+                        
+                    #add a new line character to the entry and format the entry object
                     entry.append(['\n', t2]) 
                     self.text = ''.join([x[0] for x in entry])
                     self.time = str([floor(x[1]*1000)/1000 for x in entry])
-                    #add a new line character to the entry and format the entry object
                     
-                    if 'bye' in self.text.lower(): #to specify whether or not to wait for the next entry or to stop.
-                        return True
-                    else: 
-                        return False
+                    print()
+                    
+                    #specify if or not to wait for the next entry
+                    return 'bye' in self.text.lower()
+                    
+                #Escape seq pressed
                 elif char == '\\\\':
-                    #print("hola")
-                    #onpress of escape seq
-                    print('\\', end='', flush=True) #print single \ instead of \\
+                    #print single \ instead of \\
+                    print('\\', end='', flush=True)
                     char = "\\"
+                    
+                #Tabspace pressed
                 elif char == '\\t':
-                    #onpress of tabspace
-                    print('\t', end='', flush=True) #print tabspace instead of \t literally
+                    #print tabspace instead of \t literally
+                    print('\t', end='', flush=True)
                     char = '\t'
+                    
+                #Backspace pressed, I think 
                 elif char == '\\x08':
-                    #onpress of backspace I think 
-                    print('\b \b', end='', flush=True) #mame the necassae changes on screen 
+                    #make the necassare changes on screen 
+                    print('\b \b', end='', flush=True)
                     char = '\b'
-                else: print(char, end='', flush=True) #normal character
-                entry.append([char, t2]) #add character to the entry array.
+                    
+                #normal character?
+                else:
+                    print(char, end='', flush=True)
+                    
+                #add character to entry list.
+                entry.append([char, t2])
+                
         except Exception as e: input(e)
-            
+    
+    
     def write(self, file=filename):
-        #write the current entry to file and reset the object, I think
+        '''
+        write the current entry to file and reset the object, I think
+        '''
         with open(file, 'a') as f:
+            #reset file if empty
             if f.tell() != 0: f.write('\n\n')
             f.write(self.timestamp+' '+self.text+self.time)
-        self.text, self.time = '', ''
-        
+        self.text = self.time = ''
+    
+    
     def print(self, file=filename):
-        #to print the entry. This includes the sleep function to imitate the user's type speed. 
-        #self.printdate decides wheter or not to print the timestamp I think
+        '''
+        prints the entry.
+        Contains sleep() to imitate the user's type speed.
+        self.printdate decides whether or not to print the timestamp I think
+        '''
         try:
-            if self.printdate:print('\n'+self.timestamp, flush=True)
+            if self.printdate: print('\n'+self.timestamp, flush=True)
+            for letter, time in zip(self.text, self.time):
+                print(
+                    (letter, '\b \b')[letter=='\b'],
+                    end='', flush=True
+                )
+                sleep(time)
 #            print(self.timestamp, end=' ', flush=True)
-            for x in range(len(self.text)):
-                if self.text[x] == '\b':
-                    print('\b \b', end='', flush=True)
-                else:
-                    print(self.text[x], end='', flush=True)
-                sleep(self.time[x])
+#            for x in range(len(self.text)):
+#                if self.text[x] == '\b':
+#                    print('\b \b', end='', flush=True)
+#                else:
+#                    print(self.text[x], end='', flush=True)
         except KeyboardInterrupt as e:
             print("\nDiary closed")
             exit()
     
+    
     def tostring(self):
-        '''used in search ops where backspace characters need not be considered in the entry'''
+        '''
+        Convert user input information and returns data alone.
+        used in search ops where backspace characters need not be considered
+        in the entry
+        '''
         text = ''
         for x in self.text:
-            if x == '\b': text = text[:-1]
-            else: text = text + x
+            text = (text+x, text[:-1])[x=='\b']
+#            if x == '\b': text = text[:-1]
+#            else: text = text + x
         return text;
             
 
 def readall(file=filename):
-    entries=[] #list of entry Objects to be returned to the caller. 
-    f=open(filename, 'r') #file to read from, obtained from globals
+    '''Scan diary file and returns a list of entry objects'''
+    #list of entry Objects to be returned to the caller. 
+    entries=[]
+    
+    #file to read from, obtained from globals
+    f=open(filename, 'r')
+    
     while True:
-        #parses the file and appends entry objects created from each entry in the file
+        #scans file, appends entry objects created from each file entry
         text = f.readline()
-        if not text: break;
-        e = entry()
-        e.text = text[25:]
-        e.timestamp = text[:24]
-        if len(entries) == 0: e.printdate = True
-        elif entries[len(entries)-1].timestamp[4:10]+entries[len(entries)-1].timestamp[20:24] != e.timestamp[4:10]+e.timestamp[20:24]:
+        
+        #escape blank lines
+        if not text: break
+        e = entry(text[25:], text[:24])
+        if len(entries) == 0 or entries[-1].timestamp[4:10]+entries[-1].timestamp[20:24] != e.timestamp[4:10]+e.timestamp[20:24]:
 #            print(entries[len(entries)-1].timestamp[4:10]+entries[len(entries)-1].timestamp[20:24]+' and '+e.timestamp[4:10]+e.timestamp[20:])
             e.printdate = True
         time = f.readline()[1:-2].split(', ')
-        #int(time[y].split('.')[0])+int(time[y].split('.')[1])/len(time[y].split('.')[1]) 
+#        int(time[y].split('.')[0])+int(time[y].split('.')[1])/len(time[y].split('.')[1]) 
         e.time = [ float(time[y]) for y in range(len(time))]
         f.readline()
         entries.append(e)
 #        input(e.printdate)
     f.close()
     return entries
+
+
 def readdate(year, month, date, file=filename):
-    for x in readall():
-        if int(x.timestamp[20:]) == int(year) and x.timestamp[4:7].lower() == month[:3].lower() and int(x.timestamp[8:10]) == int(date):
-            x.print()
+    '''Select records from a specific date'''
+    for record in readall():
+        if int(record.timestamp[20:]) == int(year) and
+                record.timestamp[4:7].lower() == month[:3].lower() and
+                int(record.timestamp[8:10]) == int(date):
+            record.print()
+
+
 def readmonth(year, month, file=filename):
-    for x in readall():
-        if x.timestamp[20:] == year and x.timestamp[4:7].lower() == month[:3].lower():
-            x.print()
+    '''Select records from a specific month'''
+    for record in readall():
+        if record.timestamp[20:] == year and
+                record.timestamp[4:7].lower() == month[:3].lower():
+            record.print()
+
+
 def readyear(year, file=filename):
-    for x in readall():
-        if x.timestamp[20:] == year:
-            x.print()
+    '''Select records from a specific Year'''
+    for record in readall():
+        if record.timestamp[20:] == year:
+            record.print()
+
 
 def month(mon):
-    #function to return the monthnumber to the monthstring
-    month = {'jan':1,
-             'feb':2,
-             'mar':3,
-             'apr':4,
-             'may':5,
-             'jun':6,
-             'jul':7,
-             'aug':8,
-             'sep':9,
-             'oct':10,
-             'nov':11,
-             'dec':12}
-    return month[mon[:3].lower()]
+    '''returns the monthnumber to the monthstring'''
+    return {
+        [
+            'jan', 'feb', 'mar', 
+            'apr', 'may', 'jun',
+            'jul', 'aug', 'sep',
+            'oct', 'nov', 'dec'
+        ][x]:x+1 for x in range(12)
+    }[mon[:3].lower()]
+
+
+def log(string, pause):
+    '''to log values while testing'''
+    if testing: print(string)
+    if pause:input()
+
 
 def main():
+    '''Fired if user wishes to add a new diary entry'''
     try:
         ent = entry()
         while True:
-            stoprequest = ent.record()
+            stopRec = ent.record()
             ent.write(filename)
-            if stoprequest: break
-    except Exception as e: input(str(e)+'\n'+'Contact github.com/madhaven')
+            if stopRec: break
+    except Exception as e:
+        input(str(e)+'\n'+'Contact github.com/madhaven')
 
 if __name__ == '__main__':
-    if testing:
-        print(sys.argv)
+    log(sys.argv)
     arglen = len(sys.argv)
     if arglen == 1: 
-        if testing: print("running the app cuz no other attribs are specified")
+        log("running the app cuz no other attribs are specified")
         main()
     elif arglen >= 2:
         if sys.argv[1].lower() == 'version': 
             print("Diary.py v"+version+"\nproduct of Jay Creations")
         elif sys.argv[1].lower() == 'read':
-            if testing: print("reading diary logs acc to parameters")
+            log("reading diary logs acc to parameters")
             if arglen >= 3:
                 if sys.argv[2].lower() == 'yesterday':
                     yesterday = datetime.now() - timedelta(1)
-                    readdate(yesterday.strftime('%Y'), yesterday.strftime('%b'), yesterday.strftime('%d'))
+                    readdate(
+                        yesterday.strftime('%Y'),
+                        yesterday.strftime('%b'),
+                        yesterday.strftime('%d')
+                    )
                     exit()
                 elif sys.argv[2].lower() == 'today':
                     today = datetime.now()
-                    readdate(today.strftime('%Y'), today.strftime('%b'), today.strftime('%d'))
+                    readdate(
+                        today.strftime('%Y'),
+                        today.strftime('%b'),
+                        today.strftime('%d')
+                    )
                     exit()
                 elif strftime('%Y', localtime()) >= sys.argv[2]:
                     if arglen == 3: 
