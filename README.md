@@ -31,6 +31,5 @@ After having added the .py extension and the program directory to path, the Diar
 >```
 >diary    [search | find]     [ string [ string2 [...]]]
 >diary [searchall | findall]  [ string [ string2 [...]]]
-
 >```
 >helps you search for strings in your file. The ```searchall``` also works in a similar fashion except that it fetches those entries that simultaneously have all the search strings in it.
