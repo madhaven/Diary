@@ -16,3 +16,4 @@ with open('diary', 'r') as f, open('diary2', 'w') as f2:
             for time in f.readline()[1:-2].split(', ')
         ]))
         f.readline()
+print('Conversion Complete')
