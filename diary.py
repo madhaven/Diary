@@ -1,18 +1,32 @@
 try:
+    version = '3.1'
+    testing = version[-5:]=='debug'
+    import os
     from os import sep
     import sys
+    if testing: import traceback
 
     from time import sleep
     from datetime import datetime, timedelta
     from msvcrt import getch, kbhit
     import re, calendar
     
-    try: exec(open('diary_config', 'r').read())
-    except: filelocation, typespeed = 'diary', 1.25
+    try:
+        exec(open(sep.join([os.path.expanduser('~'), 'diary_config']), 'r').read())
+    except:
+        file = input('Specify a location to read/write your Diary file : ')
+        filelocation = file.split(sep)+['diary']
+        typespeed = 1.25
+        try:
+            with open(sep.join([os.path.expanduser('~')]+['diary_config']), 'w') as f:
+                f.write('filelocation, typespeed = '+str(filelocation)+', '+str(typespeed))
+        except Exception as e:
+            input('There was an error, try a valid filename')
+            if testing: print(e)
+            exit()
     filename = sep.join(filelocation)
-    version = '3.1'
-    testing = version[-5:]=='debug'
-    if testing: import traceback
+    if testing: filename='diary'
+    
 except Exception as e: 
     input('include error '+str(e))
     exit()
@@ -222,7 +236,8 @@ class Diary():
             self.entries = entries
             return self
         except FileNotFoundError as e:
-            print("\nYou do not have a diary file. Make sure your file location is configured properly.")
+            print("\nYou do not have a diary file at %s. Make sure your file location is configured properly."%self.file)
+            raise e
     
     def search(self, args, strictMode:bool=False):
         '''Search/Find keywords'''
@@ -299,7 +314,7 @@ if __name__ == '__main__':
     #get cli args
     cliargs = [arg.lower() for arg in sys.argv][1:]
     log('cli args', sys.argv, '->', cliargs)
-    diary = Diary(filename, typespeed)
+    diary = Diary(filename=filename, typespeed=typespeed)
 
     # parse cli args to select menu
     try:
