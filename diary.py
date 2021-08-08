@@ -10,7 +10,7 @@ try:
     try: exec(open('diary_config', 'r').read())
     except: filelocation, typespeed = 'diary', 1.25
     filename = sep.join(filelocation)
-    version = '3.1_debug'
+    version = '3.1'
     testing = version[-5:]=='debug'
     if testing: import traceback
 except Exception as e: 
