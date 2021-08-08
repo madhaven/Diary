@@ -1,5 +1,5 @@
 try:
-    version = '3.1'
+    version = '3.1_debug'
     testing = version[-5:]=='debug'
     import os
     from os import sep
@@ -260,13 +260,13 @@ class Diary():
                     if s.lower() not in str(entry).lower(): break
                     elif i == len(args) - 1:
                         result_count += 1
-                        print(entry.time.strftime('%Y %m %d %H:%M:%S %a'), '|', str(entry), end='')
+                        print(entry.time.strftime('%Y %b %d %H:%M:%S %a'), '|', str(entry), end='')
         else:
             for entry in self.entries:
                 for i, s in enumerate(args):
                     if s.lower() in str(entry).lower():
                         result_count += 1
-                        print(entry.time.strftime('%Y %m %d %H:%M:%S %a'), '|', str(entry), end='')
+                        print(entry.time.strftime('%Y %b %d %H:%M:%S %a'), '|', str(entry), end='')
                         break
         print(result_count, "entries found")
     
