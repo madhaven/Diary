@@ -1,24 +1,23 @@
 try:
-    version = '3.1_debug'
-    testing = version[-5:]=='debug'
-    import os
-    from os import sep
-    import sys
+    version = '3.2'
+    testing = version[-5:] == 'debug'
     if testing: import traceback
+    from os import sep, path
+    import sys
 
     from time import sleep
     from datetime import datetime, timedelta
     from msvcrt import getch, kbhit
     import re, calendar
-    
+
     try:
-        exec(open(sep.join([os.path.expanduser('~'), 'diary_config']), 'r').read())
+        exec(open(sep.join([path.expanduser('~'), 'diary_config']), 'r').read())
     except:
         file = input('Specify a location to read/write your Diary file : ')
         filelocation = file.split(sep)+['diary']
         typespeed = 1.25
         try:
-            with open(sep.join([os.path.expanduser('~')]+['diary_config']), 'w') as f:
+            with open(sep.join([path.expanduser('~')]+['diary_config']), 'w') as f:
                 f.write('filelocation, typespeed = '+str(filelocation)+', '+str(typespeed))
         except Exception as e:
             input('There was an error, try a valid filename')
@@ -45,8 +44,8 @@ class Entry:
     
     def __str__(self):
         '''
-        Convert user input information and returns data alone.
-        used in search ops where backspace characters need not be considered
+        Convert user input information and returns data alone\n
+        used in search ops where backspace characters need not be considered\n
         in the entry
         '''
         text = ''
@@ -114,9 +113,9 @@ class Entry:
     
     def print(self, speed=1.5):
         '''
-        prints the entry.
-        Contains sleep() to imitate the user's type speed.
-        self.printdate decides whether or not to print the timestamp
+        prints the entry\n
+        Contains sleep() to imitate the user's type speed\n
+        self.printdate decides whether or not to print the timestamp\n
         '''
         skipFactor = 1
         if self.printdate: print('\n'+self.time.ctime(), flush=True)
@@ -130,45 +129,47 @@ class Entry:
 
 class Diary():
     '''
-    class to handle all Diary interactions.
+    class to handle all Diary interactions
     '''
+    headerFormat = 'diary v%s github.com/madhaven/diary'
+    entryFormat = '\n\n%s%s%s'
+    version = version
 
-    def __init__(self, filename:str, typespeed:float = 1.5, stopword:str='bye'):
-        '''initializes the Diary.'''
+    def __init__(self, filename:str, typespeed:float=1.5, stopWord:str='bye', version:str=version):
+        '''initializes the Diary'''
         self.entries = []
         self.file = filename
         self.printdate = False
         self.typespeed = typespeed
-        self.sessionStopWord = stopword
-        self.version = '2.10'
+        self.sessionStopWord = stopWord
     
     def add(self, *entries):
         '''writes the entry/entries to the file'''
         with open(self.file, 'a') as f:
             if f.tell()==0:
-                f.writelines(['diary v'+self.version+' github.com/madhaven/diary'])
+                f.writelines([self.headerFormat%self.version])
             for entry in entries:
-                f.write('\n\n' + entry.time.ctime() + entry.text + str(entry.intervals))
+                f.write(self.entryFormat%(entry.time.ctime(), entry.text, str(entry.intervals)))
     
-    def record(self):
+    def record(self, entry:Entry=Entry()):
         '''
-        To add diary entries to the file.
-        Initiates a loop of Entry records. 
-        Loop ends when the stop word is found in text
+        To add diary entries to the file\n
+        Initiates a loop of Entry records\n
+        Loop ends when the stop word is found in an Entry\n
+        `entry` is an injected variable that defaults to `Entry` instance
         '''
-        entry = Entry()
         try:
             while True:
                 entry.record()
                 self.add(entry)
-                if self.sessionStopWord in str(entry).lower(): break
+                if self.sessionStopWord in str(entry).lower():
+                    break
         except Exception as e:
             print('your last entry : '+str(entry))
             raise e
 
-
     def read(self, args:list):
-        '''displays the diary entries of the queried day.'''
+        '''displays the diary entries of the queried day'''
         if not args:
             print( 
                 'usage','-----','diary read all','diary read today',
@@ -206,10 +207,10 @@ class Diary():
         
     def load(self):
         '''
-        Scans the file specified on creation and returns a list of Entry objects.
-        This replaces any existing Entries in memory with data from the file.
-
-        Only recommended when reading entries as adding entries to the diary do not require any data in memory.        
+        Scans the file specified on creation and returns a list of Entry objects\n
+        This replaces any existing Entries in memory with data from the file\n
+        \n
+        Only recommended when reading entries as adding entries to the diary do not require any data in memory  
         '''
         entries = []
         try:
@@ -292,7 +293,7 @@ def log(*args, pause=False, **kwargs):
 
 def diaryversion(args=None):
     '''Shows version'''
-    print("Diary.py v"+version+"\nproduct of github.com/madhaven")
+    print("Diary.py v"+version+"\ngithub.com/madhaven/Diary")
 
 
 def diaryinfo():
