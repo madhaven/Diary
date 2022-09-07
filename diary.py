@@ -183,13 +183,17 @@ class Diary():
             args = datetime.now()-timedelta(1) if args[0]=='yesterday' else datetime.now()
             year, month, day = args.year, args.month, args.day
         else:
-            year = list(filter(re.compile(r'^\d{4}$').match, args))
-            year = int(year[0]) if year else None
-            monthname = list(filter(re.compile(r'^[a-zA-Z]{3}.*$').match, args))
-            monthname = monthname[0] if monthname else None
-            month = {month[:3].lower(): index for index, month in enumerate(calendar.month_abbr) if month}[monthname[:3]]
-            day = list(filter(re.compile(r'^\d{1,2}$').match, args))
-            day = int(day[0]) if day else None
+            try:
+                year = list(filter(re.compile(r'^\d{4}$').match, args))
+                year = int(year[0]) if year else None
+                monthname = list(filter(re.compile(r'^[a-zA-Z]{3}.*$').match, args))
+                monthname = monthname[0] if monthname else None
+                month = {month[:3].lower(): index for index, month in enumerate(calendar.month_abbr) if month}[monthname[:3]]
+                day = list(filter(re.compile(r'^\d{1,2}$').match, args))
+                day = int(day[0]) if day else None
+            except:
+                print("That date doesn't look right")
+                return
         
         self.load()
         readlist = [
