@@ -92,6 +92,14 @@ class Entry:
                     print()
                     return self
                     
+                #Ctrl+C
+                elif char == '\\x03':
+                    if len(entry) != 0:
+                        entry.append(['\n', t2])
+                        self.text = ''.join(list(zip(*entry))[0])
+                        self.intervals = list(list(zip(*entry))[1])
+                    raise EmergencyStop
+
                 #Escape char
                 elif char == '\\\\':
                     print('\\', end='', flush=True)
@@ -106,6 +114,11 @@ class Entry:
                 elif char == '\\x08':
                     print('\b \b', end='', flush=True)
                     char = '\b'
+                
+                #stray characters
+                elif len(char) > 1:
+                    char = str(getch())[2:-1]
+                    continue
                     
                 #normal character?
                 else:
