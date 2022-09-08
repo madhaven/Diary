@@ -2,7 +2,7 @@ try:
     version = '3.2'
     testing = version[-5:] == 'debug'
     if testing: import traceback
-    from os import sep, path
+    from os import sep, path, system
     import sys
 
     from time import sleep
@@ -30,17 +30,21 @@ except Exception as e:
     input('include error '+str(e))
     exit()
 
+class EmergencyStop(Exception):
+    pass
 
 class Entry:
     '''stores an entry that the user makes'''
     
     def __init__(self, text:str='', time:datetime=None, intervals:list=None, printdate:bool=False):
-        '''set empty strings, initialize the filename taken from globals'''
+        '''set empty strings'''
         self.text:str = text
-
-        if time: self.time:datetime = time
-        if intervals: self.intervals:list = intervals
+        self.time:datetime = time
+        self.intervals:list = intervals
         self.printdate:bool = printdate
+    
+    def __bool__(self):
+        return len(self.text) > 0
     
     def __str__(self):
         '''
@@ -64,19 +68,22 @@ class Entry:
 
             while True:
                 #get pressed character
-                char=str(getch())[2:-1]
+                char = str(getch())[2:-1]
                 
                 #format time
                 t2 = datetime.now().timestamp()
-                if (t2-t1)>60: t2, t1=(t2-t1)-int(t2-t1)+5, t2
-                else: t2, t1 = t2-t1, t2
+                if (t2-t1) > 60:
+                    t2, t1 = (t2-t1) - int(t2-t1) + 5, t2
+                else:
+                    t2, t1 = t2 - t1, t2
                 t2 = round(t2, 4)
                 
-                #Return key pressed
-                if char=='\\r':
+                #Return key
+                if char == '\\r':
                     
                     #do nothing if text is empty
-                    if len(entry) == 0: continue
+                    if len(entry) == 0:
+                        continue
                         
                     #add a new line character to the entry and format the entry object
                     entry.append(['\n', t2])
@@ -85,17 +92,17 @@ class Entry:
                     print()
                     return self
                     
-                #Escape seq pressed
+                #Escape char
                 elif char == '\\\\':
                     print('\\', end='', flush=True)
                     char = "\\"
                     
-                #Tabspace pressed
+                #Tabspace
                 elif char == '\\t':
                     print('\t', end='', flush=True)
                     char = '\t'
                     
-                #Backspace pressed, I think 
+                #Backspace? 
                 elif char == '\\x08':
                     print('\b \b', end='', flush=True)
                     char = '\b'
@@ -149,7 +156,8 @@ class Diary():
             if f.tell()==0:
                 f.writelines([self.headerFormat%self.version])
             for entry in entries:
-                f.write(self.entryFormat%(entry.time.ctime(), entry.text, str(entry.intervals)))
+                if entry:
+                    f.write(self.entryFormat%(entry.time.ctime(), entry.text, str(entry.intervals)))
     
     def record(self, entry:Entry=Entry()):
         '''
@@ -164,6 +172,8 @@ class Diary():
                 self.add(entry)
                 if self.sessionStopWord in str(entry).lower():
                     break
+        except EmergencyStop as e:
+            self.add(entry)
         except Exception as e:
             print('your last entry : '+str(entry))
             raise e
@@ -318,7 +328,7 @@ if __name__ == '__main__':
 
     #get cli args
     cliargs = [arg.lower() for arg in sys.argv][1:]
-    log('cli args', sys.argv, '->', cliargs)
+    log('DIARY cli args', sys.argv, '->', cliargs)
     diary = Diary(filename=filename, typespeed=typespeed)
 
     # parse cli args to select menu
