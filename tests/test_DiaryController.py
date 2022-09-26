@@ -21,12 +21,10 @@ class Test_DiaryController(TestCase):
         self.assertRaises(TypeError, DiaryController, msg='blank filename error not raised')
     
     def test_init(self):
-        diary = Diary(self.filename)
-        controller = DiaryController(diary, 'bye', 1.5)
-        self.assertEqual(controller.diary.file, 'test.txt', msg='filename not initialized')
+        controller = DiaryController(self.filename, 'bye', 1.5)
+        self.assertEqual(controller.diary.filer.fileName, self.filename, msg='filename not initialized')
         self.assertEqual(controller.typespeed, 1.5, msg='Typespeed mismatch')
         self.assertEqual(controller.stopWord, 'bye', msg='stop Word mismatch')
-        self.assertEqual(diary.printdate, False, 'printdate expected to be False')
     
     @skip
     def test_record_keyboard_interrupt(self):

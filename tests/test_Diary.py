@@ -2,7 +2,7 @@
 from datetime import date, datetime, timedelta
 import os
 from unittest import TestCase, expectedFailure, skip
-from diary import Diary, Entry
+from diary import Diary, Entry, Filer_2_10, Filer_3_2
 
 
 class Test_Diary(TestCase):
@@ -34,6 +34,13 @@ class Test_Diary(TestCase):
         nowTime = datetime.now()
         diary.add(Entry('hello\n', nowTime, [0.1 for _ in range(6)]))
         f = open(self.filename, 'r').read()
+        if type(diary.filer) == Filer_2_10:
+            diary.version = '2.10'
+        elif type(diary.filer) == Filer_3_2:
+            diary.version = '3.2'
+        else:
+            raise Exception('nofiler')
+        # self.assertEqual(f, 'diary v'+diary.version+' github.com/madhaven/diary\n\n' + nowTime.ctime() + 'hello\n[0.1, 0.1, 0.1, 0.1, 0.1, 0.1]', 'Brand New entry format error')
         self.assertEqual(f, 'diary v'+diary.version+' github.com/madhaven/diary\n\n' + nowTime.ctime() + 'hello\n[0.1, 0.1, 0.1, 0.1, 0.1, 0.1]\n', 'Brand New entry format error')
     
     def test_add_entry(self):
@@ -43,8 +50,8 @@ class Test_Diary(TestCase):
         diary.add(Entry('hello', nowTime, [0.1 for _ in range(5)]))
         nowt2 = datetime.now()
         diary.add(Entry('olleh', nowt2, [0.2 for _ in range(5)]))
-        expected = 'diary v%s github.com/madhaven/diary\n\n%shello[0.1, 0.1, 0.1, 0.1, 0.1]\n\n%solleh[0.2, 0.2, 0.2, 0.2, 0.2]\n'%(
-            diary.version, nowTime.ctime(), nowt2.ctime())
+        expected = 'diary v3.2 github.com/madhaven/diary\n\n%shello[0.1, 0.1, 0.1, 0.1, 0.1]\n\n%solleh[0.2, 0.2, 0.2, 0.2, 0.2]\n'%(
+            nowTime.ctime(), nowt2.ctime())
 
         fileContents = open(self.filename, 'r').read()
         self.assertEqual(fileContents, expected, 'Next entry format error')
@@ -56,7 +63,7 @@ class Test_Diary(TestCase):
         diary = Diary(self.filename)
         diary.add(*[Entry('bleh\n', time, [.1]*5)]*n)
 
-        expected = diary.headerFormat%diary.version
+        expected = diary.filer.headerString() + '\n'
         for _ in range(n):
             expected += '\n%sbleh\n[0.1, 0.1, 0.1, 0.1, 0.1]\n'%ctime
 

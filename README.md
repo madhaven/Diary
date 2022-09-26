@@ -33,6 +33,13 @@ After having added the .py extension and the program directory to path, the Diar
 >```
 >helps you search for strings in your file. The ```searchall / findall``` also works in a similar fashion except that it fetches those entries that simultaneously have all the search strings in it.
 
+>```
+>diary backup [filename]
+>```
+>creates a backup copy of the diary file.
+
 The `DiaryController` class is responsible for handling user interaction to access the `Diary`.  
 The `Diary` class contains a list of `Entry` instances that contain a record of the user's input.
+The `FileManager` class deals with read and write operations of files.
+`DiaryController` is passed an instance of the `Diary`.
                     

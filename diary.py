@@ -1,41 +1,173 @@
-    version = '3.2'
-testing = version[-5:] == 'debug'
-if testing: import traceback
+VERSION = '3.2'
+TESTING = VERSION[-5:] == 'debug'
+if TESTING: from traceback import print_exc
 
-from os import sep, path, system
+import calendar
+import re
 import sys
 from abc import abstractmethod
-from time import sleep
 from datetime import datetime, timedelta
 from msvcrt import getch, kbhit
-import re, calendar
+from os import path, sep, system
+from time import sleep
 
 try:
     try:
         exec(open(sep.join([path.expanduser('~'), 'diary_config']), 'r').read())
+        if TESTING: filelocation = 'testdiary'
     except:
         file = input('Specify a location to read/write your Diary file : ')
         filelocation = file.split(sep)+['diary']
         typespeed = 1.25
         try:
-            with open(sep.join([path.expanduser('~')]+['diary_config']), 'w') as f:
-                f.write('filelocation, typespeed = '+str(filelocation)+', '+str(typespeed))
+            with open(sep.join([path.expanduser('~'), 'diary_config']), 'w') as f:
+                f.write('filelocation, typespeed = %s, %s'%(filelocation, typespeed))
         except Exception as e:
-            input('There was an error, try a valid filename')
-            if testing: print(e)
+            input('There was an error, try a valid filename with write permissions.')
+            if TESTING: print(e)
             exit()
     filename = sep.join(filelocation)
-    if testing: filename='diary'
-    
-except Exception as e: 
+    if TESTING: filename='testdiary'
+except Exception as e:
     input('include error '+str(e))
     exit()
 
 class EmergencyStop(Exception):
     '''raised when User presses Ctrl+C during the record of an entry.'''
-    def __init__(self, *args: object) -> None:
-        self.entry = args[0]
-        super().__init__(args[1:])
+    pass
+
+class BadFileHeader(Exception):
+    '''raised when the metadata in the provided diary file does not match any version of FileManagers.'''
+
+class FileManager:
+    '''To manage file read/write across different versions'''
+
+    def backup(self, name):
+        file = open(self.fileName, 'r')
+        back = open(name, 'w')
+        for line in file:
+            back.write(line)
+        file.close()
+        back.close()
+        return True
+
+    @staticmethod
+    def getManager(fileName:str, preferredFiler:"FileManager"=None):
+        '''Returns the registered class for accessing the file and ensure file is initialized.'''
+        REGISTERED_FILERS = [Filer_2_10, Filer_3_2,] # arranged earliest first
+
+        if preferredFiler and preferredFiler in REGISTERED_FILERS:
+            return preferredFiler(fileName)
+        # if file don't exist, use the latest File Manager
+        if not path.isfile(fileName):
+            return REGISTERED_FILERS[-1](fileName)
+
+        # if file exists, use corresponding FileManager
+        with open(fileName, 'r') as file:
+            meta = file.readline()[:-1]
+        for filer in REGISTERED_FILERS:
+            log('checking', meta, filer.headerString())
+            if meta == filer.headerString():
+                log(filer)
+                return filer(fileName)
+        else:
+            # TODO: file don't have a suitable meta, catch error in controller
+            raise BadFileHeader
+    
+    @abstractmethod
+    def __init__(self, fileName):
+        self.fileName = fileName
+    
+    @classmethod
+    @abstractmethod
+    def headerString(self):
+        '''returns the header string that should be found at the first line of the file'''
+
+    @abstractmethod
+    def load(self) -> list:
+        '''Loads data if file exists and header matches.\n
+        Raises exception if file don't exist.\n
+        Raises BadFileHeader exception if header don't match.'''
+
+    @abstractmethod
+    def write(self, *entries):
+        '''write entries into file, if file don't exist: Creates a new one'''
+
+class Filer_3_2(FileManager):
+    HEADER = 'diary v%s github.com/madhaven/diary'
+    VERSION = '3.2'
+    ENTRY = '\n%s%s%s\n'
+
+    @classmethod
+    def headerString(self):
+        return self.HEADER%self.VERSION
+    
+    def entryString(self, entry:"Entry"):
+        return '\n%s%s%s\n'%(
+            entry.time.ctime(),
+            entry.text,
+            str(entry.intervals)
+        )
+
+    def load(self) -> list:
+        entries = []
+        with open(self.fileName, 'r') as file:
+            if self.headerString() != file.readline()[:-1]:
+                raise BadFileHeader
+            file.readline()
+
+            while True:
+                text = file.readline()
+                if not text:
+                    # TODO: escape blank lines / add info for SESSION concept in Diary
+                    break
+                intervals = [float(time) for time in file.readline()[1:-2].split(', ')]
+                file.readline()
+                entry = Entry(text[24:], datetime.strptime(text[:24], '%a %b %d %H:%M:%S %Y'), intervals)
+                entry.printdate = False if (entries and entries[-1].time.day==entry.time.day) else True
+                entries.append(entry)
+        return entries
+    
+    def write(self, *entries):
+        with open(self.fileName, 'a') as file:
+            if file.tell()==0:
+                file.writelines([self.headerString(), '\n'])
+            for entry in entries:
+                if entry:
+                    file.write(self.entryString(entry))
+
+class Filer_2_10(FileManager):
+    HEADER = 'diary v2.10 github.com/madhaven/diary'
+
+    @classmethod
+    def headerString(self):
+        return self.HEADER
+    
+    def load(self) -> list:
+        entries = []
+        with open(self.fileName, 'r') as file:
+            if self.headerString() != file.readline()[:-1]:
+                raise BadFileHeader
+            file.readline()
+
+            while True:
+                text = file.readline()
+                if not text:
+                    # skip blank lines / add info for session concept in Diary
+                    break
+                intervals = [float(time) for time in file.readline()[1:-2].split(', ')]
+                file.readline()
+                entry = Entry(text[24:], datetime.strptime(text[:24], '%a %b %d %H:%M:%S %Y'), intervals)
+                entry.printdate = False if (entries and entries[-1].time.day == entry.time.day) else True
+                entries.append(entry)
+        return entries
+
+    def write(self, *entries):
+        with open(self.fileName, 'a') as file:
+            if not file.tell():
+                file.writelines([self.headerString()])
+            for entry in entries:
+                file.write('\n\n%s%s%s'%(entry.time.ctime(), entry.text, entry.intervals))
 
 class Entry:
     '''stores an entry that the user makes'''
@@ -82,24 +214,15 @@ class Diary:
     '''
     class to handle all Diary interactions
     '''
-    headerFormat = 'diary v%s github.com/madhaven/diary\n'
-    entryFormat = '\n%s%s%s\n'
-    version = version
 
-    def __init__(self, filename:str, version:str=version):
+    def __init__(self, filename:str):
         '''initializes the Diary'''
         self.entries = []
-        self.file = filename # TODO: add check for file
-        self.printdate = False
+        self.filer:FileManager = FileManager.getManager(filename)
     
     def add(self, *entries):
         '''writes the entry/entries to the file'''
-        with open(self.file, 'a') as f:
-            if f.tell()==0:
-                f.writelines([self.headerFormat%self.version])
-            for entry in entries:
-                if entry:
-                    f.write(self.entryFormat%(entry.time.ctime(), entry.text, str(entry.intervals)))
+        self.filer.write(*entries)
         
     def load(self):
         '''
@@ -108,36 +231,14 @@ class Diary:
         \n
         Only recommended when reading entries as adding entries to the diary do not require any data in memory  
         '''
-        entries = []
-        try:
-            with open(self.file, 'r') as f:
-                if 'diary' in f.readline().split():
-                    #version management
-                    f.readline()
+        self.entries = self.filer.load()
 
-                while True:
-                    text = f.readline()
-                    if not text:
-                        # TODO: escape blank lines / add info for SESSION concept in Diary
-                        break
-                    intervals = [float(time) for time in f.readline()[1:-2].split(', ')]
-                    f.readline()
-
-                    entry = Entry(text[24:], datetime.strptime(text[:24], '%a %b %d %H:%M:%S %Y'), intervals)
-                    if (
-                        len(entries) == 0 or 
-                        entries[-1].time.day != entry.time.day
-                    ): entry.printdate = True
-                    entries.append(entry)
-            self.entries = entries
-            
-        except FileNotFoundError as e:
-            print("\nYou do not have a diary file at %s. Make sure your file location is configured properly."%self.file)
-            raise e
-
-    def filter(self, year:int=None, month:int=None, day:int=None) -> list:
-        '''fetches diary records acc to date match'''
+    def filter(self, year:int=None, month:int=None, day:int=None, fetchLatest=False) -> list:
+        '''fetches diary records acc to date match, if `fetchLatest` is set to True, entries from the last day is fetched.'''
         self.load()
+        if fetchLatest:
+            lastDate:datetime = self.entries[-1].time
+            year, month, day = lastDate.year, lastDate.month, lastDate.day
         return [
             entry for entry in self.entries
             if ((not year or year==entry.time.year) and
@@ -147,7 +248,6 @@ class Diary:
     
     def search(self, *args, strictMode:bool=False) -> list:
         '''Search/Find keywords, returns a list of Entry objects'''
-
         results = []
         self.load()
         if strictMode:
@@ -167,6 +267,13 @@ class Diary:
                         break
         return results
 
+    def backup(self, name:str=None, *args):
+        if not name:
+            name = self.filer.fileName
+            name = name[:name.rfind(sep)+1] + 'diaryback_'
+            name += datetime.now().strftime('%Y%m%d%H%M')
+        self.filer.backup(name)
+
     def export(self, args:str=None):
         '''Handles Export options'''
         if not args:
@@ -182,11 +289,14 @@ class Diary:
 class DiaryController():
     '''provide access to Diary'''
 
-    def __init__(self, diary:Diary, stopWord:str='bye', typespeed:float=1.5):
+    def __init__(self, filename:str, stopWord:str='bye', typespeed:float=1.5):
         self.stopWord:str = stopWord
         self.typespeed:int = typespeed
-        self.diary:Diary = diary
-        self.version:str = version
+        try:
+            self.diary:Diary = Diary(filename)
+        except BadFileHeader as e:
+            raise NotImplementedError
+        self.version:str = VERSION
     
     def _showVersion(self, args=None):
         '''Shows Controller Version'''
@@ -202,40 +312,44 @@ class DiaryController():
             'diary read - to access older entries or logs that you have made',
             'diary search|find - to search for keywords',
             'diary searchall|findall - to search for entries containing all the keywords',
+            'diary backup [filename]',
             'diary export - to export your entries to portable formats | NOT AVAILABLE',
             sep='\n'
         )
 
     def main(self, *args):
         '''Main entry point into Diary. parses cli args to select menu'''
+        try:
+            if not args:
+                self._showInfo()
+            elif args[0] in ['log', 'entry']:
+                self.log()
+            elif args[0] in ['read', 'show']:
+                self.read(*args[1:])
+            elif args[0] in ['search', 'find']:
+                self.search(*args[1:])
+            elif args[0] in ['searchall', 'findall', 'search all', 'find all']:
+                self.search(*args[1:], strictMode=True)
+            elif args[0] in ['export as', 'export to', 'export']:
+                self.diary.export(*args[1:])
+            elif args[0] in ['version', '--version']:
+                self._showVersion()
+            elif args[0] in ['backup']:
+                self.backup(*args[1:])
+            else:
+                self._showInfo()
+        except FileNotFoundError as e:
+            print('\nDiary file missing "%s"?'%self.diary.filer.fileName)
 
-        if not args:
-            self._showInfo()
-        elif args[0] in ['log', 'entry']:
-            self.log()
-        elif args[0] in ['read', 'show']:
-            self.read(*args[1:])
-        elif args[0] in ['search', 'find']:
-            self.search(*args[1:])
-        elif args[0] in ['searchall', 'findall', 'search all', 'find all']:
-            self.search(*args[1:], strictMode=True)
-        elif args[0] in ['export as', 'export to', 'export']:
-            self.diary.export(*args[1:])
-        elif args[0] in ['version', '--version']:
-            self._showVersion()
-        else:
-            self._showInfo()
-    
     def log(self):
         '''
         To record diary entries\n
-        Initiates a loop of Entry records\n
+        Initiates a loop of Entry recordings\n
         Loop ends when the stop word is found in an Entry\n
-        `entry` is an injected variable that defaults to `Entry` instance
         '''
         try:
             while True:
-                entry = self.record()
+                entry = self._record()
                 self.diary.add(entry)
                 if self.stopWord in str(entry).lower():
                     break
@@ -246,7 +360,7 @@ class DiaryController():
             print('your last entry was broken: %s'%entry)
             raise e
     
-    def record(self) -> Entry:
+    def _record(self) -> Entry:
         '''method to record an entry from the cli interface. A single entry ends when the return key is pressed. The diary log ends if the stopword is found in the entry.'''
         try:
             # record current time
@@ -329,10 +443,12 @@ class DiaryController():
             return
         
         if args[0]=='all':
-            year, month, day = None, None, None
+            year, month, day, getLatest = None, None, None, False
         elif args[0] in ['yesterday', 'today']:
             args = datetime.now()-timedelta(days=1) if args[0]=='yesterday' else datetime.now()
-            year, month, day = args.year, args.month, args.day
+            year, month, day, getLatest = args.year, args.month, args.day, False
+        elif args[0] in ['latest', 'last']:
+            year, month, day, getLatest = None, None, None, True
         else:
             try:
                 year = list(filter(re.compile(r'^\d{4}$').match, args))
@@ -346,17 +462,19 @@ class DiaryController():
                 }[monthname[:3]] if monthname else None
                 day = list(filter(re.compile(r'^\d{1,2}$').match, args))
                 day = int(day[0]) if day else None
+                getLatest = False
             except:
                 print("That date doesn't look right")
-                if testing: traceback.print_exc()
+                if TESTING: print_exc()
                 return
         
-        readlist = self.diary.filter(year, month, day)
-        print('found %s entries,'%str(len(readlist)))
+        entries = self.diary.filter(year, month, day, getLatest)
+        count = len(entries)
+        print('%s %s found'%(count, 'entry' if count==1 else 'entries'))
         try:
-            for entry in readlist:
+            for entry in entries:
                 self.printEntry(entry)
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             print("\nDiary closed")
             return
     
@@ -378,7 +496,7 @@ class DiaryController():
         for entry in results:
             print(entry.time.strftime('%Y %b %d %H:%M:%S %a'), '|', str(entry), end='')
         count = len(results)
-        print(count, "%s found"%("entries" if count>1 else "entry"))
+        print("%s %s found"%(count, "entries" if count!=1 else "entry"))
     
     def printEntry(self, entry:Entry, speed:int=None):
         '''
@@ -399,23 +517,25 @@ class DiaryController():
                 end='', flush=True
             )
 
+    def backup(self, name:str=None, *args):
+        print('backing up diary%s...'%((' to %s'%name) if name else ''))
+        self.diary.backup(name)
+        print('COMPLETE')
 
 def log(*args, pause=False, **kwargs):
     '''to log values while testing'''
-    if testing: 
+    if TESTING: 
         print(*args, **kwargs)
         if pause:input()
-
 
 if __name__ == '__main__':
 
     #get cli args
     cliargs = [arg.lower() for arg in sys.argv][1:]
     log('DIARY cli args', sys.argv, '->', cliargs)
-    diary = Diary(filename=filename)
-    controller = DiaryController(diary, typespeed=typespeed)
 
     try:
+        controller = DiaryController(filename, typespeed=typespeed)
         controller.main(*cliargs)
     except Exception as e:
         print(
@@ -423,4 +543,4 @@ if __name__ == '__main__':
             'please report issues to https://github.com/madhaven/Diary/issues',
             sep='\n', end='\n\n'
         )
-        if testing: traceback.print_exc()
+        if TESTING: print_exc()
