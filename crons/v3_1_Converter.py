@@ -1,6 +1,8 @@
 #to remove spaces between timestamp and text in diary records
 from os import sep, system
-with open('diary', 'r') as f, open('diary2', 'w') as f2:
+oldDiary = input('Drop your old diary file to read from : ')
+newDiary = input('Specify your new file : ')
+with open(oldDiary, 'r') as f, open(newDiary, 'w') as f2:
     f2.write('diary v2.10 github.com/madhaven/diary')
     while True:
         line = f.readline()
@@ -16,3 +18,4 @@ with open('diary', 'r') as f, open('diary2', 'w') as f2:
             for time in f.readline()[1:-2].split(', ')
         ]))
         f.readline()
+input('Conversion Complete')
