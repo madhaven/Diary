@@ -9,6 +9,7 @@ For initial setup:
 	 ```pip install -r requirements.txt```
 	 
 - Add program directory to path:
+
 	In Linux / Mac (Use .bashrc or .zshrc based on what you use. .bashrc used in example)
 	- Run ```$ nano ~/.bashrc``` in terminal & bash profile will be open
 	- Add ```export PATH="/path/to/diary.py:$PATH"``` and save
