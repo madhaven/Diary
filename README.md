@@ -4,13 +4,21 @@ The read option enables you to replay entries the way you typed it into the cons
 The setup is quite clumsy for a standalone script.
 
 For initial setup:
-- To install the required python libraries, run:
-	- ```pip install -r requirements.txt```
-- To add program directory to path:
-	| Windows   | ```C:\> setx path "%PATH%;C:%cd%"``` |
-        |-----------|--------------------------------------|
-        | Linux/Mac | ```export PATH="$(pwd):$PATH"```     |
-
+------------------
+- Install the requirements:
+	 ```pip install -r requirements.txt```
+	 
+- Add program directory to path:
+	In Linux / Mac (Use .bashrc or .zshrc based on what you use. .bashrc used in example)
+	- Run ```$ nano ~/.bashrc``` in terminal & bash profile will be open
+	- Add ```export PATH="/path/to/diary.py:$PATH"``` and save
+	- Run ```source .bashrc```
+	
+	In Windows
+	- Get inside Diary directory in Command prompt
+	- Run ```C:...\Diary> setx path "%PATH%;C:%cd%"```
+	
+------------------
 	
 After having added the .py extension and the program directory to path, the Diary interface could be called with one of three ways to start it up.
 
