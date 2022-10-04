@@ -3,7 +3,20 @@ The diary app is intended to be called from a command prompt and can be used to 
 The read option enables you to replay entries the way you typed it into the console.  
 The setup is quite clumsy for a standalone script.
 
-After having added the .py extension and the program directory to path, the Diary interface could be called with one of three ways to start it up.
+For initial setup:
+------------------
+- Add program directory to path:
+
+	In Linux / Mac (Use .bashrc or .zshrc based on what you use. .bashrc used in example)
+	- Run ```$ nano ~/.bashrc``` in terminal & bash profile will be open
+	- Add ```export PATH="/path/to/diary.py:$PATH"``` and save
+	- Run ```source .bashrc```
+	
+	In Windows
+	- Get inside Diary directory in Command prompt
+	- Run ```C:...\Diary> setx path "%PATH%;C:%cd%"```
+
+After having added the .py extension and the program directory to path, the Diary interface could be called with one of these ways to start it up.
 
 >```
 >diary
