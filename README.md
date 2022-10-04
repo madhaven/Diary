@@ -5,9 +5,6 @@ The setup is quite clumsy for a standalone script.
 
 For initial setup:
 ------------------
-- Install the requirements:
-	 ```pip install -r requirements.txt```
-	 
 - Add program directory to path:
 
 	In Linux / Mac (Use .bashrc or .zshrc based on what you use. .bashrc used in example)
@@ -18,10 +15,8 @@ For initial setup:
 	In Windows
 	- Get inside Diary directory in Command prompt
 	- Run ```C:...\Diary> setx path "%PATH%;C:%cd%"```
-	
-------------------
-	
-After having added the .py extension and the program directory to path, the Diary interface could be called with one of three ways to start it up.
+
+After having added the .py extension and the program directory to path, the Diary interface could be called with one of these ways to start it up.
 
 >```
 >diary
