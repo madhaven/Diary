@@ -279,7 +279,7 @@ class Diary:
         if not args:
             print( 
                 'not implemented',
-                # 'usage','-----',
+                # 'Usage','-----',
                 # 'diary export[to] text/txt',
                 # 'diary export[to] csv',
                 sep = '\n'
@@ -432,7 +432,7 @@ class DiaryController():
         '''displays the diary entries of the queried day'''
         if not args:
             print( 
-                'usage',
+                'Usage',
                 '-----',
                 'diary read all',
                 'diary read today',
@@ -482,7 +482,7 @@ class DiaryController():
         '''Search/Find keywords'''
         if not args:
             print( 
-                'usage',
+                'Usage',
                 '-----',
                 'diary search [search_text [search_text2 [...]]]',
                 'diary searchall [search_text [search_text2 [...]]]',
