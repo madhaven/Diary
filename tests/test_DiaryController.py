@@ -1,7 +1,8 @@
 import os
 from unittest import TestCase, skip
 
-from diary import Diary, DiaryController
+from Diary import Diary
+from DiaryController import DiaryController
 
 class Test_DiaryController(TestCase):
     '''unit tests for DiaryController'''

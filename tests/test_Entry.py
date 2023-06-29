@@ -1,6 +1,6 @@
 from datetime import datetime
 from unittest import TestCase, skip
-from diary import Entry
+from Entry import Entry
 
 class TestEntry(TestCase):
     '''conducts unit tests for entry methods'''

@@ -2,7 +2,9 @@
 from datetime import date, datetime, timedelta
 import os
 from unittest import TestCase, expectedFailure, skip
-from diary import Diary, Entry, Filer_2_10, Filer_3_2
+from Diary import Diary
+from Entry import Entry
+from Filers import Filer_2_10, Filer_3_2
 
 
 class Test_Diary(TestCase):
@@ -34,9 +36,9 @@ class Test_Diary(TestCase):
         nowTime = datetime.now()
         diary.add(Entry('hello\n', nowTime, [0.1 for _ in range(6)]))
         f = open(self.filename, 'r').read()
-        if type(diary.filer) == Filer_2_10:
+        if type(diary.filer) == type(Filer_2_10):
             diary.version = '2.10'
-        elif type(diary.filer) == Filer_3_2:
+        elif type(diary.filer) == type(Filer_3_2):
             diary.version = '3.2'
         else:
             raise Exception('nofiler')
