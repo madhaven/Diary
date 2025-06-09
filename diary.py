@@ -323,6 +323,7 @@ class DiaryController():
             if not args:
                 self._showInfo()
             elif args[0] in ['log', 'entry']:
+                print(self.pre_log_advice())
                 self.log()
             elif args[0] in ['read', 'show']:
                 self.read(*args[1:])
@@ -521,6 +522,13 @@ class DiaryController():
         print('backing up diary%s...'%((' to %s'%name) if name else ''))
         self.diary.backup(name)
         print('COMPLETE')
+
+    def pre_log_advice(self):
+        '''returns a string to be printed before logging an entry'''
+        return (
+            'Ctrl+C / "bye" to stop recording.\n'
+            'Say something memorable about today :)\n'
+        )
 
 def log(*args, pause=False, **kwargs):
     '''to log values while testing'''
