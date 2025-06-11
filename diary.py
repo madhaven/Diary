@@ -1,4 +1,4 @@
-VERSION = '3.2'
+VERSION = '3.4'
 TESTING = VERSION[-5:] == 'debug'
 if TESTING: from traceback import print_exc
 
@@ -355,7 +355,6 @@ class DiaryController():
                 if self.stopWord in str(entry).lower():
                     break
         except EmergencyStop as e:
-            self.diary.add(e.entry)
             system('cls')
         except Exception as e:
             print('your last entry was broken: %s'%entry)
