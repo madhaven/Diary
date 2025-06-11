@@ -3,8 +3,10 @@ from datetime import datetime
 from os import path, sep
 
 from DiaryConfig import *
-from FileManager import FileManager
-from Filers.Filer_3_2 import Filer_3_2
+from filers.file_manager import FileManager
+from filers.filer_factory import FilerFactory
+from filers.filer_3_2 import Filer_3_2
+from diary_controller import DiaryController
 
 try:
     try:
@@ -36,8 +38,7 @@ class Diary:
     def __init__(self, filename:str):
         '''initializes the Diary'''
         self.entries = []
-        FileManager.registerFiler(Filer_3_2)
-        self.filer:FileManager = FileManager.getManager(filename)
+        self.filer:FileManager = FilerFactory.getManager('3.2')(filename)
     
     def add(self, *entries):
         '''writes the entry/entries to the file'''

@@ -2,7 +2,7 @@
 from datetime import date, datetime, timedelta
 import os
 from unittest import TestCase, expectedFailure, skip
-from Diary import Diary
+from diary import Diary
 from Entry import Entry
 from Filers import Filer_2_10, Filer_3_2
 

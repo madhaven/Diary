@@ -1,9 +1,8 @@
-
 import datetime
 
 
 class Entry:
-    '''stores an entry that the user makes'''
+    '''represents an entry that the user makes'''
     
     def __init__(self, text:str='', time:datetime=None, intervals:list=[], printdate:bool=False):
         '''set empty strings'''
@@ -21,9 +20,8 @@ class Entry:
     def __eq__(self, __o: "Entry") -> bool:
         if self.text != __o.text:
             return False
-        for x, y in zip(self.intervals, __o.intervals):
-            if x != y:
-                return False
+        if any([x!=y for x, y in zip(self.intervals, __o.intervals)]):
+            return False
         return True
     
     def __str__(self):

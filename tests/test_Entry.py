@@ -26,7 +26,9 @@ class TestEntry(TestCase):
     @skip
     def test_record(self):
         pass
+        # TODO: find way to inject streams
 
     @skip
     def test_print(self):
         pass
+        # TODO: find way to inject streams

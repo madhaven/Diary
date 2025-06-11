@@ -1,7 +1,7 @@
 import datetime
 from DiaryExceptions import BadFileHeader
 from Entry import Entry
-from FileManager import FileManager
+from filers.file_manager import FileManager
 
 
 class Filer_2_10(FileManager):
