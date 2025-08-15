@@ -52,9 +52,9 @@ class FileManager:
         return True
 
     @staticmethod
-    def getManager(fileName:str, preferredFiler:"FileManager"=None):
+    def get_manager(fileName:str, preferredFiler:"FileManager"=None):
         '''Returns the registered class for accessing the file and ensure file is initialized.'''
-        REGISTERED_FILERS = [Filer_2_10, Filer_3_2,] # arranged earliest first
+        REGISTERED_FILERS: list[FileManager] = [Filer_2_10, Filer_3_2,] # arranged earliest first
 
         if preferredFiler and preferredFiler in REGISTERED_FILERS:
             return preferredFiler(fileName)
@@ -66,8 +66,8 @@ class FileManager:
         with open(fileName, 'r') as file:
             meta = file.readline()[:-1]
         for filer in REGISTERED_FILERS:
-            log('checking', meta, filer.headerString())
-            if meta == filer.headerString():
+            log('checking', meta, filer.header_string())
+            if meta == filer.header_string():
                 log(filer)
                 return filer(fileName)
         else:
@@ -80,7 +80,7 @@ class FileManager:
     
     @classmethod
     @abstractmethod
-    def headerString(self):
+    def header_string(self):
         '''returns the header string that should be found at the first line of the file'''
 
     @abstractmethod
@@ -99,7 +99,7 @@ class Filer_3_2(FileManager):
     ENTRY = '\n%s%s%s\n'
 
     @classmethod
-    def headerString(self):
+    def header_string(self):
         return self.HEADER%self.VERSION
     
     def entryString(self, entry:"Entry"):
@@ -112,7 +112,7 @@ class Filer_3_2(FileManager):
     def load(self) -> list:
         entries = []
         with open(self.fileName, 'r') as file:
-            if self.headerString() != file.readline()[:-1]:
+            if self.header_string() != file.readline()[:-1]:
                 raise BadFileHeader
             file.readline()
 
@@ -131,7 +131,7 @@ class Filer_3_2(FileManager):
     def write(self, *entries):
         with open(self.fileName, 'a') as file:
             if file.tell()==0:
-                file.writelines([self.headerString(), '\n'])
+                file.writelines([self.header_string(), '\n'])
             for entry in entries:
                 if entry:
                     file.write(self.entryString(entry))
@@ -140,13 +140,13 @@ class Filer_2_10(FileManager):
     HEADER = 'diary v2.10 github.com/madhaven/diary'
 
     @classmethod
-    def headerString(self):
+    def header_string(self):
         return self.HEADER
     
     def load(self) -> list:
         entries = []
         with open(self.fileName, 'r') as file:
-            if self.headerString() != file.readline()[:-1]:
+            if self.header_string() != file.readline()[:-1]:
                 raise BadFileHeader
             file.readline()
 
@@ -165,7 +165,7 @@ class Filer_2_10(FileManager):
     def write(self, *entries):
         with open(self.fileName, 'a') as file:
             if not file.tell():
-                file.writelines([self.headerString()])
+                file.writelines([self.header_string()])
             for entry in entries:
                 file.write('\n\n%s%s%s'%(entry.time.ctime(), entry.text, entry.intervals))
 
@@ -218,7 +218,7 @@ class Diary:
     def __init__(self, filename:str):
         '''initializes the Diary'''
         self.entries = []
-        self.filer:FileManager = FileManager.getManager(filename)
+        self.filer:FileManager = FileManager.get_manager(filename)
     
     def add(self, *entries):
         '''writes the entry/entries to the file'''
@@ -298,13 +298,13 @@ class DiaryController():
             raise NotImplementedError
         self.version:str = VERSION
     
-    def _showVersion(self, args=None):
+    def _show_version(self, args=None):
         '''Shows Controller Version'''
         print("Diary.py v" + self.version + "\ngithub.com/madhaven/Diary")
 
-    def _showInfo(self):
+    def _show_info(self):
         '''Shows Manual'''
-        self._showVersion()
+        self._show_version()
         print(
             '\nUsage','-----',
             'diary log|entry - to add to your diary',
@@ -321,7 +321,7 @@ class DiaryController():
         '''Main entry point into Diary. parses cli args to select menu'''
         try:
             if not args:
-                self._showInfo()
+                self._show_info()
             elif args[0] in ['log', 'entry']:
                 print(self.pre_log_advice())
                 self.log()
@@ -334,11 +334,11 @@ class DiaryController():
             elif args[0] in ['export as', 'export to', 'export']:
                 self.diary.export(*args[1:])
             elif args[0] in ['version', '--version']:
-                self._showVersion()
+                self._show_version()
             elif args[0] in ['backup']:
                 self.backup(*args[1:])
             else:
-                self._showInfo()
+                self._show_info()
         except FileNotFoundError as e:
             print('\nDiary file missing "%s"?'%self.diary.filer.fileName)
 
@@ -473,7 +473,7 @@ class DiaryController():
         print('%s %s found'%(count, 'entry' if count==1 else 'entries'))
         try:
             for entry in entries:
-                self.printEntry(entry)
+                self.print_entry(entry)
         except KeyboardInterrupt:
             print("\nDiary closed")
             return
@@ -498,7 +498,7 @@ class DiaryController():
         count = len(results)
         print("%s %s found"%(count, "entries" if count!=1 else "entry"))
     
-    def printEntry(self, entry:Entry, speed:int=None):
+    def print_entry(self, entry:Entry, speed:int=None):
         '''
         prints the entry\n
         Contains sleep() to imitate the user's type speed\n

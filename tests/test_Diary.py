@@ -63,7 +63,7 @@ class Test_Diary(TestCase):
         diary = Diary(self.filename)
         diary.add(*[Entry('bleh\n', time, [.1]*5)]*n)
 
-        expected = diary.filer.headerString() + '\n'
+        expected = diary.filer.header_string() + '\n'
         for _ in range(n):
             expected += '\n%sbleh\n[0.1, 0.1, 0.1, 0.1, 0.1]\n'%ctime
 
