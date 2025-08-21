@@ -4,5 +4,6 @@ diary_config
 diary
 testdiary
 *diaryback*
-/Diary.CLI/obj
 /.idea
+/Diary.CLI/bin
+/Diary.CLI/obj
