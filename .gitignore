@@ -4,3 +4,5 @@ diary_config
 diary
 testdiary
 *diaryback*
+/Diary.CLI/obj
+/.idea
