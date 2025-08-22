@@ -15,6 +15,8 @@ internal static class Program
         var diary = new Diary(fileManager);
         var controller = new CliController(diary, "bye", 1);
 
+        Console.CancelKeyPress += (sender, cancelEventArgs) => { Console.WriteLine("\nDiary closed"); };
+
         var parser = BuildParser(controller);
         parser.Parse(args).Invoke();
     }

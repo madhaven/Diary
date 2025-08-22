@@ -1,4 +1,5 @@
 using System.Globalization;
+using Diary.Core.Exceptions;
 
 namespace Diary.Core;
 
@@ -6,7 +7,7 @@ public class FileManager : IFileManager
 {
     public string FileName { get; }
 
-    public FileManager(string fileName)
+    public FileManager(string fileName) // TODO: Change with Configuration handler class
     {
         FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
     }
@@ -33,11 +34,12 @@ public class FileManager : IFileManager
         while ((line = reader.ReadLine()) != null)
         {
             var datetime = DateTime.ParseExact(line, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture);
-            var text = reader.ReadLine() ?? throw new Exception("Corrupt Entry"); // TODO: move to seperate exception
+            var printDate = entries.LastOrDefault()?.Time.Date != datetime.Date;
+            var text = reader.ReadLine() ?? throw new BadFileHeader();
             text += '\n';
             var intervals = reader.ReadLine()
-                ?.Split(',').Select(int.Parse).ToList() ?? throw new Exception("Corrupt Entry");
-            var entry = new Entry(text, datetime, intervals);
+                ?.Split(',').Select(int.Parse).ToList() ?? throw new BadFileHeader();
+            var entry = new Entry(text, datetime, intervals, printDate);
             entries.Add(entry);
             reader.ReadLine();
         }
@@ -45,8 +47,5 @@ public class FileManager : IFileManager
         return entries;
     }
 
-    public void Backup(string name)
-    {
-        ;
-    }
+    public void Backup(string name) {}
 }

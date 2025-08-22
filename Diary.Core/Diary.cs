@@ -73,9 +73,9 @@ public class Diary
         if (string.IsNullOrEmpty(name))
         {
             var fileName = _fileManager.FileName;
-            var sepIndex = fileName.LastIndexOf(Path.DirectorySeparatorChar);
-            name = fileName.Substring(0, sepIndex + 1) + "diaryback_";
-            name += DateTime.Now.ToString("yyyyMMddHHmm");
+            var directory = Path.GetDirectoryName(fileName);
+            var dateString = DateTime.Now.ToString("yyyyMMddHHmm");
+            name = Path.Join(directory, "diaryback_" + dateString);
         }
 
         _fileManager.Backup(name);

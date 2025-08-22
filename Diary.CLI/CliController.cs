@@ -128,14 +128,9 @@ public class CliController
 
     public void ReplayEntries(IEnumerable<Entry> entries)
     {
-        try
-        {
-            var entryList = entries.ToList();
-            Console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
-            foreach (var entry in entryList) { ReplayEntry(entry); }
-        }
-        // TODO: catch keyboard interrupt error
-        catch (Exception) { Console.WriteLine("\nDiary closed"); }
+        var entryList = entries.ToList();
+        Console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
+        foreach (var entry in entryList) { ReplayEntry(entry); }
     }
 
     public void ReplayAll()
@@ -192,7 +187,7 @@ public class CliController
         foreach (var entry in entries)
         {
             var timeString = entry.Time.ToString("yyyy-MM-dd HH:mm:ss ddd");
-            Console.Write($"{timeString}|{entry}");
+            Console.Write($"{timeString} | {entry}");
         }
         Console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }
