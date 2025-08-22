@@ -1,6 +1,4 @@
 ﻿using System.CommandLine;
-using System.Runtime.InteropServices.Marshalling;
-using Microsoft.Extensions.Configuration;
 
 namespace Diary.CLI;
 
@@ -38,16 +36,21 @@ internal static class Program
         commandFrom.Add(filter2);
         var filter3 = new Argument<string?>("y/m/d") { DefaultValueFactory = x => null};
         commandFrom.Add(filter3);
-        commandFrom.SetAction(parseResult => { Console.WriteLine("read"); Console.WriteLine(parseResult.ToString());});
+        commandFrom.SetAction(parseResult =>
+        {
+            List<Argument<string?>> dateSpec = [filter1!, filter2, filter3];
+            var dates = dateSpec.Select(parseResult.GetValue);
+            controller.ReplayFrom(dates.ToList());
+        });
         commandRead.Add(commandFrom);
         var commandReadAll = new Command("all", "read all entries from the very start");
         commandReadAll.SetAction(parseResult => { controller.ReplayAll(); });
         commandRead.Add(commandReadAll);
         var commandReadToday =  new Command("today", "read entries from current day");
-        commandReadToday.SetAction(parseResult => { Console.WriteLine("read today"); });
+        commandReadToday.SetAction(parseResult => { controller.ReplayToday(); });
         commandRead.Add(commandReadToday);
         var commandReadYesterday = new Command("yesterday", "read entries from yesterday");
-        commandReadYesterday.SetAction(parseResult => { Console.WriteLine("read yesterday"); });
+        commandReadYesterday.SetAction(parseResult => { controller.ReplayYesterday(); });
         commandRead.Add(commandReadYesterday);
         
         // search
@@ -56,7 +59,12 @@ internal static class Program
         var argumentKeywords = new Argument<string[]>("keywords");
         commandSearch.Aliases.Add("find");
         commandSearch.Add(argumentKeywords);
-        commandSearch.SetAction(parseResult => { Console.WriteLine("search"); Console.WriteLine(parseResult.ToString()); });
+        commandSearch.SetAction(parseResult =>
+        {
+            var isStrict = parseResult.GetValue(optionStrict);
+            var keywords = parseResult.GetValue(argumentKeywords)!;
+            controller.Search(keywords, isStrict);
+        });
         commandSearch.Add(optionStrict);
 
         // backup

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diary.CLI", "Diary.CLI\Diary.CLI.csproj", "{9A339B0F-AC83-4ED1-9EFE-F1DB5B838503}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diary", "Diary\Diary.csproj", "{3288ABC7-E97D-446F-9172-2DC312785AF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diary.Core", "Diary.Core\Diary.Core.csproj", "{3288ABC7-E97D-446F-9172-2DC312785AF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

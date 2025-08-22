@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Diary\Diary.csproj" />
+    <ProjectReference Include="..\Diary.Core\Diary.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +16,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>Diary</AssemblyName>
+    <Version>4.0.0</Version>
   </PropertyGroup>
 
 </Project>

@@ -1,5 +1,5 @@
-using System.CommandLine;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Diary.CLI;
 
@@ -15,22 +15,6 @@ public class CliController
         _stopWord = stopWord ?? throw new ArgumentNullException(nameof(stopWord));
         _replaySpeed = replaySpeed;
     }
-
-    public void ShowVersion(){}
-    
-    public void ShowUsage()
-    {
-        ShowVersion();
-        Console.WriteLine("\nUsage");
-        Console.WriteLine("-----");
-        Console.WriteLine("diary log|entry - to add to your diary");
-        Console.WriteLine("diary version - to check which version your diary is running");
-        Console.WriteLine("diary read - to access older entries or logs that you have made");
-        Console.WriteLine("diary search|find - to search for keywords");
-        Console.WriteLine("diary searchall|findall - to search for entries containing all the keywords");
-        Console.WriteLine("diary backup [filename]");
-        Console.WriteLine("diary export - to export your entries to portable formats | NOT AVAILABLE");
-    }
     
     /// <summary>
     /// Records diary entries
@@ -39,6 +23,7 @@ public class CliController
     /// </summary>
     public void Log()
     {
+        Console.WriteLine(GetPrelogAdvice());
         try
         {
             while (true)
@@ -141,27 +126,75 @@ public class CliController
         }
     }
 
-    public void ReplayAll()
-    {
-        var entries = _diary.All().ToList();
-        Console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
-        ReplayEntries(entries);
-    }
-
     public void ReplayEntries(IEnumerable<Entry> entries)
     {
         try
         {
-            foreach (var entry in entries)
-            {
-                ReplayEntry(entry);
-            }
+            var entryList = entries.ToList();
+            Console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
+            foreach (var entry in entryList) { ReplayEntry(entry); }
         }
         // TODO: catch keyboard interrupt error
-        catch (Exception ex)
+        catch (Exception) { Console.WriteLine("\nDiary closed"); }
+    }
+
+    public void ReplayAll()
+    {
+        var entries = _diary.All();
+        ReplayEntries(entries);
+    }
+
+    public void ReplayToday()
+    {
+        var today = DateTime.Now;
+        var entries = _diary.Filter(today.Year, today.Month, today.Day);
+        ReplayEntries(entries);
+    }
+
+    public void ReplayYesterday()
+    {
+        var yesterday = DateTime.Now - TimeSpan.FromDays(1);
+        var entries = _diary.Filter(yesterday.Year, yesterday.Month, yesterday.Day);
+        ReplayEntries(entries);
+    }
+
+    public void ReplayFrom(List<string?> dates)
+    {
+        int? year, month, day;
+        try
         {
-            Console.WriteLine("\nDiary closed");
+            var yearFound = dates.FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^\d{4}$"));
+            year = yearFound == null ? null : int.Parse(yearFound);
+
+            var monthFound = dates
+                .FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^[a-zA-Z]{3}.*$"))?[..3]
+                ?.ToLowerInvariant();
+            var months = new Dictionary<string, int?> {
+                { "jan", 1 }, { "feb", 2 }, { "mar", 3 }, { "apr", 4 }, { "may", 5 }, { "jun", 6 },
+                { "jul", 7 }, { "aug", 8 }, { "sep", 9 }, { "oct", 10 }, { "nov", 11 }, { "dec", 12 } }; 
+            month = monthFound == null ? null : months.GetValueOrDefault(monthFound, null);
+
+            var dayFound = dates.FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^\d{1,2}$"));
+            day = dayFound == null ? null : int.Parse(dayFound);
+
+            var entries = _diary.Filter(year, month, day);
+            ReplayEntries(entries);
         }
+        catch (Exception)
+        {
+            Console.WriteLine("That date does not look right");
+        }
+    }
+
+    public void Search(string[] keywords, bool isStrict = false)
+    {
+        var entries = _diary.Search(isStrict, keywords).ToList();
+        foreach (var entry in entries)
+        {
+            var timeString = entry.Time.ToString("yyyy-MM-dd HH:mm:ss ddd");
+            Console.Write($"{timeString}|{entry}");
+        }
+        Console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }
 
     public void Backup(string? name)

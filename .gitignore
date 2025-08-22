@@ -5,5 +5,6 @@ diary
 testdiary
 *diaryback*
 /.idea
-/Diary.CLI/bin
-/Diary.CLI/obj
+*/obj
+*/bin
+*.user
