@@ -13,20 +13,20 @@ internal static class Program
     static void Main(string[] args)
     {
         // TODO: setup DI
-        // var fileManager = new FileManager();
-        // var diary = new Diary(fileManager);
-        // var controller = new CliController(diary, "bye", 1);
+        var fileManager = new FileManager("diary.txt"); // TODO: fetch from configs
+        var diary = new Diary(fileManager);
+        var controller = new CliController(diary, "bye", 1);
 
-        var parser = BuildParser();
+        var parser = BuildParser(controller);
         parser.Parse(args).Invoke();
     }
     
-    private static RootCommand BuildParser()
+    private static RootCommand BuildParser(CliController controller)
     {
         // log
         var commandLog = new Command("log", "adds entries to the diary");
         commandLog.Aliases.Add("entry");
-        commandLog.SetAction(parseResult => { Console.WriteLine("log"); });
+        commandLog.SetAction(_ => { controller.Log(); });
 
         // read
         var commandRead = new Command("read", "replay previously created entries");
@@ -41,7 +41,7 @@ internal static class Program
         commandFrom.SetAction(parseResult => { Console.WriteLine("read"); Console.WriteLine(parseResult.ToString());});
         commandRead.Add(commandFrom);
         var commandReadAll = new Command("all", "read all entries from the very start");
-        commandReadAll.SetAction(parseResult => { Console.WriteLine("read all"); });
+        commandReadAll.SetAction(parseResult => { controller.ReplayAll(); });
         commandRead.Add(commandReadAll);
         var commandReadToday =  new Command("today", "read entries from current day");
         commandReadToday.SetAction(parseResult => { Console.WriteLine("read today"); });

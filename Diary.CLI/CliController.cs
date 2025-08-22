@@ -37,14 +37,14 @@ public class CliController
     /// Initiates a loop of Entry recordings
     /// Loop ends when the stop word is found in an Entry
     /// </summary>
-    public void Log(Diary diary)
+    public void Log()
     {
         try
         {
             while (true)
             {
                 var entry = Record();
-                diary.AddEntry(entry);
+                _diary.AddEntry(entry);
                 if (entry.ToString().ToLowerInvariant().Contains(_stopWord))
                 {
                     break;
@@ -70,14 +70,14 @@ public class CliController
         try
         {
             var entry = new Entry { Time = DateTime.Now };
-            var t1 = DateTime.Now;
             while (true)
             {
+                var stopwatch = Stopwatch.StartNew();
                 var chr = Console.ReadKey(true);
-                var t2 = DateTime.Now;
-                TimeSpan t3 = t2.Subtract(t1).TotalMinutes >= 1
-                    ? t3 = TimeSpan.FromSeconds(5)
-                    : t3 = t2 - t1;
+                stopwatch.Stop();
+                var time = stopwatch.Elapsed.TotalMinutes >= 1
+                    ? TimeSpan.FromSeconds(5)
+                    : stopwatch.Elapsed;
 
                 if (chr.Key == ConsoleKey.Enter)
                 {
@@ -86,7 +86,7 @@ public class CliController
                         continue;
                     }
 
-                    entry.AddCharacter('\n', t3);
+                    entry.AddCharacter('\n', (int)time.TotalMilliseconds);
                     Console.WriteLine();
                     return entry;
                 }
@@ -95,7 +95,7 @@ public class CliController
                 {
                     if (!entry.IsEmpty())
                     {
-                        entry.AddCharacter('\n', t3);
+                        entry.AddCharacter('\n', (int)time.TotalMilliseconds);
                     }
 
                     throw new Exception("EMERGENCY STOP ERROR"); // TODO
@@ -103,7 +103,7 @@ public class CliController
 
                 Console.Write(chr.Key == ConsoleKey.Backspace ? "\b \b" : chr.KeyChar);
                 // TODO: handle stray characters
-                entry.AddCharacter(chr.KeyChar, t3);
+                entry.AddCharacter(chr.KeyChar, (int)time.TotalMilliseconds);
             }
         }
         catch (Exception ex)
@@ -118,7 +118,7 @@ public class CliController
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="speed"></param>
-    public void ReplayEntry(Entry entry, float? speed)
+    public void ReplayEntry(Entry entry, float? speed = null)
     {
         speed ??= _replaySpeed;
         var skipFactor = 1;
@@ -130,7 +130,7 @@ public class CliController
 
         foreach (var (letter, time) in entry.Text.Zip(entry.Intervals))
         {
-            Thread.Sleep((int)(time.Milliseconds * skipFactor / speed.Value));
+            Thread.Sleep((int)(time * skipFactor / speed.Value));
             if (Console.KeyAvailable &&
                     Console.ReadKey(true) is { Key: ConsoleKey.Enter | ConsoleKey.Escape | ConsoleKey.Spacebar })
             {
@@ -138,6 +138,29 @@ public class CliController
             }
             
             Console.Write(letter == '\b' ? "\b \b" : letter);
+        }
+    }
+
+    public void ReplayAll()
+    {
+        var entries = _diary.All().ToList();
+        Console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
+        ReplayEntries(entries);
+    }
+
+    public void ReplayEntries(IEnumerable<Entry> entries)
+    {
+        try
+        {
+            foreach (var entry in entries)
+            {
+                ReplayEntry(entry);
+            }
+        }
+        // TODO: catch keyboard interrupt error
+        catch (Exception ex)
+        {
+            Console.WriteLine("\nDiary closed");
         }
     }
 
