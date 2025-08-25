@@ -47,5 +47,15 @@ public class FileManager : IFileManager
         return entries;
     }
 
-    public void Backup(string name) {}
+    public void Backup(string? opName)
+    {
+        if (string.IsNullOrEmpty(opName))
+        {
+            var directory = Path.GetDirectoryName(FileName);
+            var dateString = DateTime.Now.ToString("yyyyMMddHHmm");
+            opName = Path.Join(directory, "diaryback_" + dateString);
+        }
+        
+        File.Copy(FileName, opName, false);
+    }
 }

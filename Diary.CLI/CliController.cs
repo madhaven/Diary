@@ -1,15 +1,17 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using Diary.Core;
 
 namespace Diary.CLI;
 
 public class CliController
 {
-    private string _stopWord;
-    private float _replaySpeed;
-    private readonly Diary _diary;
+    private readonly string _stopWord;
+    private readonly float _replaySpeed;
+    private readonly Core.Diary _diary;
     
-    public CliController(Diary diary, string stopWord, float replaySpeed)
+    public CliController(Core.Diary diary, string stopWord, float replaySpeed)
     {
         _diary = diary ?? throw new ArgumentNullException(nameof(diary));
         _stopWord = stopWord ?? throw new ArgumentNullException(nameof(stopWord));
@@ -30,10 +32,7 @@ public class CliController
             {
                 var entry = Record();
                 _diary.AddEntry(entry);
-                if (entry.ToString().ToLowerInvariant().Contains(_stopWord))
-                {
-                    break;
-                }
+                if (entry.ToString().Contains(_stopWord, StringComparison.InvariantCultureIgnoreCase)) { break; }
             }
         }
         // TODO: Emergency Stop error: clear screen
@@ -66,10 +65,7 @@ public class CliController
 
                 if (chr.Key == ConsoleKey.Enter)
                 {
-                    if (entry.IsEmpty())
-                    {
-                        continue;
-                    }
+                    if (entry.IsEmpty()) { continue; }
 
                     entry.AddCharacter('\n', (int)time.TotalMilliseconds);
                     Console.WriteLine();
@@ -108,19 +104,13 @@ public class CliController
         speed ??= _replaySpeed;
         var skipFactor = 1;
 
-        if (entry.PrintDate)
-        {
-            Console.WriteLine($"\n{entry.Time.ToString()}");
-        }
+        if (entry.PrintDate) Console.WriteLine($"\n{entry.Time.ToString(CultureInfo.InvariantCulture)}");
 
         foreach (var (letter, time) in entry.Text.Zip(entry.Intervals))
         {
             Thread.Sleep((int)(time * skipFactor / speed.Value));
-            if (Console.KeyAvailable &&
-                    Console.ReadKey(true) is { Key: ConsoleKey.Enter | ConsoleKey.Escape | ConsoleKey.Spacebar })
-            {
+            if (Console.KeyAvailable && Console.ReadKey(true).Key is ConsoleKey.Spacebar or ConsoleKey.Enter)
                 skipFactor = 0;
-            }
             
             Console.Write(letter == '\b' ? "\b \b" : letter);
         }

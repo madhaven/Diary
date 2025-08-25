@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using Diary.Core;
 
 namespace Diary.CLI;
 
@@ -12,10 +13,10 @@ internal static class Program
     {
         // TODO: setup DI
         var fileManager = new FileManager("diary.txt"); // TODO: fetch from configs
-        var diary = new Diary(fileManager);
+        var diary = new Core.Diary(fileManager);
         var controller = new CliController(diary, "bye", 1);
 
-        Console.CancelKeyPress += (sender, cancelEventArgs) => { Console.WriteLine("\nDiary closed"); };
+            Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var parser = BuildParser(controller);
         parser.Parse(args).Invoke();
@@ -31,12 +32,12 @@ internal static class Program
         // read
         var commandRead = new Command("read", "replay previously created entries");
         commandRead.Aliases.Add("show");
-        var commandFrom = new Command("from", "access entries from a specific year/month/date");
+        var commandFrom = new Command("from", "read entries from a specific year/month/date");
         var filter1 = new Argument<string>("y/m/d");
         commandFrom.Add(filter1);
-        var filter2 = new Argument<string?>("y/m/d") { DefaultValueFactory = x => null};
+        var filter2 = new Argument<string?>("y/m/d") { DefaultValueFactory = _ => null};
         commandFrom.Add(filter2);
-        var filter3 = new Argument<string?>("y/m/d") { DefaultValueFactory = x => null};
+        var filter3 = new Argument<string?>("y/m/d") { DefaultValueFactory = _ => null};
         commandFrom.Add(filter3);
         commandFrom.SetAction(parseResult =>
         {
@@ -46,13 +47,13 @@ internal static class Program
         });
         commandRead.Add(commandFrom);
         var commandReadAll = new Command("all", "read all entries from the very start");
-        commandReadAll.SetAction(parseResult => { controller.ReplayAll(); });
+        commandReadAll.SetAction(_ => { controller.ReplayAll(); });
         commandRead.Add(commandReadAll);
         var commandReadToday =  new Command("today", "read entries from current day");
-        commandReadToday.SetAction(parseResult => { controller.ReplayToday(); });
+        commandReadToday.SetAction(_ => { controller.ReplayToday(); });
         commandRead.Add(commandReadToday);
         var commandReadYesterday = new Command("yesterday", "read entries from yesterday");
-        commandReadYesterday.SetAction(parseResult => { controller.ReplayYesterday(); });
+        commandReadYesterday.SetAction(_ => { controller.ReplayYesterday(); });
         commandRead.Add(commandReadYesterday);
         
         // search
@@ -72,7 +73,11 @@ internal static class Program
         // backup
         var commandBackup = new Command("backup", "creates a backup of the diary");
         var argumentFilename = new Argument<string>("filename");
-        commandBackup.SetAction(parseResult => { Console.WriteLine("backup"); });
+        commandBackup.SetAction(parseResult =>
+        {
+            var fileName = parseResult.GetValue(argumentFilename);
+            controller.Backup(fileName);
+        });
         commandBackup.Add(argumentFilename);
         
         // root

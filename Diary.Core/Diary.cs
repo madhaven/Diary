@@ -70,14 +70,6 @@ public class Diary
 
     public void Backup(string? name, params object[] args)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            var fileName = _fileManager.FileName;
-            var directory = Path.GetDirectoryName(fileName);
-            var dateString = DateTime.Now.ToString("yyyyMMddHHmm");
-            name = Path.Join(directory, "diaryback_" + dateString);
-        }
-
         _fileManager.Backup(name);
     }
 
