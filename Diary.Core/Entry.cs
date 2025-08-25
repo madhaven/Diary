@@ -7,13 +7,15 @@ public class Entry
     public bool PrintDate { get; }
     public List<int> Intervals { get; }
 
-    public Entry(string text = "", DateTime time = default, List<int>? intervals = null, bool printDate = false)
+    public Entry(string text = "", DateTime time = default, IEnumerable<int>? intervals = null, bool printDate = false)
     {
         Text = text;
         Time = time;
         PrintDate = printDate;
-        Intervals = intervals?.Count == Text.Length
-            ? intervals
+
+        var i2 = intervals?.ToList() ?? Enumerable.Repeat(0, Text.Length).ToList();
+        Intervals = i2.Count == Text.Length
+            ? i2
             : Enumerable.Repeat(0, Text.Length).ToList();
     }
     
@@ -35,7 +37,7 @@ public class Entry
         string text = "";
         foreach (var character in Text)
         {
-            text = character == '\b' && Text.Length > 0
+            text = character == '\b' && text.Length > 0
                 ? text.Substring(0, text.Length - 1)
                 : text + character;
         }

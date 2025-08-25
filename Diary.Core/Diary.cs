@@ -2,6 +2,7 @@
 
 public class Diary
 {
+    // TODO: consider returning diary object after each operation
     private readonly IFileManager _fileManager;
     private List<Entry> _entries;
     

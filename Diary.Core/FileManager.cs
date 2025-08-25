@@ -38,7 +38,7 @@ public class FileManager : IFileManager
             var text = reader.ReadLine() ?? throw new BadFileHeader();
             text += '\n';
             var intervals = reader.ReadLine()
-                ?.Split(',').Select(int.Parse).ToList() ?? throw new BadFileHeader();
+                ?.Split(',').Select(int.Parse) ?? throw new BadFileHeader();
             var entry = new Entry(text, datetime, intervals, printDate);
             entries.Add(entry);
             reader.ReadLine();
