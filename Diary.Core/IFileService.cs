@@ -1,6 +1,6 @@
 namespace Diary.Core;
 
-public interface IFileManager
+public interface IFileService
 {
     public string FileName { get; }
     public void Write(params Entry[] entries);

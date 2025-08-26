@@ -3,11 +3,11 @@ using Diary.Core.Exceptions;
 
 namespace Diary.Core;
 
-public class FileManager : IFileManager
+public class FileService : IFileService
 {
     public string FileName { get; }
 
-    public FileManager(string fileName) // TODO: Change with Configuration handler class
+    public FileService(string fileName) // TODO: Change with Configuration handler class
     {
         FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
     }

@@ -7,7 +7,7 @@ namespace Diary.Tests.Core;
 public class DiaryTests
 {
     private string _fileName;
-    private Mock<IFileManager> _fileManagerMock;
+    private Mock<IFileService> _fileManagerMock;
     
     [SetUp]
     public void Setup()
@@ -15,7 +15,7 @@ public class DiaryTests
         _fileName = "test.txt";
         if (File.Exists(_fileName)) File.Delete(_fileName);
         
-        _fileManagerMock = new Mock<IFileManager>();
+        _fileManagerMock = new Mock<IFileService>();
     }
 
     [TearDown]

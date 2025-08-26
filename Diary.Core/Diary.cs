@@ -3,17 +3,17 @@
 public class Diary
 {
     // TODO: consider returning diary object after each operation
-    private readonly IFileManager _fileManager;
+    private readonly IFileService _fileService;
     private List<Entry> _entries;
     
     /// <summary>
     /// initializes the Diary
     /// </summary>
-    /// <param name="fileManager"></param>
+    /// <param name="fileService"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public Diary(IFileManager fileManager)
+    public Diary(IFileService fileService)
     {
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+        _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         _entries = [];
     }
 
@@ -23,7 +23,7 @@ public class Diary
     /// <param name="entries"></param>
     public void AddEntry(params Entry[] entries)
     {
-        _fileManager.Write(entries);
+        _fileService.Write(entries);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class Diary
     /// </summary>
     public void Load()
     {
-        _entries = _fileManager.Load().ToList();
+        _entries = _fileService.Load().ToList();
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class Diary
 
     public void Backup(string? name, params object[] args)
     {
-        _fileManager.Backup(name);
+        _fileService.Backup(name);
     }
 
     // TODO: Add export options

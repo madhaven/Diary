@@ -12,7 +12,7 @@ internal static class Program
     static void Main(string[] args)
     {
         // TODO: setup DI
-        var fileManager = new FileManager("diary.txt"); // TODO: fetch from configs
+        var fileManager = new FileService("diary.txt"); // TODO: fetch from configs
         var diary = new Core.Diary(fileManager);
         var controller = new CliController(diary, "bye", 1);
 
