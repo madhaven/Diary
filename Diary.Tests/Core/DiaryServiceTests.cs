@@ -1,10 +1,9 @@
 using Diary.Core;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Moq;
 
 namespace Diary.Tests.Core;
 
-public class DiaryTests
+public class DiaryServiceTests
 {
     private string _fileName;
     private Mock<IFileService> _fileManagerMock;
@@ -27,7 +26,7 @@ public class DiaryTests
     [Test]
     public void TestInit()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
 
         Assert.That(diary.All(), Is.EqualTo(Enumerable.Empty<Entry>()), "Expected Blank list of diary entries on init");
         // TODO: assert file manager versions?
@@ -36,13 +35,13 @@ public class DiaryTests
     [Test]
     public void TestBlankInit_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => { _ = new Diary.Core.Diary(null); });
+        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(null); });
     }
 
     [Test]
     public void TestAddEntryCallsFileManager()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         diary.AddEntry(new Entry());
         _fileManagerMock.Verify(x => x.Write(It.IsAny<Entry[]>()), Times.Once);
     }
@@ -53,7 +52,7 @@ public class DiaryTests
     [Test]
     public void TestAddEntry()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService.Core.DiaryService(_fileManagerMock.Object);
         var time1 = DateTime.Now;
         diary.AddEntry(new Entry("hello\n", time1, Enumerable.Repeat(1, 6)));
         var time2 = DateTime.Now;
@@ -68,7 +67,7 @@ public class DiaryTests
         var entry = new Entry("bleh\n", DateTime.Now, Enumerable.Repeat(1, 5));
         _fileManagerMock.Setup(x => x.Load()).Returns([entry]);
         
-        var diary =  new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary =  new DiaryService(_fileManagerMock.Object);
         diary.AddEntry(entry);
         var result = diary.Filter(null, null, null);
         
@@ -78,7 +77,7 @@ public class DiaryTests
     [Test]
     public void TestFilterYearAlone()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         DateTime t1 = DateTime.Now, t2 = DateTime.Now, t3 = DateTime.Now;
         t1 -= TimeSpan.FromDays(30);
         t2 -= TimeSpan.FromDays(70);
@@ -96,7 +95,7 @@ public class DiaryTests
     [Test]
     public void TestFilterMonthAlone()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         DateTime t1 = DateTime.Now, t2 = DateTime.Now, t3 = DateTime.Now;
         t1 -= TimeSpan.FromDays(365);
         t3 -= TimeSpan.FromDays(1000);
@@ -113,7 +112,7 @@ public class DiaryTests
     [Test]
     public void TestFilterDateAlone()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2016, 7, 7), t3 = new(2018, 2, 8);
         var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
@@ -129,7 +128,7 @@ public class DiaryTests
     [Test]
     public void TestFilterYearAndMonth()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2015, 5, 9), t3 = new(2018, 5, 8), t4 = new(2015, 8, 1);
         
@@ -147,7 +146,7 @@ public class DiaryTests
     [Test]
     public void TestFilterYearAndDate()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2015, 9, 7), t3 = new(2018, 5, 7), t4 = new(2015, 8, 6);
         
@@ -165,7 +164,7 @@ public class DiaryTests
     [Test]
     public void TestFilterMonthAndDate()
     {
-        var diary = new Diary.Core.Diary(_fileManagerMock.Object);
+        var diary = new DiaryService(_fileManagerMock.Object);
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2018, 5, 7), t3 = new(2019, 5, 1), t4 = new(2015, 8, 7);
         

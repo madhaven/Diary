@@ -22,7 +22,7 @@ public static class ArgParser
     /// <returns>RootCommand</returns>
     public static RootCommand BuildParser(ICliController controller)
     {
-        return new RootCommand("Diary CLI")
+        return new RootCommand("DiaryService CLI")
             .AddLogCommand(controller)
             .AddReadCommand(controller)
             .AddSearchCommand(controller)

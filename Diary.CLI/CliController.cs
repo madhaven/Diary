@@ -9,11 +9,11 @@ public class CliController : ICliController
 {
     private readonly string _stopWord;
     private readonly float _replaySpeed;
-    private readonly Core.Diary _diary;
+    private readonly IDiaryService _diaryService;
 
-    public CliController(Core.Diary diary, string stopWord, float replaySpeed)
+    public CliController(IDiaryService diaryService, string stopWord, float replaySpeed)
     {
-        _diary = diary ?? throw new ArgumentNullException(nameof(diary));
+        _diaryService = diaryService ?? throw new ArgumentNullException(nameof(diaryService));
         _stopWord = stopWord ?? throw new ArgumentNullException(nameof(stopWord));
         _replaySpeed = replaySpeed;
     }
@@ -26,7 +26,7 @@ public class CliController : ICliController
             while (true)
             {
                 var entry = Record();
-                _diary.AddEntry(entry);
+                _diaryService.AddEntry(entry);
                 if (entry.ToString().Contains(_stopWord, StringComparison.InvariantCultureIgnoreCase)) { break; }
             }
         }
@@ -109,21 +109,21 @@ public class CliController : ICliController
 
     public void ReplayAll()
     {
-        var entries = _diary.All();
+        var entries = _diaryService.All();
         ReplayEntries(entries);
     }
 
     public void ReplayToday()
     {
         var today = DateTime.Now;
-        var entries = _diary.Filter(today.Year, today.Month, today.Day);
+        var entries = _diaryService.Filter(today.Year, today.Month, today.Day);
         ReplayEntries(entries);
     }
 
     public void ReplayYesterday()
     {
         var yesterday = DateTime.Now - TimeSpan.FromDays(1);
-        var entries = _diary.Filter(yesterday.Year, yesterday.Month, yesterday.Day);
+        var entries = _diaryService.Filter(yesterday.Year, yesterday.Month, yesterday.Day);
         ReplayEntries(entries);
     }
 
@@ -146,7 +146,7 @@ public class CliController : ICliController
             var dayFound = dates.FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^\d{1,2}$"));
             day = dayFound == null ? null : int.Parse(dayFound);
 
-            var entries = _diary.Filter(year, month, day);
+            var entries = _diaryService.Filter(year, month, day);
             ReplayEntries(entries);
         }
         catch (Exception)
@@ -157,7 +157,7 @@ public class CliController : ICliController
 
     public void Search(string[] keywords, bool isStrict = false)
     {
-        var entries = _diary.Search(isStrict, keywords).ToList();
+        var entries = _diaryService.Search(isStrict, keywords).ToList();
         foreach (var entry in entries)
         {
             var timeString = entry.Time.ToString("yyyy-MM-dd HH:mm:ss ddd");
@@ -169,7 +169,7 @@ public class CliController : ICliController
     public void Backup(string? name)
     {
         Console.WriteLine($"Backing up diary{(name?.Length > 0 ? name : "...")}");
-        _diary.Backup(name);
+        _diaryService.Backup(name);
         Console.WriteLine("Backup Complete");
     }
 
