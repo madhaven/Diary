@@ -5,24 +5,19 @@ using Diary.Core;
 
 namespace Diary.CLI;
 
-public class CliController
+public class CliController : ICliController
 {
     private readonly string _stopWord;
     private readonly float _replaySpeed;
     private readonly Core.Diary _diary;
-    
+
     public CliController(Core.Diary diary, string stopWord, float replaySpeed)
     {
         _diary = diary ?? throw new ArgumentNullException(nameof(diary));
         _stopWord = stopWord ?? throw new ArgumentNullException(nameof(stopWord));
         _replaySpeed = replaySpeed;
     }
-    
-    /// <summary>
-    /// Records diary entries
-    /// Initiates a loop of Entry recordings
-    /// Loop ends when the stop word is found in an Entry
-    /// </summary>
+
     public void Log()
     {
         Console.WriteLine(GetPrelogAdvice());
@@ -42,13 +37,7 @@ public class CliController
             throw;
         }
     }
-    
-    /// <summary>
-    /// method to record an entry from the cli interface.
-    /// A single entry ends when the return key is pressed.
-    /// The diary log ends if the stopword is found in the entry.
-    /// </summary>
-    /// <returns>Entry object</returns>
+
     public Entry Record()
     {
         try
@@ -94,11 +83,6 @@ public class CliController
         }
     }
 
-    /// <summary>
-    /// replays the entry as it was typed in, imitating the user's typespeed.
-    /// </summary>
-    /// <param name="entry"></param>
-    /// <param name="speed"></param>
     public void ReplayEntry(Entry entry, float? speed = null)
     {
         speed ??= _replaySpeed;
