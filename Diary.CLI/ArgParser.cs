@@ -2,44 +2,39 @@ using System.CommandLine;
 
 namespace Diary.CLI;
 
-public static class ArgParser
+public class ArgParser : IArgParser
 {
-    /// <summary>
-    /// Takes in the arguments, Parses them and fires actions with the controller.
-    /// </summary>
-    /// <param name="args"></param>
-    /// <param name="controller"></param>
-    public static void Obey(string[] args, ICliController controller)
+    private RootCommand _rootCommand;
+
+    public ArgParser(ICliController controller)
     {
-        var parser = ArgParser.BuildParser(controller);
-        parser.Parse(args).Invoke();
+        _rootCommand = BuildParser(controller);
     }
     
-    /// <summary>
-    /// Builds the parser which can be used to parse arguments and thereby invoke actions.
-    /// </summary>
-    /// <param name="controller"></param>
-    /// <returns>RootCommand</returns>
-    public static RootCommand BuildParser(ICliController controller)
+    public void Obey(string[] args)
     {
-        return new RootCommand("DiaryService CLI")
-            .AddLogCommand(controller)
-            .AddReadCommand(controller)
-            .AddSearchCommand(controller)
-            .AddBackup(controller);
+        _rootCommand.Parse(args).Invoke();
+    }
+    
+    public RootCommand BuildParser(ICliController controller)
+    {
+        _rootCommand = new RootCommand("Diary CLI");
+        AddLogCommand(controller);
+        AddReadCommand(controller);
+        AddSearchCommand(controller);
+        AddBackup(controller);
+        return _rootCommand;
     }
 
-    private static RootCommand AddLogCommand(this RootCommand rootCommand, ICliController controller)
+    private void AddLogCommand(ICliController controller)
     {
         var commandLog = new Command("log", "adds entries to the diary");
         commandLog.Aliases.Add("entry");
         commandLog.SetAction(_ => { controller.Log(); });
-        
-        rootCommand.Add(commandLog);
-        return rootCommand;
+        _rootCommand.Add(commandLog);
     }
 
-    private static RootCommand AddReadCommand(this RootCommand rootCommand, ICliController controller)
+    private void AddReadCommand(ICliController controller)
     {
         var commandRead = new Command("read", "replay previously created entries");
         commandRead.Aliases.Add("show");
@@ -66,12 +61,10 @@ public static class ArgParser
         var commandReadYesterday = new Command("yesterday", "read entries from yesterday");
         commandReadYesterday.SetAction(_ => { controller.ReplayYesterday(); });
         commandRead.Add(commandReadYesterday);
-        
-        rootCommand.Add(commandRead);
-        return rootCommand;
+        _rootCommand.Add(commandRead);
     }
 
-    private static RootCommand AddSearchCommand(this RootCommand rootCommand, ICliController controller)
+    private void AddSearchCommand(ICliController controller)
     {
         var commandSearch = new Command("search", "search for keywords");
         var optionStrict = new Option<bool>("--strict");
@@ -85,12 +78,10 @@ public static class ArgParser
             controller.Search(keywords, isStrict);
         });
         commandSearch.Add(optionStrict);
-
-        rootCommand.Add(commandSearch);
-        return rootCommand;
+        _rootCommand.Add(commandSearch);
     }
 
-    private static RootCommand AddBackup(this RootCommand rootCommand, ICliController controller)
+    private void AddBackup(ICliController controller)
     {
         var commandBackup = new Command("backup", "creates a backup of the diary");
         var argumentFilename = new Argument<string>("filename");
@@ -100,8 +91,6 @@ public static class ArgParser
             controller.Backup(fileName);
         });
         commandBackup.Add(argumentFilename);
-
-        rootCommand.Add(commandBackup);
-        return rootCommand;
+        _rootCommand.Add(commandBackup);
     }
 }
