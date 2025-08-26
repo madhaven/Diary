@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 using Diary.Core;
 
 namespace Diary.CLI;
@@ -11,11 +12,11 @@ public class CliController : ICliController
     private readonly float _replaySpeed;
     private readonly IDiaryService _diaryService;
 
-    public CliController(IDiaryService diaryService, string stopWord, float replaySpeed)
+    public CliController(IDiaryService diaryService, IOptions<AppConfigs> appConfigs)
     {
         _diaryService = diaryService ?? throw new ArgumentNullException(nameof(diaryService));
-        _stopWord = stopWord ?? throw new ArgumentNullException(nameof(stopWord));
-        _replaySpeed = replaySpeed;
+        _stopWord = appConfigs.Value.StopWord;
+        _replaySpeed = appConfigs.Value.ReplaySpeed;
     }
 
     public void Log()

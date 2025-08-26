@@ -1,5 +1,6 @@
 using System.Globalization;
 using Diary.Core.Exceptions;
+using Microsoft.Extensions.Options;
 
 namespace Diary.Core;
 
@@ -7,9 +8,10 @@ public class FileService : IFileService
 {
     public string FileName { get; }
 
-    public FileService(string fileName) // TODO: Change with Configuration handler class
+    public FileService(IOptions<AppConfigs> appconfigs)
     {
-        FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
+        var appConfigs = appconfigs.Value ?? throw new ArgumentNullException(nameof(appconfigs));
+        FileName = appConfigs.FileLocation;
     }
     
     public void Write(params Entry[] entries)
