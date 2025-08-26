@@ -1,32 +1,40 @@
-﻿using System.CommandLine;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Diary.Core;
 
 namespace Diary.CLI;
 
 internal static class Program
 {
-    /// <summary>
-    /// Command Line Access Point to the App
-    /// </summary>
-    /// <param name="args"></param>
     static void Main(string[] args)
     {
-        // TODO: setup DI
-        var fileManager = new FileService("diary.txt"); // TODO: fetch from configs
-        var diary = new Core.Diary(fileManager);
-        var controller = new CliController(diary, "bye", 1);
+        var builder = Host.CreateApplicationBuilder(args)
+            .AddDiaryConfiguration()
+            .ConfigureDiaryServices();
 
-            Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
+        var host = builder.Build();
 
-        ArgParser.Obey(args, controller);
+        var parser = host.Services.GetService<IArgParser>()!;
+        parser.Obey(args);
+
+        Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
+    }
+    
+    private static HostApplicationBuilder AddDiaryConfiguration(this HostApplicationBuilder builder)
+    {
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
+        return builder;
     }
 
-    // private static void LoadConfig()
-    // {
-    //     var config = new ConfigurationBuilder()
-    //         .SetBasePath(Directory.GetCurrentDirectory())
-    //         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    //         .Build();
-    //     AppConfigs configs = config.GetSection("AppSettings");
-    // }
+    private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)
+    {
+        builder.Services.AddTransient<ICliController, CliController>();
+        builder.Services.AddSingleton<IDiaryService, DiaryService>();
+        builder.Services.AddSingleton<IFileService, FileService>();
+        builder.Services.AddSingleton<IArgParser, ArgParser>();
+        return builder;
+    }
 }
