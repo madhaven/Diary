@@ -12,6 +12,12 @@ public class FileService : IFileService
     {
         var appConfigs = appconfigs.Value ?? throw new ArgumentNullException(nameof(appconfigs));
         FileName = appConfigs.FileLocation;
+        var directory = Path.GetDirectoryName(FileName)!;
+        
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+        if (!File.Exists(FileName))
+            File.Create(FileName).Dispose();
     }
     
     public void Write(params Entry[] entries)

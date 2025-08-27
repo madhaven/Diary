@@ -1,32 +1,24 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 using Diary.Core;
 
 namespace Diary.CLI;
 
 internal static class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
+        EnsureConfigExists();
+
         var builder = Host.CreateApplicationBuilder(args)
-            .AddDiaryConfiguration()
             .ConfigureDiaryServices();
+
+        Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var host = builder.Build();
 
-        var parser = host.Services.GetService<IArgParser>()!;
-        parser.Obey(args);
-
-        Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
-    }
-    
-    private static HostApplicationBuilder AddDiaryConfiguration(this HostApplicationBuilder builder)
-    {
-        builder.Configuration
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
-        return builder;
+        host.Services.GetService<IArgParser>()!.Obey(args);
     }
 
     private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)
@@ -35,6 +27,18 @@ internal static class Program
         builder.Services.AddSingleton<IDiaryService, DiaryService>();
         builder.Services.AddSingleton<IFileService, FileService>();
         builder.Services.AddSingleton<IArgParser, ArgParser>();
+
+        builder.Services.Configure<AppConfigs>(builder.Configuration.GetSection(nameof(AppConfigs)));
+
         return builder;
+    }
+
+    private static void EnsureConfigExists()
+    {
+        const string fileName = "appsettings.json";
+        if (File.Exists(fileName)) return;
+        
+        var json = JsonSerializer.Serialize(new { AppConfigs = new AppConfigs() });
+        File.WriteAllText(fileName, json);
     }
 }
