@@ -6,7 +6,7 @@ namespace Diary.Core;
 
 public class FileService : IFileService
 {
-    public string FileName { get; }
+    private string FileName { get; }
 
     public FileService(IOptions<AppConfigs> appconfigs)
     {
@@ -43,10 +43,10 @@ public class FileService : IFileService
         {
             var datetime = DateTime.ParseExact(line, "yyyy-MM-dd HH:mm:ss", CultureInfo.CurrentCulture);
             var printDate = entries.LastOrDefault()?.Time.Date != datetime.Date;
-            var text = reader.ReadLine() ?? throw new BadFileHeader();
+            var text = reader.ReadLine() ?? throw new BadFileHeaderException();
             text += '\n';
             var intervals = reader.ReadLine()
-                ?.Split(',').Select(int.Parse) ?? throw new BadFileHeader();
+                ?.Split(',').Select(int.Parse) ?? throw new BadFileHeaderException();
             var entry = new Entry(text, datetime, intervals, printDate);
             entries.Add(entry);
             reader.ReadLine();

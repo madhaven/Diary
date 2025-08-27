@@ -8,7 +8,6 @@ public interface IArgParser
     /// Takes in the arguments, Parses them and fires actions with the controller.
     /// </summary>
     /// <param name="args"></param>
-    /// <param name="controller"></param>
     public void Obey(string[] args);
 
     /// <summary>

@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using Diary.Core;
 
 namespace Diary.CLI;

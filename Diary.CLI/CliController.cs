@@ -174,5 +174,5 @@ public class CliController : ICliController
         Console.WriteLine("Backup Complete");
     }
 
-    public string GetPrelogAdvice() => "Ctrl+C / 'bye' to stop recording.\nSay something memorable about today :)\n";
+    public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
 }
