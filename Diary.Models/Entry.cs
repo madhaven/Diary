@@ -1,11 +1,11 @@
-﻿namespace Diary.Core;
+﻿namespace Diary.Models;
 
 public class Entry
 {
-    public string Text { get; private set; }
+    public string Text { get; set; }
     public DateTime Time { get; init; }
     public bool PrintDate { get; }
-    public List<int> Intervals { get; }
+    public List<int> Intervals { get; init; }
 
     public Entry(string text = "", DateTime time = default, IEnumerable<int>? intervals = null, bool printDate = false)
     {
@@ -23,7 +23,7 @@ public class Entry
 
     public override bool Equals(object? obj)
     {
-        return obj is Entry model && (Text == model.Text || Intervals == model.Intervals);
+        return obj is Entry model && Text == model.Text && Intervals == model.Intervals;
     }
 
     /// <summary>

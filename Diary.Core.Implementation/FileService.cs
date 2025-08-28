@@ -1,8 +1,10 @@
 using System.Globalization;
+using Diary.Core;
 using Diary.Core.Exceptions;
+using Diary.Models;
 using Microsoft.Extensions.Options;
 
-namespace Diary.Core;
+namespace Diary.Implementation;
 
 public class FileService : IFileService
 {

@@ -2,6 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using Diary.Core;
+using Diary.Data;
+using Diary.Implementation;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace Diary.CLI;
 
@@ -17,18 +21,31 @@ internal static class Program
         Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var host = builder.Build();
+        
+        var ctx = host.Services.GetRequiredService<DiaryDbContext>();
+        ctx.Database.EnsureCreated();
 
-        host.Services.GetService<IArgParser>()!.Obey(args);
+        var parser = host.Services.GetRequiredService<IArgParser>();
+        parser.Obey(args);
     }
 
     private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)
     {
-        builder.Services.AddTransient<ICliController, CliController>();
-        builder.Services.AddSingleton<IDiaryService, DiaryService>();
-        builder.Services.AddSingleton<IFileService, FileService>();
-        builder.Services.AddSingleton<IArgParser, ArgParser>();
+        builder.Services.AddScoped<ICliController, CliController>();
+        builder.Services.AddScoped<IDiaryService, DiaryService>();
+        builder.Services.AddScoped<IFileService, FileService>();
+        builder.Services.AddScoped<IArgParser, ArgParser>();
 
         builder.Services.Configure<AppConfigs>(builder.Configuration.GetSection(nameof(AppConfigs)));
+
+        var connectionStringBuilder = new SqliteConnectionStringBuilder
+        {
+            DataSource = builder.Configuration["AppConfigs:SqlitePath"],
+            Cache = SqliteCacheMode.Shared,
+            Mode = SqliteOpenMode.ReadWriteCreate
+        };
+        var connectionString = connectionStringBuilder.ToString();
+        builder.Services.AddDbContext<DiaryDbContext>(options => options.UseSqlite(connectionString));
 
         return builder;
     }

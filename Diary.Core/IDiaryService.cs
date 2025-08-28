@@ -1,3 +1,5 @@
+using Diary.Models;
+
 namespace Diary.Core;
 
 public interface IDiaryService
@@ -7,15 +9,6 @@ public interface IDiaryService
     /// </summary>
     /// <param name="entries"></param>
     public void AddEntry(params Entry[] entries);
-
-    /// <summary>
-    /// Scans the file specified on creation and initializes the list of Entry objects
-    /// This replaces any existing Entries in memory with data from the file
-    ///
-    /// Only recommended when reading entries as adding entries to the diary do not require any data in memory  
-    /// </summary>
-    /// <returns>list of entries</returns>
-    public IEnumerable<Entry> FetchEntries();
 
     /// <summary>
     /// fetches diary records acc to date match, if `fetchLatest` is set to True.

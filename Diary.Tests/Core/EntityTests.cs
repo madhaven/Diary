@@ -1,4 +1,4 @@
-﻿using Diary.Core;
+﻿using Diary.Models;
 
 namespace Diary.Tests.Core;
 

@@ -3,10 +3,11 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using Diary.Core;
+using Diary.Models;
 
 namespace Diary.CLI;
 
-public class CliController : ICliController
+public partial class CliController : ICliController // TODO: remove partial
 {
     private readonly string _stopWord;
     private readonly float _replaySpeed;
