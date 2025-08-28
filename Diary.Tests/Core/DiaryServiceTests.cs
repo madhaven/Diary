@@ -33,7 +33,6 @@ public class DiaryServiceTests
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContextMock.Object);
 
         Assert.That(diary.All(), Is.EqualTo(Enumerable.Empty<Entry>()), "Expected Blank list of diary entries on init");
-        // TODO: assert file manager versions?
     }
 
     [Test]
@@ -52,7 +51,6 @@ public class DiaryServiceTests
     }
 
     // TODO: check file init specs TestFirstEntry();
-
     /* TODO: check second entry format
     [Test]
     public void TestAddEntry()
@@ -63,8 +61,8 @@ public class DiaryServiceTests
         var time2 = DateTime.Now;
         diary.AddEntry(new Entry("olleh\n", time2, Enumerable.Repeat(2, 6)));
     } */
-    
     // TODO: test load
+    // TODO: test search.
 
     [Test]
     public void TestFilterEmptyArgs()
@@ -183,6 +181,4 @@ public class DiaryServiceTests
         var result = diary.Filter(null, t1.Month, t1.Day);
         Assert.That(result, Is.EqualTo((List<Entry>)[e1, e2]), "Expected entries of a month and day were not filtered");
     }
-    
-    // TODO: test search.
 }

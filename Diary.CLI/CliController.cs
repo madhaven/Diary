@@ -12,6 +12,11 @@ public partial class CliController : ICliController // TODO: remove partial
     private readonly string _stopWord;
     private readonly float _replaySpeed;
     private readonly IDiaryService _diaryService;
+    private readonly Dictionary<string, int?> _months = new()
+    {
+        { "jan", 1 }, { "feb", 2 }, { "mar", 3 }, { "apr", 4 }, { "may", 5 }, { "jun", 6 },
+        { "jul", 7 }, { "aug", 8 }, { "sep", 9 }, { "oct", 10 }, { "nov", 11 }, { "dec", 12 }
+    };
 
     public CliController(IDiaryService diaryService, IOptions<AppConfigs> appConfigs)
     {
@@ -27,6 +32,7 @@ public partial class CliController : ICliController // TODO: remove partial
         {
             while (true)
             {
+                // TODO: Add locking mechanism / session to avoid other entry points from mixing entries
                 var entry = Record();
                 _diaryService.AddEntry(entry);
                 if (entry.ToString().Contains(_stopWord, StringComparison.InvariantCultureIgnoreCase)) { break; }
@@ -134,18 +140,15 @@ public partial class CliController : ICliController // TODO: remove partial
         int? year, month, day;
         try
         {
-            var yearFound = dates.FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^\d{4}$"));
+            var yearFound = dates.FirstOrDefault(s => YearRegex().IsMatch(s ?? ""));
             year = yearFound == null ? null : int.Parse(yearFound);
 
             var monthFound = dates
-                .FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^[a-zA-Z]{3}.*$"))?[..3]
+                .FirstOrDefault(s => MonthRegex().IsMatch(s ?? ""))?[..3]
                 ?.ToLowerInvariant();
-            var months = new Dictionary<string, int?> {
-                { "jan", 1 }, { "feb", 2 }, { "mar", 3 }, { "apr", 4 }, { "may", 5 }, { "jun", 6 },
-                { "jul", 7 }, { "aug", 8 }, { "sep", 9 }, { "oct", 10 }, { "nov", 11 }, { "dec", 12 } }; 
-            month = monthFound == null ? null : months.GetValueOrDefault(monthFound, null);
+            month = monthFound == null ? null : _months.GetValueOrDefault(monthFound, null);
 
-            var dayFound = dates.FirstOrDefault(s => Regex.IsMatch(s ?? "", @"^\d{1,2}$"));
+            var dayFound = dates.FirstOrDefault(s => DayRegex().IsMatch(s ?? ""));
             day = dayFound == null ? null : int.Parse(dayFound);
 
             var entries = _diaryService.Filter(year, month, day);
@@ -176,4 +179,13 @@ public partial class CliController : ICliController // TODO: remove partial
     }
 
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
+
+    [GeneratedRegex(@"^[a-zA-Z]{3}.*$")]
+    private static partial Regex MonthRegex();
+
+    [GeneratedRegex(@"^\d{4}$")]
+    private static partial Regex YearRegex();
+
+    [GeneratedRegex(@"^\d{1,2}$")]
+    private static partial Regex DayRegex();
 }

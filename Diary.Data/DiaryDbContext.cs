@@ -6,5 +6,5 @@ public class DiaryDbContext : DbContext
 {
     public DiaryDbContext(DbContextOptions<DiaryDbContext> options) : base(options) {}
 
-    public DbSet<EntryData> Entries { get; set; } // TODO: nullable needed ? remove comment if no errors.
+    public DbSet<EntryData> Entries { get; set; }
 }

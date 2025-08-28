@@ -21,11 +21,12 @@ internal static class Program
         Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var host = builder.Build();
-        
-        var ctx = host.Services.GetRequiredService<DiaryDbContext>();
+
+        using var scope = host.Services.CreateScope();
+        var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
         ctx.Database.EnsureCreated();
 
-        var parser = host.Services.GetRequiredService<IArgParser>();
+        var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
         parser.Obey(args);
     }
 
