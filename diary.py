@@ -217,7 +217,7 @@ class Diary:
 
     def __init__(self, filename:str):
         '''initializes the Diary'''
-        self.entries = []
+        self.entries: list[Entry] = []
         self.filer:FileManager = FileManager.getManager(filename)
     
     def add(self, *entries):
