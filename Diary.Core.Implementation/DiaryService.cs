@@ -18,7 +18,8 @@ public class DiaryService : IDiaryService
 
     public void AddEntry(params Entry[] entries)
     {
-        _diaryDbContext.Entries.AddRange(entries.Select(EntryData.FromEntity));
+        var entryEntities = entries.Select(EntryData.FromEntity);
+        _diaryDbContext.Entries.AddRange(entryEntities);
         _diaryDbContext.SaveChanges();
     }
 
@@ -36,24 +37,24 @@ public class DiaryService : IDiaryService
             .Where(e => e.Time.Year == (year ?? e.Time.Year)
                 && e.Time.Month == (month ?? e.Time.Month)
                 && e.Time.Day == (day ?? e.Time.Day))
-            .ToList()
+            .AsEnumerable()
             .Select(x => x.ToEntity());
     }
 
     public IEnumerable<Entry> All()
     {
         return _diaryDbContext.Entries
-            .ToList()
+            .AsEnumerable()
             .Select(x => x.ToEntity());
     }
 
     public IEnumerable<Entry> Search(bool isStrict=false, params string[] args)
     {
         var entries = isStrict
-            ? _diaryDbContext.Entries.ToList()
+            ? _diaryDbContext.Entries.AsEnumerable()
                 .Select(e => e.ToEntity())
                 .Where(e => args.All(arg => e.Text.Contains(arg, StringComparison.CurrentCulture)))
-            : _diaryDbContext.Entries.ToList()
+            : _diaryDbContext.Entries.AsEnumerable()
                 .Select(e => e.ToEntity())
                 .Where(e => args.Any(arg => e.Text.Contains(arg, StringComparison.CurrentCulture)));
         return entries;
