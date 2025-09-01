@@ -1,4 +1,4 @@
-VERSION = '3.4'
+VERSION = '3.4_debug'
 TESTING = VERSION[-5:] == 'debug'
 if TESTING: from traceback import print_exc
 
@@ -327,6 +327,8 @@ class DiaryController():
                 self.log()
             elif args[0] in ['read', 'show']:
                 self.read(*args[1:])
+            elif args[0] == 'quickread':
+                self.read(10, *args[1:])
             elif args[0] in ['search', 'find']:
                 self.search(*args[1:])
             elif args[0] in ['searchall', 'findall', 'search all', 'find all']:
@@ -428,7 +430,7 @@ class DiaryController():
             print(e)
             raise e
     
-    def read(self, *args):
+    def read(self, speed:int=1, *args):
         '''displays the diary entries of the queried day'''
         if not args:
             print( 
@@ -473,7 +475,7 @@ class DiaryController():
         print('%s %s found'%(count, 'entry' if count==1 else 'entries'))
         try:
             for entry in entries:
-                self.printEntry(entry)
+                self.printEntry(entry, speed)
         except KeyboardInterrupt:
             print("\nDiary closed")
             return
@@ -498,20 +500,20 @@ class DiaryController():
         count = len(results)
         print("%s %s found"%(count, "entries" if count!=1 else "entry"))
     
-    def printEntry(self, entry:Entry, speed:int=None):
+    def printEntry(self, entry:Entry, speed:int=1):
         '''
         prints the entry\n
         Contains sleep() to imitate the user's type speed\n
         self.printdate decides whether or not to print the timestamp\n
         '''
-        speed = self.typespeed if not speed else speed
+        speed = self.typespeed * speed
         skipFactor = 1 # speed when user decides to skip an entry
         if entry.printdate:
             print('\n' + entry.time.ctime(), flush=True)
         for letter, time in zip(entry.text, entry.intervals):
             sleep(time * skipFactor / speed)
             if kbhit() and str(getch())[2:-1] in ['\\r', ' ']:
-                skipFactor=0
+                skipFactor = 0 # TODO: stringify the rest of the entry and break from loop
             print(
                 '\b \b' if letter=='\b' else letter,
                 end='', flush=True
