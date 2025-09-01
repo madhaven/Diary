@@ -11,6 +11,12 @@ public interface IDiaryService
     public void AddEntry(params Entry[] entries);
 
     /// <summary>
+    /// Returns the last entry made in the diary.
+    /// </summary>
+    /// <returns>Entry</returns>
+    public Entry? LastEntry();
+
+    /// <summary>
     /// fetches diary records acc to date match, if `fetchLatest` is set to True.
     /// </summary>
     /// <param name="year"></param>

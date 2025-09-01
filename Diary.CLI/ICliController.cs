@@ -35,6 +35,8 @@ public interface ICliController
 
     public void ReplayYesterday();
 
+    public void ReplayLast();
+
     public void ReplayFrom(List<string?> dates);
 
     public void Search(string[] keywords, bool isStrict = false);

@@ -135,6 +135,15 @@ public partial class CliController : ICliController // TODO: remove partial
         ReplayEntries(entries);
     }
 
+    public void ReplayLast()
+    {
+        var lastEntry = _diaryService.LastEntry();
+        var entries = lastEntry == null
+            ? []
+            : _diaryService.Filter(lastEntry.Time.Year, lastEntry.Time.Month, lastEntry.Time.Day);
+        ReplayEntries(entries);
+    }
+
     public void ReplayFrom(List<string?> dates)
     {
         int? year, month, day;

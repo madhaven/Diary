@@ -61,6 +61,9 @@ public class ArgParser : IArgParser
         var commandReadYesterday = new Command("yesterday", "read entries from yesterday");
         commandReadYesterday.SetAction(_ => { controller.ReplayYesterday(); });
         commandRead.Add(commandReadYesterday);
+        var commandLast = new Command("last", "read entries from the last day entered");
+        commandLast.SetAction(_ => { controller.ReplayLast(); });
+        commandRead.Add(commandLast);
         _rootCommand.Add(commandRead);
     }
 

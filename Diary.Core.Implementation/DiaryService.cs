@@ -22,6 +22,14 @@ public class DiaryService : IDiaryService
         _diaryDbContext.SaveChanges();
     }
 
+    public Entry? LastEntry()
+    {
+        return _diaryDbContext.Entries
+            .OrderBy(e => e.Time)
+            .LastOrDefault()?
+            .ToEntity();
+    }
+
     public IEnumerable<Entry> Filter(int? year, int? month, int? day)
     {
         return _diaryDbContext.Entries
