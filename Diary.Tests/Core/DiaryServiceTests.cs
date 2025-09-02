@@ -61,7 +61,29 @@ public class DiaryServiceTests
         Assert.That(savedEntry, Is.Not.Null, "Entry should be saved to database");
     }
 
-    // TODO: test search.
+    [Test]
+    public void TestSearch()
+    {
+        string s1 = "my", s2 = "name", s3 = "is";
+        var entry1 = new Entry($"{s1}\n", DateTime.Now, Enumerable.Repeat(1d, s1.Length));
+        var entry2 = new Entry($"{s2}\n", DateTime.Now, Enumerable.Repeat(1d, s2.Length));
+        var entry3 = new Entry($"{s3}\n", DateTime.Now, Enumerable.Repeat(1d, s3.Length));
+        var entry4 = new Entry($"{s1} {s2} {s3}\n", DateTime.Now, Enumerable.Repeat(1d, s1.Length + s3.Length + s3.Length + 3));
+
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        diary.AddEntry(entry1, entry2, entry3, entry4);
+        var result1 = diary.Search(false, s1, s2).ToList();
+        var result2 = diary.Search(true, s1, s2).ToList();
+        
+        Assert.That(result1, Has.Count.EqualTo(3), "Expected 3 entries");
+        Assert.That(result1, Does.Contain(entry1));
+        Assert.That(result1, Does.Contain(entry2));
+        Assert.That(result1, Does.Contain(entry4));
+        
+        Assert.That(result2, Has.Count.EqualTo(1), "Expected 1 entry");
+        Assert.That(result2, Does.Contain(entry4));
+
+    }
 
     [Test]
     public void TestFilterEmptyArgs()
