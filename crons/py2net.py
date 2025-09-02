@@ -41,7 +41,7 @@ for entry in diary.entries:
     cur.execute(CREATE_ENTRY_QUERY, (
         entry.time.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
         entry.text,
-        ",".join(map(lambda x: str(int(x*1000)), entry.intervals))
+        ",".join(map(lambda x: str(float(x*1000)), entry.intervals))
     ))
 
 db.commit()

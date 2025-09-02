@@ -29,7 +29,7 @@ public class EntryData
     {
         return new Entry
         {
-            Intervals = Intervals?.Split(",").Select(int.Parse).ToList() ?? throw new DataException("Data corrupt"),
+            Intervals = Intervals?.Split(",").Select(double.Parse).ToList() ?? throw new DataException("Data corrupt"),
             Time = Time,
             Text = Text ?? throw new DataException("Data corrupt")
         };

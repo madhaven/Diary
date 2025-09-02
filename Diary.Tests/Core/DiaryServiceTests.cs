@@ -66,7 +66,7 @@ public class DiaryServiceTests
     [Test]
     public void TestFilterEmptyArgs()
     {
-        var entry = new Entry("bleh\n", DateTime.Now, Enumerable.Repeat(1, 5));
+        var entry = new Entry("bleh\n", DateTime.Now, Enumerable.Repeat(1d, 5));
         
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
         diary.AddEntry(entry);
@@ -82,9 +82,9 @@ public class DiaryServiceTests
         t1 -= TimeSpan.FromDays(30);
         t2 -= TimeSpan.FromDays(70);
         t3 -= TimeSpan.FromDays(1000);
-        var e1 = new Entry("bleh\n", t1, Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2, Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1, Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2, Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
@@ -99,9 +99,9 @@ public class DiaryServiceTests
         DateTime t1 = DateTime.Now, t2 = DateTime.Now, t3 = DateTime.Now;
         t1 -= TimeSpan.FromDays(365);
         t3 -= TimeSpan.FromDays(1000);
-        var e1 = new Entry("bleh\n", t1, Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2, Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1, Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2, Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
@@ -116,9 +116,9 @@ public class DiaryServiceTests
     {
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2016, 7, 7), t3 = new(2018, 2, 8);
-        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
@@ -133,10 +133,10 @@ public class DiaryServiceTests
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2015, 5, 9), t3 = new(2018, 5, 8), t4 = new(2015, 8, 1);
         
-        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
@@ -152,10 +152,10 @@ public class DiaryServiceTests
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2015, 9, 7), t3 = new(2018, 5, 7), t4 = new(2015, 8, 6);
         
-        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
@@ -171,10 +171,10 @@ public class DiaryServiceTests
         TimeOnly t = new(12, 12, 12);
         DateOnly t1 = new(2015, 5, 7), t2 = new(2018, 5, 7), t3 = new(2019, 5, 1), t4 = new(2015, 8, 7);
         
-        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
-        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1, 5));
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
         var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);

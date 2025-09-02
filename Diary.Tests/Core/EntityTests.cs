@@ -8,7 +8,7 @@ public class EntityTests
     public void TestInit()
     {
         var time = DateTime.Now;
-        var entry = new Entry("hello\n", time, Enumerable.Repeat(1, 6));
+        var entry = new Entry("hello\n", time, Enumerable.Repeat(1d, 6));
 
         Assert.That(entry.Intervals, Is.EqualTo(Enumerable.Repeat(1, 6).ToList()), "intervals should match");
         Assert.That(entry.PrintDate, Is.EqualTo(false), "Print date should match");

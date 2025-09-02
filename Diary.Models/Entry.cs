@@ -5,18 +5,18 @@ public class Entry
     public string Text { get; set; }
     public DateTime Time { get; init; }
     public bool PrintDate { get; }
-    public List<int> Intervals { get; init; }
+    public List<double> Intervals { get; init; }
 
-    public Entry(string text = "", DateTime time = default, IEnumerable<int>? intervals = null, bool printDate = false)
+    public Entry(string text = "", DateTime time = default, IEnumerable<double>? intervals = null, bool printDate = false)
     {
         Text = text;
         Time = time;
         PrintDate = printDate;
 
-        var i2 = intervals?.ToList() ?? Enumerable.Repeat(0, Text.Length).ToList();
+        var i2 = intervals?.ToList() ?? Enumerable.Repeat(0d, Text.Length).ToList();
         Intervals = i2.Count == Text.Length
             ? i2
-            : Enumerable.Repeat(0, Text.Length).ToList();
+            : Enumerable.Repeat(0d, Text.Length).ToList();
     }
     
     public bool IsEmpty() => Text.Length == 0;
