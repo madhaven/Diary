@@ -4,7 +4,7 @@ public class Entry
 {
     public string Text { get; set; }
     public DateTime Time { get; init; }
-    public bool PrintDate { get; }
+    public bool PrintDate { get; set; }
     public List<double> Intervals { get; init; }
 
     public Entry(string text = "", DateTime time = default, IEnumerable<double>? intervals = null, bool printDate = false)
@@ -28,7 +28,6 @@ public class Entry
 
         return Text == otherEntry.Text
             && Time == otherEntry.Time
-            && PrintDate == otherEntry.PrintDate
             && Intervals.Count == otherEntry.Intervals.Count
             && Intervals.SequenceEqual(otherEntry.Intervals);
     }

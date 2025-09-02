@@ -96,7 +96,7 @@ public partial class CliController : ICliController // TODO: remove partial
         speed ??= _replaySpeed;
         var skipFactor = 1;
 
-        if (entry.PrintDate) Console.WriteLine($"\n{entry.Time.ToString(CultureInfo.InvariantCulture)}");
+        if (entry.PrintDate) Console.WriteLine($"\n{entry.Time:ddd yyyy-MMM-dd HH:mm:ss}");
 
         foreach (var (letter, time) in entry.Text.Zip(entry.Intervals))
         {
@@ -112,7 +112,15 @@ public partial class CliController : ICliController // TODO: remove partial
     {
         var entryList = entries.ToList();
         Console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
-        foreach (var entry in entryList) { ReplayEntry(entry); }
+
+        if (entryList.Count == 0) { return; }
+        var lastDateSeen = DateTime.UnixEpoch;
+        foreach (var entry in entryList)
+        {
+            if (entry.Time.Date != lastDateSeen.Date) { entry.PrintDate = true; }
+            ReplayEntry(entry);
+            lastDateSeen = entry.Time;
+        }
     }
 
     public void ReplayAll()
@@ -174,8 +182,7 @@ public partial class CliController : ICliController // TODO: remove partial
         var entries = _diaryService.Search(isStrict, keywords).ToList();
         foreach (var entry in entries)
         {
-            var timeString = entry.Time.ToString("yyyy-MM-dd HH:mm:ss ddd");
-            Console.Write($"{timeString} | {entry}");
+            Console.Write($"{entry.Time:yyyy-MM-dd HH:mm:ss ddd} | {entry}");
         }
         Console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }
