@@ -24,7 +24,7 @@ internal static class Program
 
         using var scope = host.Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
-        ctx.Database.EnsureCreated();
+        ctx.Database.Migrate();
 
         var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
         parser.Obey(args);
@@ -55,8 +55,9 @@ internal static class Program
     {
         const string fileName = "appsettings.json";
         if (File.Exists(fileName)) return;
-        
-        var json = JsonSerializer.Serialize(new { AppConfigs = new AppConfigs() });
+
+        var defaultConfigs = new { AppConfigs = new AppConfigs() };
+        var json = JsonSerializer.Serialize(defaultConfigs);
         File.WriteAllText(fileName, json);
     }
 }

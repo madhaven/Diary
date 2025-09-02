@@ -23,7 +23,24 @@ public class Entry
 
     public override bool Equals(object? obj)
     {
-        return obj is Entry model && Text == model.Text && Intervals == model.Intervals;
+        if (obj is not Entry otherEntry) return false;
+        if (ReferenceEquals(this, obj)) return true;
+
+        return Text == otherEntry.Text
+            && Time == otherEntry.Time
+            && PrintDate == otherEntry.PrintDate
+            && Intervals.Count == otherEntry.Intervals.Count
+            && Intervals.SequenceEqual(otherEntry.Intervals);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Text);
+        hash.Add(Time);
+        hash.Add(PrintDate);
+        foreach (var interval in Intervals) { hash.Add(interval); }
+        return hash.ToHashCode();
     }
 
     /// <summary>
