@@ -2,11 +2,11 @@
 # This is to facilitate the conversion of the project to the .NET.
 
 import os
-from os import sep, path
 import sys
 import sqlite3
+from os import sep, path
 
-# Add the parent directory to the Python path so we can import from diary
+# Add parent directory to Python path to import from diary
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from diary import Filer_3_2, Diary
 
@@ -14,6 +14,7 @@ from diary import Filer_3_2, Diary
 try:
     filelocation = ""
     exec(open(sep.join([path.expanduser('~'), 'diary_config']), 'r').read())
+    filelocation = sep.join(filelocation)
 except:
     print("Migration was not able to find an appropriate diary file")
     exit(1)
@@ -28,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Entries (
 )
 """
 
-diary:Diary = Diary(sep.join(filelocation))
+diary:Diary = Diary(filelocation)
 diary.load()
 
 if path.exists("diary.sqlite"):
@@ -47,4 +48,4 @@ for entry in diary.entries:
 db.commit()
 db.close()
 print('Migration complete')
-print("place diary.sqlite file in the folder where the Diary.exe tool exists.")
+print("place the generated diary.sqlite file in the folder where the Diary.exe exists.")
