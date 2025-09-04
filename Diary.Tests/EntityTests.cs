@@ -1,6 +1,6 @@
 ﻿using Diary.Models;
 
-namespace Diary.Tests.Core;
+namespace Diary.Tests;
 
 public class EntityTests
 {

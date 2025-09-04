@@ -8,7 +8,7 @@ using Diary.Models;
 
 namespace Diary.CLI;
 
-public partial class CliController : ICliController // TODO: remove partial
+public partial class CliController : ICliController
 {
     private readonly string _stopWord;
     private readonly float _replaySpeed;
@@ -153,7 +153,7 @@ public partial class CliController : ICliController // TODO: remove partial
         ReplayEntries(entries);
     }
 
-    public void ReplayFrom(List<string?> dates)
+    public void ReplayFrom(string?[] dates)
     {
         int? year, month, day;
         try
@@ -200,11 +200,12 @@ public partial class CliController : ICliController // TODO: remove partial
         var exportOption = exportType switch
         {
             "txt" => ExportOption.Text,
-            "csv" => ExportOption.Csv,
-            "json" => ExportOption.Json,
+            // "csv" => ExportOption.Csv,
+            // "json" => ExportOption.Json,
             _ => throw new InvalidExportException()
         };
         destination = ProcessExportDestination(destination);
+        _diaryService.Export(exportOption, destination);
         Console.WriteLine($"Diary Exported to {destination}.{exportType}");
     }
 
@@ -221,10 +222,12 @@ public partial class CliController : ICliController // TODO: remove partial
 
     private static string ProcessExportDestination(string? destination)
     {
-        destination ??= "." + Path.DirectorySeparatorChar;
-        if (Path.EndsInDirectorySeparator(destination))
-            destination = Path.Join(destination, $"diaryback_{DateTime.Now:yyyyMMddHHmmss}");
-        destination = Path.GetFullPath(destination);
-        return destination;
+        destination ??= ".";
+        var path = Path.GetFullPath(destination);
+        var name = Path.GetFileName(destination);
+        var isDirectory = string.IsNullOrEmpty(name) || name == "." || name == "..";
+        return isDirectory
+            ? Path.Combine(path, $"diaryback_{DateTime.Now:yyyyMMddHHmmss}")
+            : path;
     }
 }

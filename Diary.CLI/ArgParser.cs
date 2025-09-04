@@ -50,7 +50,7 @@ public class ArgParser : IArgParser
         {
             List<Argument<string?>> dateSpec = [filter1!, filter2, filter3];
             var dates = dateSpec.Select(parseResult.GetValue);
-            controller.ReplayFrom(dates.ToList());
+            _controller.ReplayFrom(dates.ToArray());
         });
         commandRead.Add(commandFrom);
         var commandReadAll = new Command("all", "read all entries from the very start");
@@ -101,9 +101,13 @@ public class ArgParser : IArgParser
     private void AddExport(ICliController controller)
     {
         var commandExport = new Command("export", "exports diary data to specified format");
-        var argumentFileType = new Argument<string>("filetype"); // TODO: IMPROVE CLI INTERFACE
-        var argumentDestination = new Argument<string?>("destination");
-        argumentDestination.DefaultValueFactory = _ => null;
+        var argumentFileType = new Argument<string>("fileformat")
+            .AcceptOnlyFromAmong("txt", "csv");
+        var argumentDestination = new Argument<string?>("destination")
+        {
+            Description = "Filename without the extension",
+            DefaultValueFactory = _ => null
+        };
         commandExport.SetAction(result =>
         {
             var exportType = result.GetValue(argumentFileType)!.ToLower();

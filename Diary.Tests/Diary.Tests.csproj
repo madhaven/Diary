@@ -30,8 +30,4 @@
     <ProjectReference Include="..\Diary.Core.Implementation\Diary.Core.Implementation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="CLI\" />
-  </ItemGroup>
-
 </Project>

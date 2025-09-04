@@ -45,4 +45,11 @@ public interface IDiaryService
     /// <param name="name">Uses the file if specified</param>
     /// <param name="args">future proofing</param>
     public void Backup(string? name, params object[] args);
+
+    /// <summary>
+    /// Exports the diary to the available file options.
+    /// </summary>
+    /// <param name="exportOption">ExportOption that helps resolve the strategy</param>
+    /// <param name="destination">Path to save the exported file.</param>
+    public void Export(ExportOption exportOption, string destination);
 }

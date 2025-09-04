@@ -57,7 +57,7 @@ public interface ICliController
     /// Replay entries from a specific combination of year/month/date.
     /// </summary>
     /// <param name="dates">at least one year/month/date specification is required.</param>
-    public void ReplayFrom(List<string?> dates);
+    public void ReplayFrom(string?[] dates);
 
     /// <summary>
     /// Searches for the keywords in the diary.

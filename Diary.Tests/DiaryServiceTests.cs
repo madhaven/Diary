@@ -5,27 +5,30 @@ using Diary.Models;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace Diary.Tests.Core;
+namespace Diary.Tests;
 
 public class DiaryServiceTests
 {
     private string _fileName;
     private DiaryDbContext _diaryDbContext;
     private Mock<IFileService> _fileManagerMock;
+    private Mock<IExportStrategyFactory> _exportStrategyFactoryMock;
     
     [SetUp]
     public void Setup()
     {
         _fileName = "test.txt";
         if (File.Exists(_fileName)) File.Delete(_fileName);
-        
+
         _fileManagerMock = new Mock<IFileService>();
-        
+
         // Use in-memory database instead of mocking
         var options = new DbContextOptionsBuilder<DiaryDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
         _diaryDbContext = new DiaryDbContext(options);
+
+        _exportStrategyFactoryMock = new Mock<IExportStrategyFactory>();
     }
 
     [TearDown]
@@ -38,21 +41,22 @@ public class DiaryServiceTests
     [Test]
     public void TestInit()
     {
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         Assert.That(diary.All(), Is.EqualTo(Enumerable.Empty<Entry>()), "Expected Blank list of diary entries on init");
     }
 
     [Test]
     public void TestBlankInit_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(null!, _diaryDbContext); });
-        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(_fileManagerMock.Object, null!); });
+        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(null!, _diaryDbContext, _exportStrategyFactoryMock.Object); });
+        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(_fileManagerMock.Object, null!, _exportStrategyFactoryMock.Object); });
+        Assert.Throws<ArgumentNullException>(() => { _ = new DiaryService(_fileManagerMock.Object, _diaryDbContext, null!); });
     }
 
     [Test]
     public void TestAddEntryCalls()
     {
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         var entry = new Entry();
         diary.AddEntry(entry);
         
@@ -70,7 +74,7 @@ public class DiaryServiceTests
         var entry3 = new Entry($"{s3}\n", DateTime.Now, Enumerable.Repeat(1d, s3.Length));
         var entry4 = new Entry($"{s1} {s2} {s3}\n", DateTime.Now, Enumerable.Repeat(1d, s1.Length + s3.Length + s3.Length + 3));
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(entry1, entry2, entry3, entry4);
         var result1 = diary.Search(false, s1, s2).ToList();
         var result2 = diary.Search(true, s1, s2).ToList();
@@ -90,7 +94,7 @@ public class DiaryServiceTests
     {
         var entry = new Entry("bleh\n", DateTime.Now, Enumerable.Repeat(1d, 5));
         
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(entry);
         var result = diary.Filter(null, null, null);
         
@@ -109,7 +113,7 @@ public class DiaryServiceTests
         var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3);
         var result = diary.Filter(t1.Year, null, null);
         Assert.That(result, Is.EqualTo(expectedEntries), "Expected entries of a year were not filtered");
@@ -126,7 +130,7 @@ public class DiaryServiceTests
         var e3 = new Entry("bleh\n", t3, Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3);
 
         var result = diary.Filter(null, t1.Month, null);
@@ -143,7 +147,7 @@ public class DiaryServiceTests
         var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3);
         var result = diary.Filter(null, null, t1.Day);
         Assert.That(result, Is.EqualTo(expectedEntries), "Expected entries of a date were not filtered");
@@ -161,7 +165,7 @@ public class DiaryServiceTests
         var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3, e4);
 
         var result = diary.Filter(t1.Year, t1.Month, null);
@@ -180,7 +184,7 @@ public class DiaryServiceTests
         var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3, e4);
 
         var result = diary.Filter(t1.Year, null, t1.Day);
@@ -199,7 +203,7 @@ public class DiaryServiceTests
         var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
         List<Entry> expectedEntries = [e1, e2];
 
-        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext);
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
         diary.AddEntry(e1, e2, e3, e4);
 
         var result = diary.Filter(null, t1.Month, t1.Day);

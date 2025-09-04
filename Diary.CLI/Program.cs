@@ -4,6 +4,7 @@ using System.Text.Json;
 using Diary.Core;
 using Diary.Data;
 using Diary.Implementation;
+using Diary.Implementation.ExportStrategies;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,13 +33,20 @@ internal static class Program
 
     private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)
     {
+        // DI service configuration
         builder.Services.AddScoped<ICliController, CliController>();
         builder.Services.AddScoped<IDiaryService, DiaryService>();
         builder.Services.AddScoped<IFileService, FileService>();
         builder.Services.AddScoped<IArgParser, ArgParser>();
 
+        // Exporter classes configuration
+        builder.Services.AddScoped<IExportStrategyFactory, ExportStrategyFactory>();
+        builder.Services.AddTransient<TextExportStrategy>();
+
+        // App Configs
         builder.Services.Configure<AppConfigs>(builder.Configuration.GetSection(nameof(AppConfigs)));
 
+        // DB setup
         var connectionStringBuilder = new SqliteConnectionStringBuilder
         {
             DataSource = builder.Configuration["AppConfigs:SqlitePath"],

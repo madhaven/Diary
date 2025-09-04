@@ -1,5 +1,6 @@
 ﻿using Diary.Core;
 using Diary.Data;
+using Diary.Models;
 using Microsoft.EntityFrameworkCore;
 using Entry = Diary.Models.Entry;
 
@@ -9,11 +10,13 @@ public class DiaryService : IDiaryService
 {
     private readonly DiaryDbContext _diaryDbContext;
     private readonly IFileService _fileService;
+    private readonly IExportStrategyFactory _exportStrategyFactory;
 
-    public DiaryService(IFileService fileService, DiaryDbContext context)
+    public DiaryService(IFileService fileService, DiaryDbContext context, IExportStrategyFactory exportStrategyFactory)
     {
         _diaryDbContext = context ?? throw new ArgumentNullException(nameof(context));
         _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
+        _exportStrategyFactory = exportStrategyFactory ?? throw new ArgumentNullException(nameof(exportStrategyFactory));
     }
 
     public void AddEntry(params Entry[] entries)
@@ -48,7 +51,7 @@ public class DiaryService : IDiaryService
             .Select(x => x.ToEntity());
     }
 
-    public IEnumerable<Entry> Search(bool isStrict=false, params string[] args)
+    public IEnumerable<Entry> Search(bool isStrict = false, params string[] args)
     {
         var entries = isStrict
             ? _diaryDbContext.Entries.AsEnumerable()
@@ -65,5 +68,18 @@ public class DiaryService : IDiaryService
         _fileService.Backup(name);
     }
 
-    // TODO: Add export options
+    /// <summary>
+    /// Exports diary entries using the strategy selected by <paramref name="exportOption"/>.
+    /// </summary>
+    /// <param name="exportOption">The export format to use.</param>
+    /// <param name="destination">The file path to write to.</param>
+    public void Export(ExportOption exportOption, string destination)
+    {
+        var strategy = _exportStrategyFactory.CreateExporter(exportOption);
+        var entries = _diaryDbContext.Entries
+            .AsEnumerable()
+            .Select(e => e.ToEntity())
+            .ToList();
+        strategy.Export(entries, destination);
+    }
 }
