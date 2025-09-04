@@ -72,6 +72,8 @@ public interface ICliController
     /// <param name="name">Specifies the file to back up to, the absense of which will result in a default location.</param>
     public void Backup(string? name);
 
+    public void Export(string exportType, string? destination);
+
     /// <summary>
     /// Gets a string to show the user prior to a diary entry.
     /// </summary>

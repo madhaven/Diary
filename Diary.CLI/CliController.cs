@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using Diary.Core;
+using Diary.Core.Exceptions;
 using Diary.Models;
 
 namespace Diary.CLI;
@@ -194,6 +195,19 @@ public partial class CliController : ICliController // TODO: remove partial
         Console.WriteLine("Backup Complete");
     }
 
+    public void Export(string exportType, string? destination)
+    {
+        var exportOption = exportType switch
+        {
+            "txt" => ExportOption.Text,
+            "csv" => ExportOption.Csv,
+            "json" => ExportOption.Json,
+            _ => throw new InvalidExportException()
+        };
+        destination = ProcessExportDestination(destination);
+        Console.WriteLine($"Diary Exported to {destination}.{exportType}");
+    }
+
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
 
     [GeneratedRegex(@"^[a-zA-Z]{3}.*$")]
@@ -204,4 +218,13 @@ public partial class CliController : ICliController // TODO: remove partial
 
     [GeneratedRegex(@"^\d{1,2}$")]
     private static partial Regex DayRegex();
+
+    private static string ProcessExportDestination(string? destination)
+    {
+        destination ??= "." + Path.DirectorySeparatorChar;
+        if (Path.EndsInDirectorySeparator(destination))
+            destination = Path.Join(destination, $"diaryback_{DateTime.Now:yyyyMMddHHmmss}");
+        destination = Path.GetFullPath(destination);
+        return destination;
+    }
 }

@@ -23,6 +23,7 @@ public class ArgParser : IArgParser
         AddReadCommand(controller);
         AddSearchCommand(controller);
         AddBackup(controller);
+        AddExport(controller);
         return _rootCommand;
     }
 
@@ -95,5 +96,22 @@ public class ArgParser : IArgParser
         });
         commandBackup.Add(argumentFilename);
         _rootCommand.Add(commandBackup);
+    }
+
+    private void AddExport(ICliController controller)
+    {
+        var commandExport = new Command("export", "exports diary data to specified format");
+        var argumentFileType = new Argument<string>("filetype"); // TODO: IMPROVE CLI INTERFACE
+        var argumentDestination = new Argument<string?>("destination");
+        argumentDestination.DefaultValueFactory = _ => null;
+        commandExport.SetAction(result =>
+        {
+            var exportType = result.GetValue(argumentFileType)!.ToLower();
+            var fileDestination = result.GetValue(argumentDestination);
+            controller.Export(exportType, fileDestination);
+        });
+        commandExport.Add(argumentFileType);
+        commandExport.Add(argumentDestination);
+        _rootCommand.Add(commandExport);
     }
 }
