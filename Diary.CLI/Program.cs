@@ -28,7 +28,7 @@ internal static class Program
         ctx.Database.Migrate();
 
         var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
-        parser.Obey(args);
+        parser.ParseAndInvoke(args);
     }
 
     private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)

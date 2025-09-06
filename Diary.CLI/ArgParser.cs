@@ -4,38 +4,34 @@ namespace Diary.CLI;
 
 public class ArgParser : IArgParser
 {
-    private RootCommand _rootCommand;
+    private readonly RootCommand _rootCommand;
+    private readonly ICliController _controller;
 
     public ArgParser(ICliController controller)
     {
-        _rootCommand = BuildParser(controller);
+        _controller = controller ?? throw new ArgumentNullException(nameof(controller));
+        _rootCommand = new RootCommand("Diary CLI");
+        AddLogCommand();
+        AddReadCommand();
+        AddSearchCommand();
+        AddBackup();
+        AddExport();
     }
     
-    public void Obey(string[] args)
+    public void ParseAndInvoke(string[] args)
     {
         _rootCommand.Parse(args).Invoke();
     }
-    
-    public RootCommand BuildParser(ICliController controller)
-    {
-        _rootCommand = new RootCommand("Diary CLI");
-        AddLogCommand(controller);
-        AddReadCommand(controller);
-        AddSearchCommand(controller);
-        AddBackup(controller);
-        AddExport(controller);
-        return _rootCommand;
-    }
 
-    private void AddLogCommand(ICliController controller)
+    private void AddLogCommand()
     {
         var commandLog = new Command("log", "adds entries to the diary");
         commandLog.Aliases.Add("entry");
-        commandLog.SetAction(_ => { controller.Log(); });
+        commandLog.SetAction(_ => { _controller.Log(); });
         _rootCommand.Add(commandLog);
     }
 
-    private void AddReadCommand(ICliController controller)
+    private void AddReadCommand()
     {
         var commandRead = new Command("read", "replay previously created entries");
         commandRead.Aliases.Add("show");
@@ -54,21 +50,21 @@ public class ArgParser : IArgParser
         });
         commandRead.Add(commandFrom);
         var commandReadAll = new Command("all", "read all entries from the very start");
-        commandReadAll.SetAction(_ => { controller.ReplayAll(); });
+        commandReadAll.SetAction(_ => { _controller.ReplayAll(); });
         commandRead.Add(commandReadAll);
         var commandReadToday =  new Command("today", "read entries from current day");
-        commandReadToday.SetAction(_ => { controller.ReplayToday(); });
+        commandReadToday.SetAction(_ => { _controller.ReplayToday(); });
         commandRead.Add(commandReadToday);
         var commandReadYesterday = new Command("yesterday", "read entries from yesterday");
-        commandReadYesterday.SetAction(_ => { controller.ReplayYesterday(); });
+        commandReadYesterday.SetAction(_ => { _controller.ReplayYesterday(); });
         commandRead.Add(commandReadYesterday);
         var commandLast = new Command("last", "read entries from the last day entered");
-        commandLast.SetAction(_ => { controller.ReplayLast(); });
+        commandLast.SetAction(_ => { _controller.ReplayLast(); });
         commandRead.Add(commandLast);
         _rootCommand.Add(commandRead);
     }
 
-    private void AddSearchCommand(ICliController controller)
+    private void AddSearchCommand()
     {
         var commandSearch = new Command("search", "search for keywords");
         var optionStrict = new Option<bool>("--strict");
@@ -79,26 +75,29 @@ public class ArgParser : IArgParser
         {
             var isStrict = parseResult.GetValue(optionStrict);
             var keywords = parseResult.GetValue(argumentKeywords)!;
-            controller.Search(keywords, isStrict);
+            _controller.Search(keywords, isStrict);
         });
         commandSearch.Add(optionStrict);
         _rootCommand.Add(commandSearch);
     }
 
-    private void AddBackup(ICliController controller)
+    private void AddBackup()
     {
         var commandBackup = new Command("backup", "creates a backup of the diary");
-        var argumentFilename = new Argument<string>("filename");
+        var argumentFilename = new Argument<string?>("filename")
+        {
+            DefaultValueFactory = _ => null
+        };
         commandBackup.SetAction(parseResult =>
         {
             var fileName = parseResult.GetValue(argumentFilename);
-            controller.Backup(fileName);
+            _controller.Backup(fileName);
         });
         commandBackup.Add(argumentFilename);
         _rootCommand.Add(commandBackup);
     }
 
-    private void AddExport(ICliController controller)
+    private void AddExport()
     {
         var commandExport = new Command("export", "exports diary data to specified format");
         var argumentFileType = new Argument<string>("fileformat")
@@ -112,7 +111,7 @@ public class ArgParser : IArgParser
         {
             var exportType = result.GetValue(argumentFileType)!.ToLower();
             var fileDestination = result.GetValue(argumentDestination);
-            controller.Export(exportType, fileDestination);
+            _controller.Export(exportType, fileDestination);
         });
         commandExport.Add(argumentFileType);
         commandExport.Add(argumentDestination);
