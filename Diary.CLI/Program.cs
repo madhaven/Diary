@@ -19,6 +19,7 @@ internal static class Program
         var builder = Host.CreateApplicationBuilder(args)
             .ConfigureDiaryServices();
 
+        // TODO: add tests
         Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var host = builder.Build();
@@ -34,6 +35,7 @@ internal static class Program
     private static HostApplicationBuilder ConfigureDiaryServices(this HostApplicationBuilder builder)
     {
         // DI service configuration
+        builder.Services.AddScoped<IConsoleWrapper, ConsoleWrapper>();
         builder.Services.AddScoped<ICliController, CliController>();
         builder.Services.AddScoped<IDiaryService, DiaryService>();
         builder.Services.AddScoped<IFileService, FileService>();

@@ -20,10 +20,16 @@ public class TextExportStrategy : IExportStrategy
         using var fileStream = new FileStream(destination, FileMode.Create, FileAccess.Write);
         using var streamWriter = new StreamWriter(fileStream);
         var lastSeenDate = DateTime.UnixEpoch;
+        var isFirstEntry = true;
         foreach (var entry in entries.ToList())
         {
             if (lastSeenDate.Date != entry.Time.Date)
-                streamWriter.Write($"\n{entry.Time:ddd yyyy-MMM-dd HH:mm:ss}\n");
+            {
+                if (!isFirstEntry)
+                    streamWriter.Write("\n");
+                streamWriter.Write($"{entry.Time:ddd yyyy-MMM-dd HH:mm:ss}\n");
+                isFirstEntry = false;
+            }
             
             streamWriter.Write(entry.Text);
             lastSeenDate = entry.Time;

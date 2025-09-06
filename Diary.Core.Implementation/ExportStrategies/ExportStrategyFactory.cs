@@ -6,7 +6,7 @@ namespace Diary.Implementation.ExportStrategies;
 
 public class ExportStrategyFactory : IExportStrategyFactory
 {
-    private IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public ExportStrategyFactory(IServiceProvider serviceProvider)
     {
