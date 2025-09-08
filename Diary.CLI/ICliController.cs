@@ -79,4 +79,10 @@ public interface ICliController
     /// </summary>
     /// <returns></returns>
     public string GetPrelogAdvice();
+
+    /// <summary>
+    /// Convenience function to convert py data to net environment.
+    /// </summary>
+    /// <returns></returns>
+    public void MigrateDataToNet(string? filePath);
 }

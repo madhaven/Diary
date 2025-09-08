@@ -16,6 +16,7 @@ public class ArgParser : IArgParser
         AddSearchCommand();
         AddBackup();
         AddExport();
+        AddHiddenMigrate();
     }
     
     public void ParseAndInvoke(string[] args)
@@ -116,5 +117,26 @@ public class ArgParser : IArgParser
         commandExport.Add(argumentFileType);
         commandExport.Add(argumentDestination);
         _rootCommand.Add(commandExport);
+    }
+
+    /// <summary>
+    /// This is a hidden migrate option for converting python data files to dotnet implementation.
+    /// This is not for the general user.
+    /// </summary>
+    private void AddHiddenMigrate()
+    {
+        var commandMig = new Command("mig2.net")
+        {
+            Hidden = true,
+            Description = "converts previous python data file into dotnet implementation",
+        };
+        var argumentFileLoc = new Argument<string?>("fileloc") { DefaultValueFactory = _ => null };
+        commandMig.SetAction(result =>
+        {
+            var loc = result.GetValue(argumentFileLoc);
+            _controller.MigrateDataToNet(loc);
+        });
+        commandMig.Add(argumentFileLoc);
+        _rootCommand.Add(commandMig);
     }
 }

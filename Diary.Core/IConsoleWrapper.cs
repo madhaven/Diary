@@ -10,4 +10,5 @@ public interface IConsoleWrapper
     public void WriteLine(string? value);
     public void Write(object? value);
     public ConsoleKeyInfo ReadKey(bool intercept);
+    public string? ReadLine();
 }

@@ -204,6 +204,25 @@ public partial class CliController : ICliController
         _consoleWrapper.WriteLine($"Diary Exported to {destination}.{exportType}");
     }
 
+    public void MigrateDataToNet(string? filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            _consoleWrapper.Write("File path / drag-n-drop diary data file: ");
+            filePath = _consoleWrapper.ReadLine();
+        }
+
+        if (!File.Exists(filePath))
+        {
+            _consoleWrapper.WriteLine("File does not exist");
+            return;
+        }
+
+        _consoleWrapper.Write("Migrating diary data to net... ");
+        _diaryService.MigrateDataToNet(filePath);
+        _consoleWrapper.WriteLine("Done");
+    }
+
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
 
     [GeneratedRegex(@"^[a-zA-Z]{3}.*$")]

@@ -47,9 +47,15 @@ public interface IDiaryService
     public void Backup(string? name, params object[] args);
 
     /// <summary>
-    /// Exports the diary to the available file options.
+    /// Exports diary entries using the strategy selected by <paramref name="exportOption"/>.
     /// </summary>
     /// <param name="exportOption">ExportOption that helps resolve the strategy</param>
     /// <param name="destination">Path to save the exported file.</param>
     public void Export(ExportOption exportOption, string destination);
+    
+    /// <summary>
+    /// Convenience function to migrate old python data to net environment
+    /// </summary>
+    /// <param name="filePath"></param>
+    public void MigrateDataToNet(string filePath);
 }

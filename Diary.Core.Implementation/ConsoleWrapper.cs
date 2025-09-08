@@ -25,4 +25,9 @@ public class ConsoleWrapper : IConsoleWrapper
     {
         return Console.ReadKey(intercept);
     }
+
+    public string? ReadLine()
+    {
+        return Console.ReadLine();
+    }
 }

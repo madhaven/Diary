@@ -1,4 +1,5 @@
 ﻿using Diary.Core;
+using Diary.Core.Exceptions;
 using Diary.Data;
 using Diary.Models;
 using Microsoft.EntityFrameworkCore;
@@ -68,11 +69,6 @@ public class DiaryService : IDiaryService
         _fileService.Backup(name);
     }
 
-    /// <summary>
-    /// Exports diary entries using the strategy selected by <paramref name="exportOption"/>.
-    /// </summary>
-    /// <param name="exportOption">The export format to use.</param>
-    /// <param name="destination">The file path to write to.</param>
     public void Export(ExportOption exportOption, string destination)
     {
         var strategy = _exportStrategyFactory.CreateExporter(exportOption);
@@ -81,5 +77,60 @@ public class DiaryService : IDiaryService
             .Select(e => e.ToEntity())
             .ToList();
         strategy.Export(entries, destination);
+    }
+
+    public void MigrateDataToNet(string filePath)
+    {
+        // setup db
+        string sqlitePath = Path.GetFileNameWithoutExtension(filePath) + ".sqlite";
+        while (File.Exists(sqlitePath))
+            sqlitePath = "." + sqlitePath;
+        var dbOptions = new DbContextOptionsBuilder<DiaryDbContext>()
+            .UseSqlite($"Data Source={sqlitePath};")
+            .Options;
+        var newDbContext = new DiaryDbContext(dbOptions);
+
+        // setup files
+        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        using var streamReader = new StreamReader(fileStream);
+
+        List<Entry> entries = [];
+        var firstLine = streamReader.ReadLine();
+        if (firstLine != "diary v3.2 github.com/madhaven/diary" && firstLine != "diary v2.10 github.com/madhaven/diary")
+            throw new BadFileHeaderException();
+        
+        // process file
+        while (true)
+        {
+            streamReader.ReadLine();
+            var timeAndText = streamReader.ReadLine();
+            if (timeAndText == null)
+                break;
+
+            var text = timeAndText[24..] + '\n';
+            var time = DateTime.ParseExact(
+                timeAndText.Substring(0, 24).Replace("  ", " 0"),
+                "ddd MMM dd HH:mm:ss yyyy",
+                System.Globalization.CultureInfo.InvariantCulture);
+            var intervals = streamReader.ReadLine()?[1..^1]?
+                .Split(',').Select(x => double.Parse(x) * 1000).ToList()
+                ?? Enumerable.Repeat(0d, timeAndText.Length).ToList();
+
+            var entry = new Entry
+            {
+                Text = text,
+                Time = time,
+                Intervals = intervals,
+                PrintDate = entries.Count > 0 && entries[^1].Time.Date != time.Date
+            };
+
+            entries.Add(entry);
+        }
+
+        // add to db
+        var entryData = entries.Select(EntryData.FromEntity);
+        newDbContext.Database.Migrate();
+        newDbContext.Entries.AddRange(entryData);
+        newDbContext.SaveChanges();
     }
 }
