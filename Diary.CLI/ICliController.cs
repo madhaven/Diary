@@ -85,4 +85,10 @@ public interface ICliController
     /// </summary>
     /// <returns></returns>
     public void MigrateDataToNet(string? filePath);
+
+    /// <summary>
+    /// Handles Exceptions from Diary.
+    /// </summary>
+    /// <param name="ex">Exception to Handle</param>
+    public void HandleError(Exception ex);
 }

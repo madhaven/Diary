@@ -225,6 +225,21 @@ public partial class CliController : ICliController
 
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
 
+    public void HandleError(Exception ex)
+    {
+        switch (ex)
+        {
+            case InvalidExportException:
+                _console.WriteLine("Invalid export type.");
+                break;
+            case BadFileHeaderException:
+                _console.WriteLine("Bad file header found.");
+                break;
+            default:
+                throw ex;
+        }
+    }
+
     [GeneratedRegex(@"^[a-zA-Z]{3}.*$")]
     private static partial Regex MonthRegex();
 

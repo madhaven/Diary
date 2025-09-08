@@ -1,5 +1,6 @@
 using Diary.CLI;
 using Diary.Core;
+using Diary.Core.Exceptions;
 using Diary.Models;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -205,6 +206,18 @@ public class CliControllerTests
         var cliController = new CliController(_diaryServiceMock.Object, _appConfigMock.Object, _consoleWrapperMock.Object);
         var actualAdvice = cliController.GetPrelogAdvice();
         Assert.That(expectedAdvice, Is.EqualTo(actualAdvice));
+    }
+
+    [Test]
+    public void TestHandleError()
+    {
+        _appConfigMock.Setup(x => x.Value).Returns(new AppConfigs { StopWord = "bye" });
+        var cliController = new CliController(_diaryServiceMock.Object, _appConfigMock.Object, _consoleWrapperMock.Object);
+        
+        cliController.HandleError(new InvalidExportException());
+        _consoleWrapperMock.Verify(x => x.WriteLine("Invalid export type."), Times.Once);
+        cliController.HandleError(new BadFileHeaderException());
+        _consoleWrapperMock.Verify(x => x.WriteLine("Bad file header found."), Times.Once);
     }
 
     private static Queue<ConsoleKeyInfo> CreateDummyInput(string text)

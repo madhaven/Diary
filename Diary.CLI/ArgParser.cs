@@ -21,7 +21,14 @@ public class ArgParser : IArgParser
     
     public void ParseAndInvoke(string[] args)
     {
-        _rootCommand.Parse(args).Invoke();
+        try
+        {
+            _rootCommand.Parse(args).Invoke();
+        }
+        catch (Exception ex)
+        {
+            _controller.HandleError(ex);
+        }
     }
 
     private void AddLogCommand()
