@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Diary.Core;
 
 namespace Diary.Implementation;
 
+[ExcludeFromCodeCoverage]
 public class ConsoleWrapper : IConsoleWrapper
 {
     public bool KeyAvailable => Console.KeyAvailable;

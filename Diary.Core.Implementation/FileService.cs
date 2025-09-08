@@ -1,7 +1,4 @@
-using System.Globalization;
 using Diary.Core;
-using Diary.Core.Exceptions;
-using Diary.Models;
 using Microsoft.Extensions.Options;
 
 namespace Diary.Implementation;
@@ -12,11 +9,12 @@ public class FileService : IFileService
 
     public FileService(IOptions<AppConfigs> appconfigs)
     {
-        var appConfigs = appconfigs.Value ?? throw new ArgumentNullException(nameof(appconfigs));
+        ArgumentNullException.ThrowIfNull(appconfigs);
+        var appConfigs = appconfigs.Value;
         FileName = appConfigs.SqlitePath;
         var directory = Path.GetDirectoryName(FileName)!;
         
-        if (!Directory.Exists(directory))
+        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
             Directory.CreateDirectory(directory);
         if (!File.Exists(FileName))
             File.Create(FileName).Dispose();

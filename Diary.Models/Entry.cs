@@ -37,7 +37,6 @@ public class Entry
         var hash = new HashCode();
         hash.Add(Text);
         hash.Add(Time);
-        hash.Add(PrintDate);
         foreach (var interval in Intervals) { hash.Add(interval); }
         return hash.ToHashCode();
     }

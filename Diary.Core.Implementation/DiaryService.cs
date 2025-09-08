@@ -73,7 +73,6 @@ public class DiaryService : IDiaryService
     {
         var strategy = _exportStrategyFactory.CreateExporter(exportOption);
         var entries = _diaryDbContext.Entries
-            .AsEnumerable()
             .Select(e => e.ToEntity())
             .ToList();
         strategy.Export(entries, destination);
@@ -84,7 +83,7 @@ public class DiaryService : IDiaryService
         // setup db
         string sqlitePath = Path.GetFileNameWithoutExtension(filePath) + ".sqlite";
         while (File.Exists(sqlitePath))
-            sqlitePath = "." + sqlitePath;
+            sqlitePath = $".{sqlitePath}";
         var dbOptions = new DbContextOptionsBuilder<DiaryDbContext>()
             .UseSqlite($"Data Source={sqlitePath};")
             .Options;

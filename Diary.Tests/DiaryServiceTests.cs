@@ -35,7 +35,7 @@ public class DiaryServiceTests
     public void TearDown()
     {
         if (File.Exists(_fileName)) File.Delete(_fileName);
-        _diaryDbContext?.Dispose();
+        _diaryDbContext.Dispose();
     }
 
     [Test]
@@ -208,5 +208,64 @@ public class DiaryServiceTests
 
         var result = diary.Filter(null, t1.Month, t1.Day);
         Assert.That(result, Is.EqualTo(expectedEntries), "Expected entries of a month and day were not filtered");
+    }
+
+    [Test]
+    public void TestAll()
+    {
+        TimeOnly t = new(12, 12, 12);
+        DateOnly t1 = new(2015, 5, 7), t2 = new(2018, 5, 7), t3 = new(2019, 5, 1), t4 = new(2015, 8, 7);
+
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
+        diary.AddEntry(e1, e2, e3, e4);
+        var result = diary.All();
+        Assert.That(result, Is.EqualTo(new[] { e1, e2, e3, e4 }));
+    }
+
+    [Test]
+    public void TestLastEntry()
+    {
+        TimeOnly t = new(12, 12, 12);
+        DateOnly t1 = new(2015, 5, 7);
+        DateOnly t2 = new(2018, 5, 7);
+        DateOnly t3 = new(2019, 5, 1);
+        DateOnly t4 = new(2015, 8, 7);
+
+        var e1 = new Entry("bleh\n", t1.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e2 = new Entry("bleh\n", t2.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e3 = new Entry("bleh\n", t3.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+        var e4 = new Entry("bleh\n", t4.ToDateTime(t, DateTimeKind.Local), Enumerable.Repeat(1d, 5));
+
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
+        diary.AddEntry(e1, e2, e3, e4);
+        var result = diary.LastEntry();
+        Assert.That(result, Is.EqualTo(e3));
+    }
+
+    [Test]
+    public void TestBackup()
+    {
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
+        diary.Backup("test");
+        _fileManagerMock.Verify(x => x.Backup("test"), Times.Once);
+    }
+
+    [Test]
+    public void TestExport()
+    {
+        var mockExportStrategy = new Mock<IExportStrategy>();
+        _exportStrategyFactoryMock
+            .Setup(x => x.CreateExporter(ExportOption.Text))
+            .Returns(mockExportStrategy.Object);
+        
+        var diary = new DiaryService(_fileManagerMock.Object, _diaryDbContext, _exportStrategyFactoryMock.Object);
+        diary.Export(ExportOption.Text, "test");
+        _exportStrategyFactoryMock.Verify(x => x.CreateExporter(ExportOption.Text), Times.Once);
+        mockExportStrategy.Verify(x => x.Export(It.IsAny<List<Entry>>(), "test"));
     }
 }

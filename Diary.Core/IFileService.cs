@@ -1,5 +1,3 @@
-using Diary.Models;
-
 namespace Diary.Core;
 
 public interface IFileService

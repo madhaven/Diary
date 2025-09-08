@@ -45,11 +45,11 @@ public class TextExportStrategyTests
         List<Entry> entries = [
             new()
             {
-                Time = new DateTime(2023, 11, 15, 11, 0, 0),
+                Time = new DateTime(2023, 11, 15, 11, 0, 0, DateTimeKind.Local),
                 Text = "A single entry test."
             }
         ];
-        var dateTime = new DateTime(2023, 11, 15, 11, 0, 0);
+        var dateTime = new DateTime(2023, 11, 15, 11, 0, 0, DateTimeKind.Local);
         var expectedContent = $"{dateTime:ddd yyyy-MMM-dd HH:mm:ss}\nA single entry test.";
 
         _strategy.Export(entries, Destination);
@@ -61,9 +61,9 @@ public class TextExportStrategyTests
     {
         var entries = CreateMockEntries();
         var expectedContent = 
-            $"{new DateTime(2023, 10, 26, 10, 0, 0):ddd yyyy-MMM-dd HH:mm:ss}\nFirst entry for the day.\n" +
+            $"{new DateTime(2023, 10, 26, 10, 0, 0, DateTimeKind.Local):ddd yyyy-MMM-dd HH:mm:ss}\nFirst entry for the day.\n" +
             $"Second entry, same day.\n" +
-            $"\n{new DateTime(2023, 10, 27, 9, 15, 0):ddd yyyy-MMM-dd HH:mm:ss}\nEntry for the next day.\n";
+            $"\n{new DateTime(2023, 10, 27, 9, 15, 0, DateTimeKind.Local):ddd yyyy-MMM-dd HH:mm:ss}\nEntry for the next day.\n";
 
         _strategy.Export(entries, Destination);
         AssertFileContent(Destination, expectedContent);
@@ -74,11 +74,11 @@ public class TextExportStrategyTests
     {
         var entries = new List<Entry>
         {
-            new() { Time = new DateTime(2023, 12, 1, 10, 0, 0), Text = "First entry." },
-            new() { Time = new DateTime(2023, 12, 1, 11, 0, 0), Text = "Second entry." }
+            new() { Time = new DateTime(2023, 12, 1, 10, 0, 0, DateTimeKind.Local), Text = "First entry." },
+            new() { Time = new DateTime(2023, 12, 1, 11, 0, 0, DateTimeKind.Local), Text = "Second entry." }
         };
         var expectedContent = 
-            $"{new DateTime(2023, 12, 1, 10, 0, 0):ddd yyyy-MMM-dd HH:mm:ss}\nFirst entry." +
+            $"{new DateTime(2023, 12, 1, 10, 0, 0, DateTimeKind.Local):ddd yyyy-MMM-dd HH:mm:ss}\nFirst entry." +
             $"Second entry.";
 
         _strategy.Export(entries, Destination);
@@ -113,9 +113,9 @@ public class TextExportStrategyTests
     {
         return
         [
-            new() { Time = new(2023, 10, 26, 10, 0, 0), Text = "First entry for the day.\n" },
-            new() { Time = new(2023, 10, 26, 14, 30, 0), Text = "Second entry, same day.\n" },
-            new() { Time = new(2023, 10, 27, 9, 15, 0), Text = "Entry for the next day.\n" }
+            new() { Time = new(2023, 10, 26, 10, 0, 0, DateTimeKind.Local), Text = "First entry for the day.\n" },
+            new() { Time = new(2023, 10, 26, 14, 30, 0, DateTimeKind.Local), Text = "Second entry, same day.\n" },
+            new() { Time = new(2023, 10, 27, 9, 15, 0, DateTimeKind.Local), Text = "Entry for the next day.\n" }
         ];
     }
 
