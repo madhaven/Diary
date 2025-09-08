@@ -12,7 +12,7 @@ public partial class CliController : ICliController
     private readonly string _stopWord;
     private readonly float _replaySpeed;
     private readonly IDiaryService _diaryService;
-    private readonly IConsoleWrapper _consoleWrapper;
+    private readonly IConsoleWrapper _console;
     private readonly Dictionary<string, int?> _months = new()
     {
         { "jan", 1 }, { "feb", 2 }, { "mar", 3 }, { "apr", 4 }, { "may", 5 }, { "jun", 6 },
@@ -21,7 +21,7 @@ public partial class CliController : ICliController
 
     public CliController(IDiaryService diaryService, IOptions<AppConfigs> appConfigs, IConsoleWrapper consoleWrapper)
     {
-        _consoleWrapper = consoleWrapper ?? throw new ArgumentNullException(nameof(consoleWrapper));
+        _console = consoleWrapper ?? throw new ArgumentNullException(nameof(consoleWrapper));
         _diaryService = diaryService ?? throw new ArgumentNullException(nameof(diaryService));
         if (appConfigs is null) throw new ArgumentNullException(nameof(appConfigs));
 
@@ -31,7 +31,7 @@ public partial class CliController : ICliController
 
     public void Log()
     {
-        _consoleWrapper.WriteLine(GetPrelogAdvice());
+        _console.WriteLine(GetPrelogAdvice());
         try
         {
             while (true)
@@ -45,7 +45,7 @@ public partial class CliController : ICliController
         // TODO: Emergency Stop error: clear screen
         catch (Exception)
         {
-            _consoleWrapper.WriteLine("Your last entry was broken");
+            _console.WriteLine("Your last entry was broken");
             throw;
         }
     }
@@ -58,7 +58,7 @@ public partial class CliController : ICliController
             while (true)
             {
                 var stopwatch = Stopwatch.StartNew();
-                var chr = _consoleWrapper.ReadKey(true);
+                var chr = _console.ReadKey(true);
                 stopwatch.Stop();
                 var time = stopwatch.Elapsed.TotalMinutes >= 1
                     ? TimeSpan.FromSeconds(5)
@@ -69,18 +69,18 @@ public partial class CliController : ICliController
                     if (entry.IsEmpty()) { continue; }
 
                     entry.AddCharacter('\n', (int)time.TotalMilliseconds);
-                    _consoleWrapper.WriteLine();
+                    _console.WriteLine();
                     return entry;
                 }
 
                 // TODO: handle stray characters
-                _consoleWrapper.Write(chr.Key == ConsoleKey.Backspace ? "\b \b" : chr.KeyChar);
+                _console.Write(chr.Key == ConsoleKey.Backspace ? "\b \b" : chr.KeyChar);
                 entry.AddCharacter(chr.KeyChar, (int)time.TotalMilliseconds);
             }
         }
         catch (Exception ex)
         {
-            _consoleWrapper.WriteLine(ex.Message);
+            _console.WriteLine(ex.Message);
             throw;
         }
     }
@@ -90,24 +90,24 @@ public partial class CliController : ICliController
         speed ??= _replaySpeed;
         var skipFactor = 1;
 
-        if (entry.PrintDate) _consoleWrapper.WriteLine($"\n{entry.Time:ddd yyyy-MMM-dd HH:mm:ss}");
+        if (entry.PrintDate) _console.WriteLine($"\n{entry.Time:ddd yyyy-MMM-dd HH:mm:ss}");
 
         foreach (var (letter, time) in entry.Text.Zip(entry.Intervals))
         {
             // TODO: wrap thread.sleep
             // TODO: test skip
             Thread.Sleep((int)(time * skipFactor / speed.Value));
-            if (_consoleWrapper.KeyAvailable && _consoleWrapper.ReadKey(true).Key is ConsoleKey.Spacebar or ConsoleKey.Enter)
+            if (_console.KeyAvailable && _console.ReadKey(true).Key is ConsoleKey.Spacebar or ConsoleKey.Enter)
                 skipFactor = 0;
             
-            _consoleWrapper.Write(letter == '\b' ? "\b \b" : letter);
+            _console.Write(letter == '\b' ? "\b \b" : letter);
         }
     }
 
     public void ReplayEntries(IEnumerable<Entry> entries)
     {
         var entryList = entries.ToList();
-        _consoleWrapper.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
+        _console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
 
         if (entryList.Count == 0) { return; }
         var lastDateSeen = DateTime.UnixEpoch;
@@ -169,7 +169,7 @@ public partial class CliController : ICliController
         }
         catch (Exception)
         {
-            _consoleWrapper.WriteLine("That date does not look right");
+            _console.WriteLine("That date does not look right");
         }
     }
 
@@ -178,16 +178,16 @@ public partial class CliController : ICliController
         var entries = _diaryService.Search(isStrict, keywords).ToList();
         foreach (var entry in entries)
         {
-            _consoleWrapper.Write($"{entry.Time:yyyy-MM-dd HH:mm:ss ddd} | {entry}");
+            _console.Write($"{entry.Time:yyyy-MM-dd HH:mm:ss ddd} | {entry}");
         }
-        _consoleWrapper.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
+        _console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }
 
     public void Backup(string? name)
     {
-        _consoleWrapper.WriteLine($"Backing up diary{(name?.Length > 0 ? name : "...")}");
+        _console.WriteLine($"Backing up diary{(name?.Length > 0 ? name : "...")}");
         _diaryService.Backup(name);
-        _consoleWrapper.WriteLine("Backup Complete");
+        _console.WriteLine("Backup Complete");
     }
 
     public void Export(string exportType, string? destination)
@@ -201,26 +201,26 @@ public partial class CliController : ICliController
         };
         destination = ProcessExportDestination(destination);
         _diaryService.Export(exportOption, destination);
-        _consoleWrapper.WriteLine($"Diary Exported to {destination}.{exportType}");
+        _console.WriteLine($"Diary Exported to {destination}.{exportType}");
     }
 
     public void MigrateDataToNet(string? filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
         {
-            _consoleWrapper.Write("File path / drag-n-drop diary data file: ");
-            filePath = _consoleWrapper.ReadLine();
+            _console.Write("File path / drag-n-drop diary data file: ");
+            filePath = _console.ReadLine();
         }
 
         if (!File.Exists(filePath))
         {
-            _consoleWrapper.WriteLine("File does not exist");
+            _console.WriteLine("File does not exist");
             return;
         }
 
-        _consoleWrapper.Write("Migrating diary data to net... ");
+        _console.Write("Migrating diary data to net... ");
         _diaryService.MigrateDataToNet(filePath);
-        _consoleWrapper.WriteLine("Done");
+        _console.WriteLine("Done");
     }
 
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";
