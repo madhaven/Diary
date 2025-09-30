@@ -7,11 +7,14 @@ using Diary.Implementation;
 using Diary.Implementation.ExportStrategies;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Diary.CLI;
 
 internal static class Program
 {
+    private const string AppSettingsFile = "appsettings.json";
+
     private static void Main(string[] args)
     {
         EnsureConfigExists();
@@ -63,11 +66,23 @@ internal static class Program
 
     private static void EnsureConfigExists()
     {
-        const string fileName = "appsettings.json";
-        if (File.Exists(fileName)) return;
+        if (File.Exists(AppSettingsFile)) return;
 
-        var defaultConfigs = new { AppConfigs = new AppConfigs() };
+        var defaultConfigs = new
+        {
+            Logging = new
+            {
+                LogLevel = new Dictionary<string, string>
+                {
+                    { "Default", "Error" },
+                    { "Microsoft", "Error" },
+                    { "Microsoft.Hosting.Lifetime", "Warning" },
+                    { "Microsoft.EntityFrameworkCore", "Warning" }
+                }
+            },
+            AppConfigs = new AppConfigs()
+        };
         var json = JsonSerializer.Serialize(defaultConfigs);
-        File.WriteAllText(fileName, json);
+        File.WriteAllText(AppSettingsFile, json);
     }
 }
