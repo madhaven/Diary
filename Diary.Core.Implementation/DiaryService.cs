@@ -80,40 +80,52 @@ public class DiaryService : IDiaryService
 
     public void MigrateDataToNet(string filePath)
     {
+        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        using var streamReader = new StreamReader(fileStream);
+        List<Entry> entries = [];
+
+        var firstLine = streamReader.ReadLine();
+        if (firstLine == null || firstLine != "diary v2.10 github.com/madhaven/diary")
+            throw new BadFileHeaderException();
+        
         // setup db
         string sqlitePath = Path.GetFileNameWithoutExtension(filePath) + ".sqlite";
-        while (File.Exists(sqlitePath))
-            sqlitePath = $".{sqlitePath}";
+        if (File.Exists(sqlitePath)) // TODO: handle with exceptions instead of overhead logic
+            sqlitePath = Path.GetFileNameWithoutExtension(filePath) + "_" + Path.GetRandomFileName() + ".sqlite";
         var dbOptions = new DbContextOptionsBuilder<DiaryDbContext>()
             .UseSqlite($"Data Source={sqlitePath};")
             .Options;
         var newDbContext = new DiaryDbContext(dbOptions);
+        newDbContext.Database.Migrate();
 
-        // setup files
-        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        using var streamReader = new StreamReader(fileStream);
-
-        List<Entry> entries = [];
-        var firstLine = streamReader.ReadLine();
-        if (firstLine != "diary v3.2 github.com/madhaven/diary" && firstLine != "diary v2.10 github.com/madhaven/diary")
-            throw new BadFileHeaderException();
-        
         // process file
+        int timestampLength = 24;
+        var expectedFormat = "ddd MMM dd HH:mm:ss yyyy";
+        using var transaction = newDbContext.Database.BeginTransaction();
         while (true)
         {
-            streamReader.ReadLine();
-            var timeAndText = streamReader.ReadLine();
-            if (timeAndText == null)
-                break;
+            var emptyLine = streamReader.ReadLine();
+            if (emptyLine == null) break;
 
-            var text = timeAndText[24..] + '\n';
+            var timeAndText = streamReader.ReadLine();
+            if (timeAndText == null) break;
+
+            var text = timeAndText[timestampLength..] + '\n';
             var time = DateTime.ParseExact(
-                timeAndText.Substring(0, 24).Replace("  ", " 0"),
-                "ddd MMM dd HH:mm:ss yyyy",
-                System.Globalization.CultureInfo.InvariantCulture);
-            var intervals = streamReader.ReadLine()?[1..^1]?
-                .Split(',').Select(x => double.Parse(x) * 1000).ToList()
-                ?? Enumerable.Repeat(0d, timeAndText.Length).ToList();
+                timeAndText.Substring(0, timestampLength).Replace("  ", " 0"),
+                expectedFormat,
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None);
+            
+            var intervalsLine = streamReader.ReadLine();
+            var intervals = intervalsLine?[1..^1]?.Split(',').Select(x =>
+            {
+                if (!double.TryParse(x, out var interval))
+                {
+                    throw new BadFileHeaderException();
+                }
+                return interval * 1000;
+            }).ToList() ?? Enumerable.Empty<double>().ToList();
 
             var entry = new Entry
             {
@@ -125,11 +137,9 @@ public class DiaryService : IDiaryService
 
             entries.Add(entry);
         }
-
-        // add to db
-        var entryData = entries.Select(EntryData.FromEntity);
-        newDbContext.Database.Migrate();
-        newDbContext.Entries.AddRange(entryData);
+        
+        newDbContext.Entries.AddRange(entries.Select(EntryData.FromEntity));
         newDbContext.SaveChanges();
+        transaction.Commit();
     }
 }
