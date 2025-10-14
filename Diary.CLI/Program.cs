@@ -76,13 +76,13 @@ internal static class Program
                 {
                     { "Default", "Error" },
                     { "Microsoft", "Error" },
-                    { "Microsoft.Hosting.Lifetime", "Warning" },
-                    { "Microsoft.EntityFrameworkCore", "Warning" }
+                    { "Microsoft.Hosting.Lifetime", "Error" },
+                    { "Microsoft.EntityFrameworkCore", "Error" }
                 }
             },
             AppConfigs = new AppConfigs()
         };
-        var json = JsonSerializer.Serialize(defaultConfigs);
+        var json = JsonSerializer.Serialize(defaultConfigs, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(AppSettingsFile, json);
     }
 }
