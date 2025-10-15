@@ -96,7 +96,8 @@ public class DiaryService : IDiaryService
             .UseSqlite($"Data Source={sqlitePath};")
             .Options;
         var newDbContext = new DiaryDbContext(dbOptions);
-        newDbContext.Database.Migrate();
+        if (newDbContext.Database.GetPendingMigrations().Any())
+            newDbContext.Database.Migrate();
 
         // process file
         int timestampLength = 24;

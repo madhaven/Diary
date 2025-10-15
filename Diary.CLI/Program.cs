@@ -29,7 +29,10 @@ internal static class Program
 
         using var scope = host.Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
-        ctx.Database.Migrate();
+        if (ctx.Database.HasPendingModelChanges())
+        {
+            ctx.Database.Migrate();
+        }
 
         var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
         parser.ParseAndInvoke(args);
