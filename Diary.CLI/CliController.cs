@@ -236,7 +236,8 @@ public partial class CliController : ICliController
                 _console.WriteLine("Bad file header found.");
                 break;
             default:
-                throw ex;
+                Console.Error.WriteLine(ex.Message);
+                break;
         }
     }
 

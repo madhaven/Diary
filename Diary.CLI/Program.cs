@@ -29,6 +29,7 @@ internal static class Program
 
         using var scope = host.Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
+        ctx.Database.EnsureCreated();
         if (ctx.Database.HasPendingModelChanges())
         {
             ctx.Database.Migrate();
