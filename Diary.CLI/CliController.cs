@@ -178,7 +178,7 @@ public partial class CliController : ICliController
         var entries = _diaryService.Search(isStrict, keywords).ToList();
         foreach (var entry in entries)
         {
-            _console.Write($"{entry.Time:yyyy-MM-dd HH:mm:ss ddd} | {entry}");
+            _console.Write($"{entry.Time:yyyy MMM dd HH:mm:ss ddd} | {entry}");
         }
         _console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }

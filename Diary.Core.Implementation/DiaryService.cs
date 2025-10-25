@@ -57,10 +57,10 @@ public class DiaryService : IDiaryService
         var entries = isStrict
             ? _diaryDbContext.Entries.AsEnumerable()
                 .Select(e => e.ToEntity())
-                .Where(e => args.All(arg => e.Text.Contains(arg, StringComparison.CurrentCulture)))
+                .Where(e => args.All(arg => e.Text.Contains(arg, StringComparison.CurrentCultureIgnoreCase)))
             : _diaryDbContext.Entries.AsEnumerable()
                 .Select(e => e.ToEntity())
-                .Where(e => args.Any(arg => e.Text.Contains(arg, StringComparison.CurrentCulture)));
+                .Where(e => args.Any(arg => e.Text.Contains(arg, StringComparison.CurrentCultureIgnoreCase)));
         return entries;
     }
 
