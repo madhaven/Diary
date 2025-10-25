@@ -167,7 +167,7 @@ class Filer_2_10(FileManager):
             if not file.tell():
                 file.writelines([self.headerString()])
             for entry in entries:
-                file.write('\n\n%s%s%s'%(entry.time.ctime(), entry.text, entry.intervals))
+                file.write(f'\n\n{entry.time.ctime()}{entry.text}{entry.intervals}')
 
 class Entry:
     '''stores an entry that the user makes'''

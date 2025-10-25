@@ -57,5 +57,5 @@ public interface IDiaryService
     /// Convenience function to migrate old python data to net environment
     /// </summary>
     /// <param name="filePath"></param>
-    public void MigrateDataToNet(string filePath);
+    public string MigrateDataToNet(string filePath);
 }

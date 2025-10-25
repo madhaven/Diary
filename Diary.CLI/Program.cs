@@ -7,7 +7,6 @@ using Diary.Implementation;
 using Diary.Implementation.ExportStrategies;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Diary.CLI;
 
@@ -17,24 +16,29 @@ internal static class Program
 
     private static void Main(string[] args)
     {
-        EnsureConfigExists();
+        // base dir setup // TODO: can we improve this logic using dotnet builtins?
+        var executableDir = Path.GetDirectoryName(AppContext.BaseDirectory)!;
+        EnsureConfigExists(executableDir);
 
-        var builder = Host.CreateApplicationBuilder(args)
-            .ConfigureDiaryServices();
+        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+        {
+            ContentRootPath = executableDir,
+            Args = args
+        })
+        .ConfigureDiaryServices();
 
         // TODO: add tests
         Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
 
         var host = builder.Build();
 
+        // DB setup
         using var scope = host.Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
         ctx.Database.EnsureCreated();
-        if (ctx.Database.HasPendingModelChanges())
-        {
-            ctx.Database.Migrate();
-        }
+        if (ctx.Database.HasPendingModelChanges()) { ctx.Database.Migrate(); }
 
+        // parse args
         var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
         parser.ParseAndInvoke(args);
     }
@@ -68,9 +72,10 @@ internal static class Program
         return builder;
     }
 
-    private static void EnsureConfigExists()
+    private static void EnsureConfigExists(string executableDir)
     {
-        if (File.Exists(AppSettingsFile)) return;
+        var fullAppSettingsPath = Path.Combine(executableDir, AppSettingsFile);
+        if (File.Exists(fullAppSettingsPath)) return;
 
         var defaultConfigs = new
         {
@@ -87,6 +92,6 @@ internal static class Program
             AppConfigs = new AppConfigs()
         };
         var json = JsonSerializer.Serialize(defaultConfigs, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(AppSettingsFile, json);
+        File.WriteAllText(fullAppSettingsPath, json);
     }
 }

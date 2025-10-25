@@ -204,6 +204,10 @@ public partial class CliController : ICliController
         _console.WriteLine($"Diary Exported to {destination}.{exportType}");
     }
 
+    /// <summary>
+    /// Hidden functionality to convert the python data file to sqlite
+    /// </summary>
+    /// <param name="filePath"></param>
     public void MigrateDataToNet(string? filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -218,9 +222,10 @@ public partial class CliController : ICliController
             return;
         }
 
-        _console.Write("Migrating diary data to net... ");
-        _diaryService.MigrateDataToNet(filePath);
-        _console.WriteLine("Done");
+        _console.WriteLine("Migrating diary data to sqlite... ");
+        var migratedResource = _diaryService.MigrateDataToNet(filePath);
+        _console.WriteLine($"Migrated to {migratedResource}");
+        _console.WriteLine($"Move file to 'C:\\Users\\<username>\\AppData\\Roaming\\Diary' for Diary to access.");
     }
 
     public string GetPrelogAdvice() => $"Ctrl+C or '{_stopWord}' to stop recording.\nSay something memorable about today :)\n";

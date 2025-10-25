@@ -78,7 +78,7 @@ public class DiaryService : IDiaryService
         strategy.Export(entries, destination);
     }
 
-    public void MigrateDataToNet(string filePath)
+    public string MigrateDataToNet(string filePath)
     {
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
         using var streamReader = new StreamReader(fileStream);
@@ -87,11 +87,11 @@ public class DiaryService : IDiaryService
         var firstLine = streamReader.ReadLine();
         if (firstLine == null || firstLine != "diary v2.10 github.com/madhaven/diary")
             throw new BadFileHeaderException();
-        
+
         // setup db
-        string sqlitePath = Path.GetFileNameWithoutExtension(filePath) + ".sqlite";
-        if (File.Exists(sqlitePath)) // TODO: handle with exceptions instead of overhead logic
-            sqlitePath = Path.GetFileNameWithoutExtension(filePath) + "_" + Path.GetRandomFileName() + ".sqlite";
+        string sqlitePath = Path.GetFullPath(filePath) + ".sqlite";
+        if (File.Exists(sqlitePath))
+            sqlitePath = $"{Path.GetFullPath(filePath)}_{Path.GetRandomFileName()}.sqlite";
         var dbOptions = new DbContextOptionsBuilder<DiaryDbContext>()
             .UseSqlite($"Data Source={sqlitePath};")
             .Options;
@@ -113,11 +113,11 @@ public class DiaryService : IDiaryService
 
             var text = timeAndText[timestampLength..] + '\n';
             var time = DateTime.ParseExact(
-                timeAndText.Substring(0, timestampLength).Replace("  ", " 0"),
+                timeAndText[..timestampLength].Replace("  ", " 0"),
                 expectedFormat,
                 System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.None);
-            
+
             var intervalsLine = streamReader.ReadLine();
             var intervals = intervalsLine?[1..^1]?.Split(',').Select(x =>
             {
@@ -125,7 +125,7 @@ public class DiaryService : IDiaryService
                 {
                     throw new BadFileHeaderException();
                 }
-                return interval * 1000;
+                return interval * 1000; // convert seconds to milliseconds
             }).ToList() ?? Enumerable.Empty<double>().ToList();
 
             var entry = new Entry
@@ -138,9 +138,10 @@ public class DiaryService : IDiaryService
 
             entries.Add(entry);
         }
-        
+
         newDbContext.Entries.AddRange(entries.Select(EntryData.FromEntity));
         newDbContext.SaveChanges();
         transaction.Commit();
+        return sqlitePath;
     }
 }
