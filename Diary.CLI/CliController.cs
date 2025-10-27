@@ -74,7 +74,13 @@ public partial class CliController : ICliController
                 }
 
                 // TODO: handle stray characters
-                _console.Write(chr.Key == ConsoleKey.Backspace ? "\b \b" : chr.KeyChar);
+                if (chr.Key == ConsoleKey.Backspace)
+                    if (entry.ToString().Length > 0)
+                        _console.Write("\b \b");
+                    else
+                        continue;
+                else
+                    _console.Write(chr.KeyChar);
                 entry.AddCharacter(chr.KeyChar, (int)time.TotalMilliseconds);
             }
         }
