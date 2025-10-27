@@ -1,58 +1,47 @@
 # Diary
-The diary app is intended to be called from a command prompt and can be used to quickly log entries of your day and search for past entries.
-The read option enables you to replay entries the way you typed it into the console.  
-The setup is quite clumsy for a standalone script.
 
-For initial setup:
-------------------
-- Add program directory to path:
+Diary is a powerful and intuitive command-line application designed for quick, efficient journaling. Seamlessly log your daily entries, effortlessly search through your memories, and even relive your past thoughts at the exact speed you typed them. With Diary, your personal reflections are always at your fingertips, organized and secure.
 
-	In Linux / Mac (Use .bashrc or .zshrc based on what you use. .bashrc used in example)
-	- Run ```$ nano ~/.bashrc``` in terminal & bash profile will be open
-	- Add ```export PATH="/path/to/diary.py:$PATH"``` and save
-	- Run ```source .bashrc```
-	
-	In Windows
-	- Get inside Diary directory in Command prompt
-	- Run ```C:...\Diary> setx path "%PATH%;C:%cd%"```
+## Why Choose Diary?
 
-After having added the .py extension and the program directory to path, the Diary interface could be called with one of these ways to start it up.
+* Instant Logging & Effortless Organization
+	Quickly jot down your thoughts, ideas, and daily events without ever leaving your terminal.  
+	Diary makes journaling a natural extension of your workflow with a simple call.  
+	```
+	diary log
+	```
+* Relive Every Moment
+	Diary's unique "replay" feature allows you to experience your past entries as if you were typing them again.  
+	Relive specific days or browse collections of memories with flexible reading options.  
+	```
+	diary read [YEAR] [Month] [Date]
+	diary read today
+	diary read yesterday
+	```
+* Powerful Search, Precise Results
+	Never lose a thought again. Diary's robust search functionality helps you pinpoint entries with ease.  
+	Use the `--strict` flag to retrieve only those entries that contain all your specified search terms, ensuring highly accurate results.  
+	```
+	diary [search|find] [string [string2 [...]]] [--strict]
+	```
+* Your Data, Always Safe**
+	With Diary, your valuable entries are always protected.  
+	Easily create backup copies of your diary file, giving you peace of mind.
+	```
+	diary backup [filename]
+	```
+* Simple Setup
+	Add the Diary executable to your system's path for instant access from any directory.  
+	Diary intelligently handles its own configuration, creating an `application.json` file if one isn't found, so you can focus on what matters: your thoughts.
 
->```
->diary
->```
-> Display the available commands
+## Get Started Today!
 
->```
->diary log
->```
->this command lets you log in at the current time and save it to the file specified (IN CODE)
+Display all available commands and begin your journaling journey with Diary.
+```
+diary
+```
 
->```
->diary read [YEAR] [Mon] [Date]
->diary read today
->diary read yesterday
->```
->To read specific days or collections of days.
+## Contributions
 
->```
->diary version
->```
->helps you checkout what version Diary is running on.
-
->```
->diary    [search | find]     [ string [ string2 [...]]]
->diary [searchall | findall]  [ string [ string2 [...]]]
->```
->helps you search for strings in your file. The ```searchall / findall``` also works in a similar fashion except that it fetches those entries that simultaneously have all the search strings in it.
-
->```
->diary backup [filename]
->```
->creates a backup copy of the diary file.
-
-The `DiaryController` class is responsible for handling user interaction to access the `Diary`.  
-The `Diary` class contains a list of `Entry` instances that contain a record of the user's input.
-The `FileManager` class deals with read and write operations of files.
-`DiaryController` is passed an instance of the `Diary`.
-                    
+Diary welcome contributions from the community!  
+If you're interested in making Diary even better, please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) guide for detailed information on how to get started.
