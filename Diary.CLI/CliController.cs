@@ -36,7 +36,7 @@ public partial class CliController : ICliController
         {
             while (true)
             {
-                // TODO: Add locking mechanism / session to avoid other entry points from mixing entries
+                // TODO: Concurrency: Add locking mechanism / session to avoid other entry points from mixing entries
                 var entry = Record();
                 _diaryService.AddEntry(entry);
                 if (entry.ToString().Contains(_stopWord, StringComparison.InvariantCultureIgnoreCase)) { break; }
@@ -45,7 +45,7 @@ public partial class CliController : ICliController
         // TODO: Emergency Stop error: clear screen
         catch (Exception)
         {
-            _console.WriteLine("Your last entry was broken");
+            _console.WriteLine("That last entry was broken");
             throw;
         }
     }

@@ -27,9 +27,6 @@ internal static class Program
         })
         .ConfigureDiaryServices();
 
-        // TODO: add tests
-        Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); };
-
         var host = builder.Build();
 
         // DB setup
@@ -39,6 +36,7 @@ internal static class Program
         if (ctx.Database.HasPendingModelChanges()) { ctx.Database.Migrate(); }
 
         // parse args
+        Console.CancelKeyPress += (_, _) => { Console.WriteLine("\nDiary closed"); }; // TODO: add tests
         var parser = scope.ServiceProvider.GetRequiredService<IArgParser>();
         parser.ParseAndInvoke(args);
     }
