@@ -12,7 +12,7 @@ public class DiaryServiceTests
     private string _fileName;
     private DiaryDbContext _diaryDbContext;
     private Mock<IFileService> _fileManagerMock;
-    private Mock<IExportStrategyFactory> _exportStrategyFactoryMock;
+    private Mock<IExporterFactory> _exportStrategyFactoryMock;
     
     [SetUp]
     public void Setup()
@@ -28,7 +28,7 @@ public class DiaryServiceTests
             .Options;
         _diaryDbContext = new DiaryDbContext(options);
 
-        _exportStrategyFactoryMock = new Mock<IExportStrategyFactory>();
+        _exportStrategyFactoryMock = new Mock<IExporterFactory>();
     }
 
     [TearDown]

@@ -49,11 +49,11 @@ public class Entry
     /// <returns>string</returns>
     public override string ToString()
     {
-        string text = "";
+        var text = "";
         foreach (var character in Text)
         {
             text = character == '\b' && text.Length > 0
-                ? text.Substring(0, text.Length - 1)
+                ? text[..^1]
                 : text + character;
         }
 

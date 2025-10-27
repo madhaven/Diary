@@ -2,14 +2,14 @@ using Diary.Implementation.ExportStrategies;
 
 namespace Diary.Tests;
 
-public class ExportStrategyFactoryTests
+public class ExporterFactoryTests
 {
     [Test]
     public void TestInitThrows()
     {
         Assert.Throws<ArgumentNullException>(() =>
         {
-            _ = new ExportStrategyFactory(null!);
+            _ = new ExporterFactory(null!);
         });
     }
 }

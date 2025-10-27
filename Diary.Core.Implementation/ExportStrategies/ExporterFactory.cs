@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Diary.Implementation.ExportStrategies;
 
-public class ExportStrategyFactory : IExportStrategyFactory
+public class ExporterFactory : IExporterFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public ExportStrategyFactory(IServiceProvider serviceProvider)
+    public ExporterFactory(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }

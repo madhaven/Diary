@@ -51,7 +51,7 @@ internal static class Program
         builder.Services.AddScoped<IArgParser, ArgParser>();
 
         // Exporter classes configuration
-        builder.Services.AddScoped<IExportStrategyFactory, ExportStrategyFactory>();
+        builder.Services.AddScoped<IExporterFactory, ExporterFactory>();
         builder.Services.AddTransient<TextExportStrategy>();
 
         // App Configs

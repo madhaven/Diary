@@ -11,13 +11,13 @@ public class DiaryService : IDiaryService
 {
     private readonly DiaryDbContext _diaryDbContext;
     private readonly IFileService _fileService;
-    private readonly IExportStrategyFactory _exportStrategyFactory;
+    private readonly IExporterFactory _exporterFactory;
 
-    public DiaryService(IFileService fileService, DiaryDbContext context, IExportStrategyFactory exportStrategyFactory)
+    public DiaryService(IFileService fileService, DiaryDbContext context, IExporterFactory exporterFactory)
     {
         _diaryDbContext = context ?? throw new ArgumentNullException(nameof(context));
         _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
-        _exportStrategyFactory = exportStrategyFactory ?? throw new ArgumentNullException(nameof(exportStrategyFactory));
+        _exporterFactory = exporterFactory ?? throw new ArgumentNullException(nameof(exporterFactory));
     }
 
     public void AddEntry(params Entry[] entries)
@@ -71,11 +71,11 @@ public class DiaryService : IDiaryService
 
     public void Export(ExportOption exportOption, string destination)
     {
-        var strategy = _exportStrategyFactory.CreateExporter(exportOption);
+        var exporter = _exporterFactory.CreateExporter(exportOption);
         var entries = _diaryDbContext.Entries
             .Select(e => e.ToEntity())
             .ToList();
-        strategy.Export(entries, destination);
+        exporter.Export(entries, destination);
     }
 
     public string MigrateDataToNet(string filePath)

@@ -2,7 +2,7 @@ using Diary.Models;
 
 namespace Diary.Core;
 
-public interface IExportStrategyFactory
+public interface IExporterFactory
 {
     public IExportStrategy CreateExporter(ExportOption exportOption);
 }
