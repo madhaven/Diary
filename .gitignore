@@ -4,3 +4,8 @@ diary_config
 diary
 testdiary
 *diaryback*
+/.idea
+*/obj
+*/bin
+*.user
+*.sqlite
