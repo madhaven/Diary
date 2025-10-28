@@ -19,7 +19,7 @@ public class Entry
             : Enumerable.Repeat(0d, Text.Length).ToList();
     }
     
-    public bool IsEmpty() => Text.Length == 0;
+    public bool IsEmpty() => ToString().Length == 0;
 
     public override bool Equals(object? obj)
     {

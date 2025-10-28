@@ -64,23 +64,25 @@ public partial class CliController : ICliController
                     ? TimeSpan.FromSeconds(5)
                     : stopwatch.Elapsed;
 
-                if (chr.Key == ConsoleKey.Enter)
-                {
-                    if (entry.IsEmpty()) { continue; }
+                if (chr.Modifiers is ConsoleModifiers.Alt or ConsoleModifiers.Control)
+                    continue;
 
-                    entry.AddCharacter('\n', (int)time.TotalMilliseconds);
-                    _console.WriteLine();
-                    return entry;
+                switch (chr.Key)
+                {
+                    case ConsoleKey.Enter:
+                        if (entry.IsEmpty()) continue;
+                        entry.AddCharacter('\n', (int)time.TotalMilliseconds);
+                        _console.WriteLine();
+                        return entry;
+                    case ConsoleKey.Backspace:
+                        if (entry.IsEmpty()) continue;
+                        _console.Write("\b \b");
+                        break;
+                    default:
+                        _console.Write(chr.KeyChar);
+                        break;
                 }
 
-                // TODO: handle stray characters
-                if (chr.Key == ConsoleKey.Backspace)
-                    if (entry.ToString().Length > 0)
-                        _console.Write("\b \b");
-                    else
-                        continue;
-                else
-                    _console.Write(chr.KeyChar);
                 entry.AddCharacter(chr.KeyChar, (int)time.TotalMilliseconds);
             }
         }
