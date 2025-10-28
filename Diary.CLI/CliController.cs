@@ -274,4 +274,9 @@ public partial class CliController : ICliController
             ? Path.Combine(path, $"diaryback_{DateTime.Now:yyyyMMddHHmmss}")
             : path;
     }
+
+    public void LaunchUi()
+    {
+        _console.WriteLine("Diary Web is not available yet.");
+    }
 }

@@ -17,6 +17,7 @@ public class ArgParser : IArgParser
         AddBackup();
         AddExport();
         AddHiddenMigrate();
+        AddUiCommand();
     }
     
     public void ParseAndInvoke(string[] args)
@@ -145,5 +146,12 @@ public class ArgParser : IArgParser
         });
         commandMig.Add(argumentFileLoc);
         _rootCommand.Add(commandMig);
+    }
+
+    private void AddUiCommand()
+    {
+        var commandUi = new Command("ui", "Launches the diary in an interactive web interface");
+        commandUi.SetAction(_ => { _controller.LaunchUi(); });
+        _rootCommand.Add(commandUi);
     }
 }

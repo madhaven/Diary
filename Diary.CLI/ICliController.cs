@@ -87,6 +87,11 @@ public interface ICliController
     public void MigrateDataToNet(string? filePath);
 
     /// <summary>
+    /// Launches the graphical user interface.
+    /// </summary>
+    public void LaunchUi();
+
+    /// <summary>
     /// Handles Exceptions from Diary.
     /// </summary>
     /// <param name="ex">Exception to Handle</param>
