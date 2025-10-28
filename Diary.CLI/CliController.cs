@@ -115,7 +115,7 @@ public partial class CliController : ICliController
     public void ReplayEntries(IEnumerable<Entry> entries)
     {
         var entryList = entries.ToList();
-        _console.WriteLine($"found {entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")}");
+        _console.WriteLine($"{entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")} found");
 
         if (entryList.Count == 0) { return; }
         var lastDateSeen = DateTime.UnixEpoch;
@@ -183,10 +183,11 @@ public partial class CliController : ICliController
 
     public void Search(string[] keywords, bool isStrict = false)
     {
+        _console.WriteLine("searching diary ...");
         var entries = _diaryService.Search(isStrict, keywords).ToList();
         foreach (var entry in entries)
         {
-            _console.Write($"{entry.Time:yyyy MMM dd HH:mm:ss ddd} | {entry}");
+            _console.Write($"{entry.Time:yyyy MMM dd HH:mm:ss ddd} | {entry}"); // entry contains \n
         }
         _console.WriteLine($"{entries.Count} {(entries.Count == 1 ? "entry" : "entries")} found");
     }
