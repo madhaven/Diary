@@ -4,7 +4,7 @@ using System.Text.Json;
 using Diary.Core;
 using Diary.Data;
 using Diary.Implementation;
-using Diary.Implementation.ExportStrategies;
+using Diary.Implementation.Export;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +52,7 @@ internal static class Program
 
         // Exporter classes configuration
         builder.Services.AddScoped<IExporterFactory, ExporterFactory>();
-        builder.Services.AddTransient<TextExportStrategy>();
+        builder.Services.AddTransient<TextExporter>();
 
         // App Configs
         builder.Services.Configure<AppConfigs>(builder.Configuration.GetSection(nameof(AppConfigs)));

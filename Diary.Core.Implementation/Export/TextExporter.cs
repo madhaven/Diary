@@ -1,9 +1,9 @@
 using Diary.Core;
 using Diary.Models;
 
-namespace Diary.Implementation.ExportStrategies;
+namespace Diary.Implementation.Export;
 
-public class TextExportStrategy : IExportStrategy
+public class TextExporter : IExportStrategy
 {
     public string FileExtension => ".txt";
 

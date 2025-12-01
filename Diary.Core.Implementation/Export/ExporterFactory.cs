@@ -2,7 +2,7 @@ using Diary.Core;
 using Diary.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Diary.Implementation.ExportStrategies;
+namespace Diary.Implementation.Export;
 
 public class ExporterFactory : IExporterFactory
 {
@@ -17,7 +17,7 @@ public class ExporterFactory : IExporterFactory
     {
         return exportOption switch
         {
-            ExportOption.Text => _serviceProvider.GetRequiredService<TextExportStrategy>(),
+            ExportOption.Text => _serviceProvider.GetRequiredService<TextExporter>(),
             // ExportOption.Json => expr,
             // ExportOption.Csv => expr,
             _ => throw new NotImplementedException(),

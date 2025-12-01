@@ -1,10 +1,10 @@
 using Diary.Core;
-using Diary.Implementation.ExportStrategies;
+using Diary.Implementation.Export;
 using Diary.Models;
 
 namespace Diary.Tests;
 
-public class TextExportStrategyTests
+public class TextExporterTests
 {
     private IExportStrategy _strategy;
     private const string Destination = ".\\test.txt";
@@ -15,7 +15,7 @@ public class TextExportStrategyTests
     [SetUp]
     public void Setup()
     {
-        _strategy = new TextExportStrategy(); 
+        _strategy = new TextExporter(); 
     }
 
     [TearDown]

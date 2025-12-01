@@ -1,4 +1,4 @@
-using Diary.Implementation.ExportStrategies;
+using Diary.Implementation.Export;
 
 namespace Diary.Tests;
 
