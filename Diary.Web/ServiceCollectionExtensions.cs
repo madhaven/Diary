@@ -4,6 +4,7 @@ using Diary.Implementation;
 using Diary.Implementation.ExportStrategies;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Diary.Web;
 
@@ -32,6 +33,15 @@ public static class ServiceCollectionExtensions
         };
         var connectionString = connectionStringBuilder.ToString();
         builder.Services.AddDbContext<DiaryDbContext>(options => options.UseSqlite(connectionString));
+        
+        // Controllers and swagger
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        });
 
         return builder;
     }

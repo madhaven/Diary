@@ -2,9 +2,11 @@ namespace Diary.Web.Contracts;
 
 public record Entry
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid? Id { get; init; } = Guid.NewGuid();
     public string Text { get; init; } = string.Empty;
-    public IEnumerable<double> Intervals { get; init; } = [];
+    public List<double> Intervals { get; init; } = [];
+    public DateTime Time { get; init; } = DateTime.Now;
+    public bool PrintDate { get; init; } = false;
 
     public static Entry FromEntity(Diary.Models.Entry entity)
     {
@@ -12,6 +14,17 @@ public record Entry
         {
             Text = entity.Text,
             Intervals = entity.Intervals,
+        };
+    }
+
+    public Diary.Models.Entry ToEntity()
+    {
+        return new Diary.Models.Entry
+        {
+            Text = Text,
+            Intervals = Intervals,
+            Time = Time,
+            PrintDate = PrintDate
         };
     }
 }

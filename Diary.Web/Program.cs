@@ -6,10 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 // base dir setup // TODO: can we improve this logic using dotnet builtins?
 var executableDir = Path.GetDirectoryName(AppContext.BaseDirectory)!;
 Utils.EnsureConfigExists(executableDir);
@@ -33,5 +29,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+// to serve static htmls
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 await app.RunAsync();
