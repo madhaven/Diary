@@ -1,11 +1,7 @@
-using Diary.Core;
-using Diary.Implementation;
-using Diary.Implementation.ExportStrategies;
 using Diary.Data;
+using Diary.Implementation;
+using Diary.Web;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,24 +9,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IDiaryService, DiaryService>();
-builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IExporterFactory, ExporterFactory>();
 
-// App Configs
-builder.Services.Configure<AppConfigs>(builder.Configuration.GetSection(nameof(AppConfigs)));
+// base dir setup // TODO: can we improve this logic using dotnet builtins?
+var executableDir = Path.GetDirectoryName(AppContext.BaseDirectory)!;
+Utils.EnsureConfigExists(executableDir);
 
-// DB setup
-var connectionStringBuilder = new SqliteConnectionStringBuilder
-{
-    DataSource = builder.Configuration["AppConfigs:SqlitePath"] ?? Path.Combine(AppContext.BaseDirectory, "diary.sqlite"), // Use BaseDirectory for web app
-    Cache = SqliteCacheMode.Shared,
-    Mode = SqliteOpenMode.ReadWriteCreate
-};
-var connectionString = connectionStringBuilder.ToString();
-builder.Services.AddDbContext<DiaryDbContext>(options => options.UseSqlite(connectionString));
+builder.ConfigureDiaryServices();
 
 var app = builder.Build();
+
+// DB setup
+using var scope = app.Services.CreateScope();
+var ctx = scope.ServiceProvider.GetRequiredService<DiaryDbContext>();
+await ctx.Database.MigrateAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
