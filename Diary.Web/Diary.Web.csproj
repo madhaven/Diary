@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
@@ -16,6 +20,10 @@
     <ProjectReference Include="..\Diary.Core\Diary.Core.csproj" />
     <ProjectReference Include="..\Diary.Core.Implementation\Diary.Core.Implementation.csproj" />
     <ProjectReference Include="..\Diary.Data\Diary.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\net9.0\diary.sqlite" />
   </ItemGroup>
 
 </Project>
