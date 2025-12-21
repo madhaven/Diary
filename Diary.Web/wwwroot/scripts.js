@@ -1,4 +1,6 @@
 var isPromptVisible = true;
+let keyPressTimestamps = [];
+let userInput = '';
 
 window.addEventListener('load', () => {
     const commandField = document.getElementById('command-field');
@@ -7,6 +9,7 @@ window.addEventListener('load', () => {
         setCaretToEnd(commandField);
     });
     commandField.focus();
+    recordKeyPressTime();
 });
 
 function makePromptVanish() {
@@ -30,13 +33,21 @@ function setCaretToEnd(el) {
 }
 
 function handleInputKeys(event) {
-    const commandField = document.getElementById('command-field'); // Get commandField inside handler
-    if (isPromptVisible) makePromptVanish();
+    const commandField = document.getElementById('command-field');
 
-    // Prevent Ctrl + Backspace from deleting whole words
+    // Handle Ctrl + Backspace
     if (event.key === 'Backspace' && event.ctrlKey) {
         event.preventDefault();
         return;
+    }
+
+    // Handle Backspace
+    if (event.key === 'Backspace') {
+        if (commandField.value.length > 0) {
+            userInput += '\b';
+            recordKeyPressTime();
+            return;
+        }
     }
 
     // Handle Enter key press
@@ -50,35 +61,60 @@ function handleInputKeys(event) {
     const preventKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Delete', 'Tab'];
     if (preventKeys.includes(event.key)) {
         event.preventDefault();
+        return;
     }
+
+    // Record timestamp for any non-modified character key press
+    if (event.key.length === 1) {
+        if (isPromptVisible) makePromptVanish();
+        userInput += event.key;
+        recordKeyPressTime();
+        return;
+    }
+    console.warn('modified key', event.key);
 }
 
-function handleEntryEnter(inputField) {
-    const inputText = inputField.value;
-    if (inputText.trim() === '') { return; }
+function recordKeyPressTime() {
+    keyPressTimestamps.push(Date.now());
+}
 
-    console.log('Saving entry:', inputText);
-    const object = {
-        "text": inputText,
-        "intervals": [],
-        "time": new Date().toISOString(), // ISO format: 2025-12-21T14:35:59.455Z
-        "printDate": false
+function handleEntryEnter(inputField) {    
+    // Clear timestamps if no text was entered
+    if (userInput.trim() === '') {
+        userInput = "";
+        inputField.value = "";
+        keyPressTimestamps = [];
+        return;
     }
-    const jsonString = JSON.stringify(object);
+
+    // Calculate intervals from timestamps
+    const timestamps = keyPressTimestamps;
+    timestamps.push(new Date());
+    const intervals = [];
+    for (let i = 1; i < timestamps.length; i++) {
+        intervals.push((timestamps[i] - timestamps[i-1]) / 1000);
+    }
+
+    const object = {
+        "text": userInput + '\n',
+        "intervals": intervals,
+        "time": new Date().toISOString(),
+        "printDate": false
+    };
 
     fetch("/api/entry", {
         method: 'POST',
-        body: jsonString,
+        body: JSON.stringify(object),
         headers: { 'Content-Type': 'application/json' },
     })
     .then(response => {
-        console.log('test', response);
         if (response.ok) { return response.json(); }
         throw new Error(`HTTP error! status: ${response.status}`);
     })
     .then(data => {
-        console.log('Command response:', data);
         inputField.value = '';
+        userInput = '';
+        keyPressTimestamps = [new Date()];
     })
     .catch(error => {
         console.error('Error sending command:', error);

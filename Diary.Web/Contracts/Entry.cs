@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Diary.Web.Contracts;
 
-public record Entry
+public record Entry : IValidatableObject
 {
     public Guid? Id { get; init; } = Guid.NewGuid();
     public string Text { get; init; } = string.Empty;
@@ -26,5 +28,15 @@ public record Entry
             Time = Time,
             PrintDate = PrintDate
         };
+    }
+    
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (Text.Length != Intervals.Count)
+        {
+            yield return new ValidationResult(
+                "The number of characters in the text must be equal to the number of intervals.",
+                new[] { nameof(Text), nameof(Intervals) });
+        }
     }
 }
