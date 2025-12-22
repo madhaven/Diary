@@ -23,7 +23,7 @@ body {
     min-height: 100vh;
     height: 100%;
     background-color: var(--bg);
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 input {
@@ -35,6 +35,7 @@ input {
     border-radius: 0;
     color: var(--layer-w-3);
     width: 20em;
+    font-family: 'Montserrat', sans-serif;
 }
 
 input:hover {
