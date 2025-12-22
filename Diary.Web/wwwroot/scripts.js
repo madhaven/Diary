@@ -1,8 +1,11 @@
-var isPromptVisible = true;
-let keyPressTimestamps = [];
-let userInput = '';
+var IS_PROMPT_VISIBLE = true;
+let KEY_PRESS_TIMESTAMPS = [];
+let USER_INPUT = '';
+const PROMPT_MESSAGE = "Say something good about today :)";
+const PROMPT_DELAYS = [0.509,0.24,0.09,0.08,0.185,0.106,0.044,0.05,0.159,0.036,0.094,0.132,0.001,0.095,0.171,0.116,0.135,0.069,0.113,0.111,0.133,0.086,0.122,0.033,0.081,0.12,0.084,0.111,0.107,0.052,0.499,0.13,0.57]; //,1.057];
 
 window.addEventListener('load', () => {
+    autoTypePrompt(PROMPT_MESSAGE, PROMPT_DELAYS);
     const commandField = document.getElementById('command-field');
     commandField.addEventListener('keydown', handleInputKeys);
     commandField.addEventListener('selectionchange', e => {
@@ -12,11 +15,24 @@ window.addEventListener('load', () => {
     recordKeyPressTime();
 });
 
+function sleep(s) {
+    return new Promise(resolve => setTimeout(resolve, s * 250));
+}
+
+async function autoTypePrompt(promptMsg, intervals) {
+    const prompt = document.getElementById('prompt');
+    prompt.innerHTML = "";
+    for (let i = 0; i < promptMsg.length; i++) {
+        await sleep(intervals[i]);
+        prompt.innerHTML += promptMsg[i];
+    }
+}
+
 function makePromptVanish() {
     const prompt = document.getElementById('prompt');
     prompt.classList.add('hidden');
     prompt.addEventListener('transitionend', () => { prompt.style.display = 'none'; }, { once: true });
-    isPromptVisible = false;
+    IS_PROMPT_VISIBLE = false;
 }
 
 // Function to set caret to the end
@@ -44,7 +60,7 @@ function handleInputKeys(event) {
     // Handle Backspace
     if (event.key === 'Backspace') {
         if (commandField.value.length > 0) {
-            userInput += '\b';
+            USER_INPUT += '\b';
             recordKeyPressTime();
             return;
         }
@@ -66,8 +82,8 @@ function handleInputKeys(event) {
 
     // Record timestamp for any non-modified character key press
     if (event.key.length === 1) {
-        if (isPromptVisible) makePromptVanish();
-        userInput += event.key;
+        if (IS_PROMPT_VISIBLE) makePromptVanish();
+        USER_INPUT += event.key;
         recordKeyPressTime();
         return;
     }
@@ -75,20 +91,20 @@ function handleInputKeys(event) {
 }
 
 function recordKeyPressTime() {
-    keyPressTimestamps.push(Date.now());
+    KEY_PRESS_TIMESTAMPS.push(Date.now());
 }
 
 function handleEntryEnter(inputField) {    
     // Clear timestamps if no text was entered
-    if (userInput.trim() === '') {
-        userInput = "";
+    if (USER_INPUT.trim() === '') {
+        USER_INPUT = "";
         inputField.value = "";
-        keyPressTimestamps = [];
+        KEY_PRESS_TIMESTAMPS = [];
         return;
     }
 
     // Calculate intervals from timestamps
-    const timestamps = keyPressTimestamps;
+    const timestamps = KEY_PRESS_TIMESTAMPS;
     timestamps.push(new Date());
     const intervals = [];
     for (let i = 1; i < timestamps.length; i++) {
@@ -96,7 +112,7 @@ function handleEntryEnter(inputField) {
     }
 
     const object = {
-        "text": userInput + '\n',
+        "text": USER_INPUT + '\n',
         "intervals": intervals,
         "time": new Date().toISOString(),
         "printDate": false
@@ -113,8 +129,8 @@ function handleEntryEnter(inputField) {
     })
     .then(data => {
         inputField.value = '';
-        userInput = '';
-        keyPressTimestamps = [new Date()];
+        USER_INPUT = '';
+        KEY_PRESS_TIMESTAMPS = [new Date()];
     })
     .catch(error => {
         console.error('Error sending command:', error);
