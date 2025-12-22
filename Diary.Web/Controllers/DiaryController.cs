@@ -1,5 +1,4 @@
 using Diary.Core;
-using Diary.Implementation;
 using Diary.Web.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +22,7 @@ public class DiaryController : ControllerBase
     /// </summary>
     /// <param name="request">SearchRequest object</param>
     /// <returns>List of entries matching the queries</returns>
-    [HttpGet("entry")]
+    [HttpGet("entry/search")]
     public ActionResult<IEnumerable<Entry>> FindEntries([FromBody] SearchRequest request)
     {
         _logger.LogInformation("Finding entries");

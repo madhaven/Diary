@@ -1,6 +1,7 @@
 var IS_PROMPT_VISIBLE = true;
 let KEY_PRESS_TIMESTAMPS = [];
 let USER_INPUT = '';
+let ENTRIES = []
 const PROMPT_MESSAGE = "Say something good about today :)";
 const PROMPT_DELAYS = [0.509,0.24,0.09,0.08,0.185,0.106,0.044,0.05,0.159,0.036,0.094,0.132,0.001,0.095,0.171,0.116,0.135,0.069,0.113,0.111,0.133,0.086,0.122,0.033,0.081,0.12,0.084,0.111,0.107,0.052,0.499,0.13,0.57]; //,1.057];
 
@@ -13,10 +14,24 @@ window.addEventListener('load', () => {
     });
     commandField.focus();
     recordKeyPressTime();
+
+    fetchAllEntries();
 });
 
 function sleep(s) {
     return new Promise(resolve => setTimeout(resolve, s * 250));
+}
+
+function entryToString(entry) { 
+    var string = "";
+    for (let i = 0; i < entry.length; i++) {
+        if (entry[i] == '\b') {
+            string = string.slice(0, string.length - 1);
+        } else {
+            string += entry[i];
+        }
+    }
+    return string;
 }
 
 async function autoTypePrompt(promptMsg, intervals) {
@@ -133,6 +148,26 @@ function handleEntryEnter(inputField) {
         KEY_PRESS_TIMESTAMPS = [new Date()];
     })
     .catch(error => {
-        console.error('Error sending command:', error);
+        console.error('Error sending command', error);
     });
+}
+
+async function fetchAllEntries() {
+    // TODO: optimize with pagination
+    console.log("getting all entries");
+    fetch("/api/entry/all", { method: 'GET' })
+    .then(response => {
+        if (response.ok) { return response.json(); }
+        throw new Error(`HTTP error! status: ${response.status}`);
+    })
+    .then(data => {
+        console.info("get all response", data);
+        data.forEach(element => {
+            element.string = entryToString(element.text);
+        });
+        ENTRIES = data;
+    })
+    .catch(error => {
+        console.error("Error getting all entries", error);
+    })
 }
