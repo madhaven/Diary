@@ -1,0 +1,15 @@
+<main class="command-container">
+    <div id="prompt" [class.hidden]="!isPromptVisible()">{{ promptText() }}</div>
+    <input
+        #commandfield
+        type="text"
+        title=""
+        placeholder="..."
+        name="command-field"
+        id="command-field"
+        tabindex="-1"
+        autocomplete="off"
+        (keydown)="handleInputKeys($event)"
+        (selectionchange)="setCaretToEnd()"
+        [(ngModel)]="userInput">
+</main>

@@ -22,8 +22,9 @@
     <ProjectReference Include="..\Diary.Data\Diary.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="bin\Debug\net9.0\diary.sqlite" />
-  </ItemGroup>
+  <Target Name="BuildAngular" BeforeTargets="Build">
+    <Exec WorkingDirectory="wwwroot" Command="npm install" />
+    <Exec WorkingDirectory="wwwroot" Command="npm run build" />
+  </Target>
 
 </Project>

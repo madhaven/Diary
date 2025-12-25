@@ -1,0 +1,43 @@
+.command-container {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#prompt {
+    color: var(--layer-w-1);
+    transition: 1s ease-out;
+    transition: opacity 1s ease-out, visibility 1s ease-out, max-height 1s ease-out, padding-bottom 1s ease-out;
+    max-height: 5em;
+    overflow: hidden;
+    padding-bottom: 0.5em;
+}
+
+#prompt.hidden {
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0em;
+    padding-bottom: 0;
+}
+
+#command-field {
+    font-size: 1.5em;
+    border: 1px solid transparent;
+    background-color: transparent;
+    backdrop-filter: blur(8px);
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#command-field::selection {
+    background: var(--bg);
+    color: var(layer-w-3);
+}
+#command-field::-moz-selection {
+    background: var(--bg);
+    color: var(layer-w-3);
+}

@@ -1,0 +1,7 @@
+<aside class="entry-list">
+    @for (kv of dateMap() | keyvalue; track kv.key) {
+    <div class="entry-item">
+        {{ kv.value.length }}
+    </div>
+    }
+</aside>

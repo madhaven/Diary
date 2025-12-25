@@ -16,6 +16,8 @@ public record Entry : IValidatableObject
         {
             Text = entity.Text,
             Intervals = entity.Intervals,
+            Time = entity.Time,
+            PrintDate = entity.PrintDate,
         };
     }
 
