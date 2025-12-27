@@ -1,44 +1,98 @@
-.entry-list {
-    margin-left: 1em;
-    border-left: 1px solid var(--layer-w-1);
-    position: fixed;
-    width: 10%;
-    margin-bottom: 50vh;
-    scroll-behavior: smooth;
+.entry-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    transition: var(--std-transition);
 }
 
-.entry-item {
-    width: 100%;
+/* Year Header */
+.year-header {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
     color: var(--layer-w-2);
-    /* margin: .25em .5em; */
-    
-    position: relative;
-    padding-left: 1em;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    user-select: none;
+    
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #0d0d0d !important;
 }
 
-.entry-item::before {
-    content: "";
-    position: absolute;
-    left: 0;                 /* exact border position */
-    width: .5em;
-    height: 2px;
-    background: var(--layer-w-3);
-    /* border-radius: 50%; */
-    transform: translateX(-50%);
-    /* outline: 1px solid #0ff8; */
-}
-
-
-.entry-bullet {
-    position: relative;
-    top: 50%;
-    left: 0;
+.year-header:hover {
     background-color: var(--layer-w-1);
-    width: .25em;
-    height: .25em;
-    border-radius: 50%;
-    margin-left: -0.5em;
-    outline: 1px solid #f008;
+    color: var(--accent);
+}
+
+.year-header.expanded {
+    color: var(--accent);
+    background-color: var(--layer-w-1);
+    font-weight: 600;
+}
+
+.year-header .chevron {
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+    display: inline-block;
+    color: var(--layer-w-2);
+}
+
+.year-header.expanded .chevron {
+    transform: rotate(90deg);
+}
+
+.dates-container {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5em;
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Date Item - Mimics entry-item style */
+.date-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* To push badge to the end */
+    padding: 0.5em 1em;
+    border-radius: 6px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.date-item:hover {
+    color: var(--accent);
+}
+
+.date-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    color: var(--layer-w-2);
+}
+
+.date-item:hover .date-text {
+    color: var(--accent);
+}
+
+.entry-count-badge {
+    font-size: 0.7rem;
+    color: var(--layer-w-2);
+    padding: 0.1em 0.5em;
+    border-radius: 1em;
+    font-weight: 500;
+}
+
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }

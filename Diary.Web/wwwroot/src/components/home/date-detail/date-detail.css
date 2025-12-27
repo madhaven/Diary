@@ -1,0 +1,120 @@
+/* Date Detail */
+.date-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.date-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--layer-w-1);
+    padding-bottom: 1em;
+}
+
+.play-button {
+    background: none;
+    border: none;
+    padding: 0.8em;
+    cursor: pointer;
+    transition: var(--std-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.play-button * {
+    color: var(--layer-w-3);
+}
+
+.play-button:hover {
+    background-color: var(--layer-w-0);
+}
+
+.play-button:hover * {
+    color: var(--layer-w-4);
+}
+
+.play-button svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.full-date {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.2rem;
+    color: var(--layer-w-3);
+    font-weight: 600;
+}
+
+.entries-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.entry-card {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: baseline;
+    position: relative;
+    padding: 0;
+}
+
+.entry-card:first-child {
+    padding-top: 2em;
+}
+
+.entry-card:last-child {
+    padding-bottom: 2em;
+    border-bottom: 1px solid var(--layer-w-0);
+}
+
+.entry-card::after {
+    content: '';
+    position: absolute;
+    left: 5em;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--layer-w-0);
+}
+
+.entry-card-date {
+    flex-shrink: 0;
+    width: 5em;
+    text-align: right;
+    padding-right: 1em;
+    box-sizing: border-box;
+}
+
+.entry-time {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: var(--layer-w-2);
+    font-weight: 500;
+}
+
+.entry-content {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--accent);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+    flex: 1;
+}
+
+.entry-content p {
+    margin: 0;
+}

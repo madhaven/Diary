@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EntryList } from './entry-list';
+import { EmptyState } from './empty-state';
 
-describe('EntryList', () => {
-  let component: EntryList;
-  let fixture: ComponentFixture<EntryList>;
+describe('EmptyState', () => {
+  let component: EmptyState;
+  let fixture: ComponentFixture<EmptyState>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EntryList]
+      imports: [EmptyState]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EntryList);
+    fixture = TestBed.createComponent(EmptyState);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

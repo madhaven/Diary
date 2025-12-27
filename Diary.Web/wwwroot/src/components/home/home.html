@@ -1,12 +1,25 @@
-<entry-list />
-<div class="home-container">
-  <header class="home-header">
-    <h1>Diary</h1>
-  </header>
+<div class="main-layout">
+  <aside class="sidebar" (click)="clearSelection()">
+    <div class="sidebar-header">
+      <h2><a routerLink="/">Diary</a></h2>
+    </div>
+    <div class="sidebar-content">
+      <entry-list
+        [entries]="entries()"
+        [selectedDate]="selectedDate()"
+        (dateSelected)="onDateSelected($event)"
+      />
+    </div>
+    <div class="sidebar-footer">
+      <a routerLink="/newentry" class="new-entry-btn">+ New Entry</a>
+    </div>
+  </aside>
 
-  <div class="actions">
-    <a routerLink="/newentry" class="cta-button">
-      New Entry
-    </a>
-  </div>
+  <main class="content-area">
+    @if (selectedDate(); as date) {
+      <date-detail [date]="date" [entries]="selectedDateEntries()" />
+    } @else {
+      <empty-state />
+    }
+  </main>
 </div>
