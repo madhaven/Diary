@@ -1,0 +1,18 @@
+<div class="date-detail">
+    <header class="date-header">
+      <span class="full-date">{{ date | date:'fullDate' }}</span>
+    </header>
+    
+    <div class="entries-list">
+      @for (entry of entries; track entry.id || entry.time.getTime()) {
+        <div class="entry-card">
+          <header class="entry-card-header">
+            <span class="entry-time">{{ entry.time | date:'shortTime' }}</span>
+          </header>
+          <div class="entry-content">
+            <p>{{ entry.string }}</p>
+          </div>
+        </div>
+      }
+    </div>
+</div>

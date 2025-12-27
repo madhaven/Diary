@@ -2,6 +2,7 @@
 :root {
     --bg: #111;
     --accent: #ddd;
+    --layer-w-0: #fff1;
     --layer-w-1: #fff2;
     --layer-w-2: #fff4;
     --layer-w-3: #fff8;
@@ -57,4 +58,12 @@ input:active, input:focus {
 * {
     color: var(--accent);
     background-color: transparent;
+}
+
+*::selection {
+    background: transparent;
+}
+
+*::-moz-selection {
+    background: transparent;
 }

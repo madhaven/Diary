@@ -1,7 +1,6 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
-import { DiaryService } from '@services/diary';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, signal, WritableSignal } from '@angular/core';
 import { Entry } from '@models/entities';
-import { KeyValuePipe } from '@angular/common';
+import { DatePipe, KeyValue, KeyValuePipe } from '@angular/common';
 
 @Component({
   selector: 'entry-list',
@@ -9,52 +8,61 @@ import { KeyValuePipe } from '@angular/common';
   templateUrl: './entry-list.html',
   styleUrl: './entry-list.css',
   imports: [
-    KeyValuePipe
+    KeyValuePipe,
+    DatePipe,
   ],
 })
-export class EntryList implements OnInit {
-  entries: WritableSignal<Entry[]> = signal([]);
-  dateMap: WritableSignal<Map<Number, Entry[]>> = signal(new Map<Number, Entry[]>());
+export class EntryList {
+  yearMap: WritableSignal<Map<number, Map<number, Entry[]>>> = signal(new Map<number, Map<number, Entry[]>>());
+  expandedYear = signal<number | null>(null);
+  
+  @Input() selectedDate: Date | null = null;
 
-  constructor(private diaryService: DiaryService) {
+  @Input() set entries(value: Entry[]) {
+    const yearMap = new Map<number, Map<number, Entry[]>>();
+    value.forEach(entry => {
+      const year = entry.time.getFullYear();
+      const date = new Date(year, entry.time.getMonth(), entry.time.getDate());
+      const dateKey = date.getTime();      
+      const dateMap = yearMap.get(year) ?? new Map<number, Entry[]>();
+      const entries = dateMap.get(dateKey) ?? [];
+      entries.push(entry);
+      dateMap.set(dateKey, entries);
+      yearMap.set(year, dateMap);
+    });
+
+    this.yearMap.set(yearMap);
   }
 
-  ngOnInit() {
-    setTimeout(() => {
-      this.fetchAllEntries();
-    });
+  @Output() entrySelected = new EventEmitter<Entry>();
+  @Output() yearSelected = new EventEmitter<number>();
+  @Output() dateSelected = new EventEmitter<Date>();
+
+  constructor(private elementRef: ElementRef) {
   }
 
-  private fetchAllEntries() {
-    this.diaryService.getAllEntries().subscribe({
-      next: (data) => {
-        var entries = data.map(entry => {
-          return {
-            id: entry.id,
-            text: entry.text,
-            intervals: entry.intervals,
-            time: new Date(entry.time),
-            printDate: entry.printDate,
-            string: this.diaryService.entryToString(entry.text),
-          } as Entry;
-        });
-        this.entries.set(entries);
+  toggleYear(year: number, event: Event) {
+    event.stopPropagation();
+    this.yearSelected.emit(year);
+    this.expandedYear.set(this.expandedYear() === year ? null : year);
+  }
 
-        var dateMap = new Map<Number, Entry[]>();
-        this.entries().forEach(entry => {
-          var date = new Date(
-            entry.time.getFullYear(),
-            entry.time.getMonth(),
-            entry.time.getDate()
-          );
-          var dateIndex = date.getTime();
-          var entriesInDate = dateMap.has(dateIndex) ? dateMap.get(dateIndex)! : [];
-          entriesInDate.push(entry);
-          dateMap.set(dateIndex, entriesInDate);
-        });
-        this.dateMap.set(dateMap);
-      },
-      error: (error) => console.error("Error fetching entries", error)
-    });
+  selectDate(date: number, event: Event) {
+    event.stopPropagation();
+    this.dateSelected.emit(new Date(date));
+  }
+
+  selectEntry(entry: Entry) {
+    this.entrySelected.emit(entry);
+  }
+
+  isSelected(dateKey: number): boolean {
+    return this.selectedDate?.getTime() === dateKey;
+  }
+  
+  ascOrder = (a: KeyValue<number, any>, b: KeyValue<number, any>): number => {
+    return (a.key as number) >= (b.key as number)
+      ? ((b.key as number) < (a.key as number) ? 1 : 0)
+      : -1;
   }
 }
