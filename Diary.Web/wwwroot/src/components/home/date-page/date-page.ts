@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Entry } from '@models/entities';
 
@@ -12,8 +12,9 @@ import { Entry } from '@models/entities';
 export class DatePage {
   @Input({ required: true }) date!: Date;
   @Input({ required: true }) entries: Entry[] = [];
+  @Output() playClicked = new EventEmitter<void>();
 
   play() {
-    console.log('Playing entries for', this.date);
+    this.playClicked.emit();
   }
 }
