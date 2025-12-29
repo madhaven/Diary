@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     padding: 1em;
-    transition: var(--std-transition);
+    transition: var(--std-transition-0);
 }
 
 /* Year Header */
@@ -16,16 +16,17 @@
     align-items: center;
     justify-content: space-between;
     border-radius: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: var(--std-transition-1);
     user-select: none;
     
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #0d0d0d !important;
+    background-color: transparent !important;
 }
 
 .year-header:hover {
+    transition: 0.1s ease;
     background-color: var(--layer-w-1);
     color: var(--accent);
 }
@@ -65,22 +66,25 @@
     border-radius: 6px;
     background-color: transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--std-transition-1);
     border: 1px solid transparent;
 }
 
 .date-item:hover {
     color: var(--accent);
+    transition: all 0.1s ease-out;
 }
 
 .date-text {
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
     color: var(--layer-w-2);
+    transition: var(--std-transition-1);
 }
 
 .date-item:hover .date-text {
     color: var(--accent);
+    transition: all 0.1s ease-out;
 }
 
 .entry-count-badge {

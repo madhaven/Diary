@@ -1,11 +1,10 @@
 import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
-import { EntryList } from '@components/entry-list/entry-list';
+import { EntryList } from '@components/home/entry-list/entry-list';
 import { RouterLink } from '@angular/router';
 import { Entry } from '@models/entities';
-import { DatePipe } from '@angular/common';
 import { DiaryService } from '@services/diary';
 import { EmptyState } from './empty-state/empty-state';
-import { DateDetail } from './date-detail/date-detail';
+import { DatePage } from './date-page/date-page';
 
 @Component({
   selector: 'diary-home',
@@ -16,7 +15,7 @@ import { DateDetail } from './date-detail/date-detail';
     EntryList,
     RouterLink,
     EmptyState,
-    DateDetail
+    DatePage
   ],
 })
 export class Home implements OnInit {

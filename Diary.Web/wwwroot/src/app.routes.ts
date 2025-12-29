@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DiaryEntry } from './components/diary-entry/diary-entry';
-import { EntryList } from './components/entry-list/entry-list';
+import { EntryList } from './components/home/entry-list/entry-list';
 import { Home } from '@components/home/home';
 
 export const appRoutes: Routes = [

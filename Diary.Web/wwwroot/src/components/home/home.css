@@ -21,6 +21,9 @@
 
 .sidebar-header {
     padding: 2em 1.5em 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .sidebar-header h2 {
@@ -75,7 +78,7 @@
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
-    transition: var(--std-transition);
+    transition: var(--std-transition-0);
     box-sizing: border-box;
 }
 

@@ -5,11 +5,11 @@ import { Entry } from '@models/entities';
 @Component({
   selector: 'date-detail',
   standalone: true,
-  templateUrl: './date-detail.html',
-  styleUrl: './date-detail.css',
+  templateUrl: './date-page.html',
+  styleUrl: './date-page.css',
   imports: [DatePipe]
 })
-export class DateDetail {
+export class DatePage {
   @Input({ required: true }) date!: Date;
   @Input({ required: true }) entries: Entry[] = [];
 

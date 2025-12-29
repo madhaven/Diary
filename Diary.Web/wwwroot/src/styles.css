@@ -11,7 +11,8 @@
     --layer-b-2: #0004;
     --layer-b-3: #0008;
     --layer-b-4: #000c;
-    --std-transition: .1s ease-out;
+    --std-transition-0: .1s ease-out;
+    --std-transitino-1: .2s ease-out;
 }
 
 html, body {
@@ -41,7 +42,7 @@ input {
     border: 1px solid transparent;
     border-bottom: 1px solid var(--layer-w-1);
     padding: .5em 0em;
-    transition: var(--std-transition);
+    transition: var(--std-transition-0);
     border-radius: 0;
     color: var(--layer-w-3);
     width: 20em;
