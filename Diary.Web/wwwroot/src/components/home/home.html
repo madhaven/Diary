@@ -15,11 +15,7 @@
       <h2><a routerLink="/">Diary</a></h2>
     </div>
     <div class="sidebar-content">
-      <entry-list
-        [entries]="entries()"
-        [selectedDate]="selectedDate()"
-        (dateSelected)="onDateSelected($event)"
-      />
+      <entry-list />
     </div>
     <div class="sidebar-footer">
       <a routerLink="/newentry" class="new-entry-btn">+ New Entry</a>
@@ -29,8 +25,8 @@
   <main class="content-area">
     @if (isPlaying()) {
       <entry-player [entries]="selectedDateEntries()" />
-    } @else if (isNewEntry()) {
-      <diary-entry (entryAdded)="onEntryAdded($event)" />
+    } @else if (isRecording()) {
+      <diary-entry />
     } @else if (selectedDate(); as date) {
       <date-detail [date]="date" [entries]="selectedDateEntries()" (playClicked)="onPlay()" />
     } @else {

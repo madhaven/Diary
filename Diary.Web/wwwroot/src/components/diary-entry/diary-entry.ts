@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
 import { DiaryService } from '@services/diary';
+import { StateService } from '@services/state';
 import { Entry } from '@models/entities';
 import { EntryContract } from '@models/contracts';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Import Router
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'diary-entry',
@@ -26,7 +27,11 @@ export class DiaryEntry implements AfterViewInit {
   promptText = signal("");
   isPromptVisible = signal(true);
 
-  constructor(private diaryService: DiaryService, private router: Router) { } // Inject Router
+  constructor(
+    private diaryService: DiaryService,
+    private state: StateService,
+    private router: Router
+  ) { } 
 
   ngOnInit() {
     setTimeout(() => {
@@ -140,7 +145,7 @@ export class DiaryEntry implements AfterViewInit {
       "printDate": false
     };
 
-    this.diaryService.addEntry(newEntry).subscribe({
+    this.state.addEntry(newEntry).subscribe({
       next: (response: EntryContract) => {
         this.resetKeys();
         console.log('added entry', response);
