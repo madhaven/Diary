@@ -1,12 +1,12 @@
 import { Component, computed, Signal, WritableSignal } from '@angular/core';
-import { EntryList } from '@components/home/entry-list/entry-list';
+import { EntryList } from '@components/entry-list/entry-list';
 import { RouterLink } from '@angular/router';
 import { Entry } from '@models/entities';
 import { StateService } from '@services/state';
-import { EmptyState } from './empty-state/empty-state';
-import { DatePage } from './date-page/date-page';
-import { EntryPlayer } from './entry-player/entry-player';
-import { DiaryEntry } from '@components/diary-entry/diary-entry';
+import { EntryRecorder } from '@components/entry-recorder/entry-recorder';
+import { EntryPlayer } from '@components/entry-player/entry-player';
+import { EntryView } from '@components/entry-view/entry-view';
+import { EmptyState } from '@components/empty-state/empty-state';
 
 @Component({
   selector: 'diary-home',
@@ -17,9 +17,9 @@ import { DiaryEntry } from '@components/diary-entry/diary-entry';
     EntryList,
     RouterLink,
     EmptyState,
-    DatePage,
+    EntryView,
     EntryPlayer,
-    DiaryEntry,
+    EntryRecorder,
   ],
 })
 export class Home {

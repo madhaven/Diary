@@ -8,13 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'diary-entry',
+  selector: 'entry-recorder',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './diary-entry.html',
-  styleUrl: './diary-entry.css',
+  templateUrl: './entry-recorder.html',
+  styleUrl: './entry-recorder.css',
 })
-export class DiaryEntry implements AfterViewInit {
+export class EntryRecorder implements AfterViewInit {
   @ViewChild('commandfield') commandField!: ElementRef;
   @Output('entryAdded') entryAdded = new EventEmitter<Entry>();
 

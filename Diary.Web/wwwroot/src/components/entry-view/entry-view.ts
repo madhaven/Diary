@@ -3,13 +3,13 @@ import { DatePipe } from '@angular/common';
 import { Entry } from '@models/entities';
 
 @Component({
-  selector: 'date-detail',
+  selector: 'entry-view',
   standalone: true,
-  templateUrl: './date-page.html',
-  styleUrl: './date-page.css',
+  templateUrl: './entry-view.html',
+  styleUrl: './entry-view.css',
   imports: [DatePipe]
 })
-export class DatePage {
+export class EntryView {
   @Input({ required: true }) date!: Date;
   @Input({ required: true }) entries: Entry[] = [];
   @Output() playClicked = new EventEmitter<void>();

@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DiaryEntry } from './diary-entry';
+import { EntryView } from './entry-view';
 
-describe('DiaryEntry', () => {
-  let component: DiaryEntry;
-  let fixture: ComponentFixture<DiaryEntry>;
+describe('DateDetail', () => {
+  let component: EntryView;
+  let fixture: ComponentFixture<EntryView>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DiaryEntry]
+      imports: [EntryView]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DiaryEntry);
+    fixture = TestBed.createComponent(EntryView);
     component = fixture.componentInstance;
+    component.date = new Date();
+    component.entries = [];
     await fixture.whenStable();
   });
 

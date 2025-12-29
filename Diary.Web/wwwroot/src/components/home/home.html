@@ -26,9 +26,9 @@
     @if (isPlaying()) {
       <entry-player [entries]="selectedDateEntries()" />
     } @else if (isRecording()) {
-      <diary-entry />
+      <entry-recorder />
     } @else if (selectedDate(); as date) {
-      <date-detail [date]="date" [entries]="selectedDateEntries()" (playClicked)="onPlay()" />
+      <entry-view [date]="date" [entries]="selectedDateEntries()" (playClicked)="onPlay()" />
     } @else {
       <empty-state />
     }
