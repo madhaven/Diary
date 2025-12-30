@@ -5,6 +5,13 @@
     transition: var(--std-transition-0);
 }
 
+.list-empty-message {
+    color: var(--layer-w-1);
+    font-size: 1em;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
 /* Year Header */
 .year-header {
     font-family: 'Poppins', sans-serif;

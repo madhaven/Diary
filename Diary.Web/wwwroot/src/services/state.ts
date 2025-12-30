@@ -13,6 +13,7 @@ export class StateService {
   // Core Data
   readonly entries = signal<Entry[]>([]);
   readonly selectedDate = signal<Date | null>(null);
+  readonly playbackSpeed = signal<number>(1.5);
 
   // View State
   readonly currentPage = signal<DiaryPage>('HOME');

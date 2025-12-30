@@ -12,12 +12,14 @@ import { StateService } from '@services/state';
 export class EntryPlayer implements AfterViewInit {
   @ViewChild('entryText') entryText!: ElementRef<HTMLParagraphElement>;
   readonly entries: WritableSignal<Entry[]>;
+  readonly playbackSpeed: WritableSignal<number>;
 
   constructor (
     private state: StateService,
     private router: Router,
   ) {
     this.entries = state.entries;
+    this.playbackSpeed = state.playbackSpeed;
   }
 
   ngAfterViewInit(): void {
@@ -34,6 +36,7 @@ export class EntryPlayer implements AfterViewInit {
   }
 
   private async replay(entry: Entry): Promise<void> {
+    const speedAdjustment = 1000 / this.playbackSpeed();
     const el = this.entryText.nativeElement;
     el.innerHTML = "";
 
@@ -42,7 +45,7 @@ export class EntryPlayer implements AfterViewInit {
       const char = entry.text[i];
       const delay = entry.intervals[i];
 
-      await new Promise(resolve => setTimeout(resolve, delay * 1000));
+      await new Promise(resolve => setTimeout(resolve, delay * speedAdjustment));
 
       if (char === '\b') {
         el.textContent = el.textContent?.slice(0, -1) || '';

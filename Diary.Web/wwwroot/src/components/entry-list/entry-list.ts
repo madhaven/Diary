@@ -1,4 +1,4 @@
-import { Component, computed, signal, WritableSignal } from '@angular/core';
+import { Component, computed, WritableSignal } from '@angular/core';
 import { Entry } from '@models/entities';
 import { DatePipe, KeyValue, KeyValuePipe } from '@angular/common';
 import { StateService } from '@services/state';
@@ -15,6 +15,9 @@ import { StateService } from '@services/state';
 })
 export class EntryList {
   readonly expandedYear: WritableSignal<number | null>;
+  readonly entriesEmpty = computed(() => {
+    return this.state.entries().length <= 0;
+  })
   yearMap = computed(() => {
     const entries = this.state.entries();
     const yearMap = new Map<number, Map<number, Entry[]>>();

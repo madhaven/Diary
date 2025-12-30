@@ -1,4 +1,11 @@
 <div class="entry-list-container">
+
+    @if (entriesEmpty()) {
+    <div class="list-empty-message">
+        Go ahead, Add a Diary Entry :)
+    </div>
+    }
+
     @for (yearKv of (yearMap() | keyvalue: ascOrder); track yearKv.key) {
     <div class="year-group">
         <div class="year-header" (click)="toggleYear(yearKv.key, $event)" [class.expanded]="expandedYear() === yearKv.key">
