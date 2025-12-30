@@ -1,3 +1,10 @@
+:host {
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    position: relative;
+}
+
 .command-container {
     display: flex;
     flex-direction: column;
@@ -17,6 +24,12 @@
     max-width: 80%;
     font-family: 'Montserrat', sans-serif;
     animation: fadeIn 1s ease-out;
+    white-space: pre-wrap;
+    transition: .5s ease-out;
+}
+
+.hidden {
+    opacity: 0;
 }
 
 @keyframes fadeIn {

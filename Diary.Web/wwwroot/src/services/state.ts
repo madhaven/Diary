@@ -115,6 +115,6 @@ export class StateService {
     setTimeout(() => {
       this.isPlaying.set(true);
       this.isTransitioning.set(false);
-    }, 400);
+    }, 500);
   }
 }

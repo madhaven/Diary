@@ -41,10 +41,6 @@ export class Home {
     this.selectedDateEntries = this.state.entriesOfSelectedDate;
   }
 
-  onPlay() {
-    this.state.play();
-  }
-
   clearSelection() {
     this.state.clearSelection();
   }

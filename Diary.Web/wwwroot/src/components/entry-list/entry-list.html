@@ -10,8 +10,8 @@
         <div class="dates-container">
             @for (dateKv of (yearKv.value | keyvalue: ascOrder); track dateKv.key) {
             <div class="date-item" (click)="selectDate(dateKv.key, $event)"
-                 [style.background-color]="isSelected(dateKv.key) ? 'var(--layer-w-0)' : ''"
-                 [style.color]="isSelected(dateKv.key) ? 'var(--accent)' : ''">
+                [style.background-color]="isSelected(dateKv.key) ? 'var(--layer-w-0)' : ''"
+                [style.color]="isSelected(dateKv.key) ? 'var(--accent)' : ''">
                 <span class="date-text" [style.color]="isSelected(dateKv.key) ? 'var(--accent)' : ''">{{ dateKv.key | date:'mediumDate' }}</span>
                 <!-- A subtle indicator of multiple entries -->
                 @if (dateKv.value.length > 1) {

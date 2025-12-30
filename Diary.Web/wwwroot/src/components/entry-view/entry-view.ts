@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Entry } from '@models/entities';
+import { StateService } from '@services/state';
 
 @Component({
   selector: 'entry-view',
@@ -12,9 +13,12 @@ import { Entry } from '@models/entities';
 export class EntryView {
   @Input({ required: true }) date!: Date;
   @Input({ required: true }) entries: Entry[] = [];
-  @Output() playClicked = new EventEmitter<void>();
+
+  constructor (
+    private state: StateService,
+  ) {}
 
   play() {
-    this.playClicked.emit();
+    this.state.play();
   }
 }

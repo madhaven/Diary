@@ -23,14 +23,14 @@
   </aside>
 
   <main class="content-area">
-    @if (isPlaying()) {
-      <entry-player [entries]="selectedDateEntries()" />
-    } @else if (isRecording()) {
-      <entry-recorder />
-    } @else if (selectedDate(); as date) {
-      <entry-view [date]="date" [entries]="selectedDateEntries()" (playClicked)="onPlay()" />
-    } @else {
-      <empty-state />
-    }
+  @if (isPlaying()) {
+    <entry-player />
+  } @else if (isRecording()) {
+    <entry-recorder />
+  } @else if (selectedDate(); as date) {
+    <entry-view [date]="date" [entries]="selectedDateEntries()" />
+  } @else {
+    <empty-state />
+  }
   </main>
 </div>

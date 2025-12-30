@@ -99,7 +99,6 @@ export class EntryRecorder implements AfterViewInit {
       
       if (this.userInput.length > 0) {
         this.recordKey('\b');
-        console.info(`adding key ${event.key}, ipchars: ${this.userInput.length}, chars: ${this.inputKeys.length}, intervals: ${this.keyPressTimestamps.length}`);
       }
       return;
     }
@@ -118,7 +117,6 @@ export class EntryRecorder implements AfterViewInit {
     if (event.key.length === 1) {
       if (this.isPromptVisible()) this.makePromptVanish();
       this.recordKey(event.key);
-      console.info(`adding key ${event.key}, ipchars: ${this.userInput.length}, chars: ${this.inputKeys.length}, intervals: ${this.keyPressTimestamps.length}`);
       return;
     }
 
@@ -167,7 +165,8 @@ export class EntryRecorder implements AfterViewInit {
 
   private stopWordCheck(lastEntry: Entry): void {
     var entryText = this.diaryService.entryToString(lastEntry.text);
-    if (entryText.includes('bye')) {
+    if (entryText.toLowerCase().includes('bye')) {
+      this.state.getAllEntries();
       this.router.navigate(['/']);
     }
   }
