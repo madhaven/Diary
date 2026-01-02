@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { EmptyState } from './empty-state';
+
 
 describe('EmptyState', () => {
   let component: EmptyState;
