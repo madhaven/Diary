@@ -168,3 +168,164 @@
     color: var(--accent);
     cursor: pointer;
 }
+
+/* Search Container Styles */
+.search-container {
+    padding: 0.8em 1.2em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.2em 1.5em 0.2em 0; /* Add right padding for the clear button */
+    font-size: 0.9rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.clear-search-btn * {
+    color: var(--layer-w-2);
+    transition: var(--std-transition-0);
+}
+
+.search-input-wrapper:hover .clear-search-btn,
+.search-input:focus + .clear-search-btn { /* Also show when input is focused */
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.clear-search-btn:hover * {
+    color: var(--accent);
+}
+
+.date-range-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    flex: 1;
+}
+
+.date-input-group label {
+    font-size: 0.65rem;
+    color: var(--layer-w-2);
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: -2px;
+}
+
+.date-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    padding: 0.2em 0;
+}
+
+/* Customizing date input to look like standard inputs */
+.date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(0.5);
+    cursor: pointer;
+}
+
+.date-input::-webkit-inner-spin-button,
+.date-input::-webkit-clear-button {
+    display: none;
+    -webkit-appearance: none;
+}
+
+/* Toggle Switch Styles */
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-label {
+    color: var(--layer-w-2);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--layer-w-1);
+    transition: var(--std-transition-0);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--layer-b-4);
+    transition: var(--std-transition-0);
+}
+
+input:checked + .slider {
+    background-color: var(--layer-w-1);
+}
+
+.switch input:focus + .slider {
+    box-shadow: 0 0 0 1px var(--layer-w-2);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+    background-color: var(--layer-b-4);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

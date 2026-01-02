@@ -2,17 +2,51 @@
   <aside class="sidebar" (click)="clearSelection()">
     <div class="sidebar-header">
       <div class="header-actions">
-        <button class="icon-btn" title="Search Entries">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <button class="icon-btn" [class.active]="sidebarMode() === 'SEARCH'" (click)="setSidebarMode('SEARCH')" title="Search Entries">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>
+        </button>
+        <button class="icon-btn" [class.active]="sidebarMode() === 'ENTRIES'" (click)="setSidebarMode('ENTRIES')" title="Entries">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
         </button>
       </div>
       <h2><a routerLink="/">Diary</a></h2>
     </div>
     <div class="sidebar-content">
-      <entry-list />
-      <div class="new-entry-container">
-        <a class="new-entry-btn" (click)="createNewEntry()">New Entry</a>
-      </div>
+      @if (sidebarMode() === 'ENTRIES') {
+        <entry-list [entries]="this.entries()"/>
+        <div class="new-entry-container">
+          <a class="new-entry-btn" (click)="createNewEntry()">New Entry</a>
+        </div>
+      } @else {
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <input #searchInput (input)="updateSearchResults()" type="text" class="search-input" placeholder="Search keywords..." tabindex="1">
+            <button class="clear-search-btn" (click)="clearSearch(searchInput)" tabindex="-1" title="Clear Search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          
+          <div class="date-range-container">
+            <div class="date-input-group">
+              <label>From</label>
+              <input #dateFrom (change)="updateSearchResults()" type="date" class="date-input" tabindex="2">
+            </div>
+            <div class="date-input-group">
+              <label>To</label>
+              <input #dateTo (change)="updateSearchResults()" type="date" class="date-input" tabindex="3">
+            </div>
+          </div>
+
+          <div class="toggle-container">
+            <span class="toggle-label">Strict Match</span>
+            <label class="switch">
+              <input #strictMatch (change)="updateSearchResults()" type="checkbox" tabindex="4">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <entry-list [entries]="this.searchResults()" />
+      }
     </div>
   </aside>
 

@@ -38,9 +38,9 @@ app-root {
 }
 
 input {
-    background-color: var(--bg);
+    background-color: transparent;
     border: 1px solid transparent;
-    border-bottom: 1px solid var(--layer-w-1);
+    border-bottom: 1px solid var(--layer-w-0);
     padding: .5em 0em;
     transition: var(--std-transition-0);
     border-radius: 0;
@@ -50,11 +50,11 @@ input {
 }
 
 input:hover {
-    border-bottom: 1px solid var(--layer-w-2);
+    border-bottom: 1px solid var(--layer-w-1);
 }
 
 input:active, input:focus {
-    border-bottom: 1px solid var(--layer-w-3);
+    border-bottom: 1px solid var(--layer-w-2);
     outline: none;
 }
 

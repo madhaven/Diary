@@ -6,6 +6,7 @@
 }
 
 .list-empty-message {
+    padding: 1em 0em;
     color: var(--layer-w-1);
     font-size: 1em;
     text-align: center;
@@ -34,13 +35,11 @@
 
 .year-header:hover {
     transition: 0.1s ease;
-    background-color: var(--layer-w-1);
-    color: var(--accent);
+    color: var(--layer-w-3);
 }
 
 .year-header.expanded {
     color: var(--accent);
-    background-color: var(--layer-w-1);
     font-weight: 600;
 }
 
@@ -63,7 +62,6 @@
     animation: slideDown 0.2s ease-out;
 }
 
-/* Date Item - Mimics entry-item style */
 .date-item {
     display: flex;
     flex-direction: row;
@@ -77,11 +75,6 @@
     border: 1px solid transparent;
 }
 
-.date-item:hover {
-    color: var(--accent);
-    transition: all 0.1s ease-out;
-}
-
 .date-text {
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
@@ -90,8 +83,12 @@
 }
 
 .date-item:hover .date-text {
+    color: var(--layer-w-3);
+    transition: var(--std-transition-0);
+}
+
+.date-item.selected .date-text {
     color: var(--accent);
-    transition: all 0.1s ease-out;
 }
 
 .entry-count-badge {

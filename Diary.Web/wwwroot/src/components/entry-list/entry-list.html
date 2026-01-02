@@ -2,7 +2,7 @@
 
     @if (entriesEmpty()) {
     <div class="list-empty-message">
-        Go ahead, Add a Diary Entry :)
+        no entries to show
     </div>
     }
 
@@ -16,14 +16,9 @@
         @if (expandedYear() === yearKv.key) {
         <div class="dates-container">
             @for (dateKv of (yearKv.value | keyvalue: ascOrder); track dateKv.key) {
-            <div class="date-item" (click)="selectDate(dateKv.key, $event)"
-                [style.background-color]="isSelected(dateKv.key) ? 'var(--layer-w-0)' : ''"
-                [style.color]="isSelected(dateKv.key) ? 'var(--accent)' : ''">
-                <span class="date-text" [style.color]="isSelected(dateKv.key) ? 'var(--accent)' : ''">{{ dateKv.key | date:'mediumDate' }}</span>
-                <!-- A subtle indicator of multiple entries -->
-                @if (dateKv.value.length > 1) {
+            <div class="date-item" (click)="selectDate(dateKv.key, $event)" [class.selected]="isSelected(dateKv.key)">
+                <span class="date-text">{{ dateKv.key | date:'mediumDate' }}</span>
                 <span class="entry-count-badge">{{ dateKv.value.length }}</span>
-                }
             </div>
             }
         </div>

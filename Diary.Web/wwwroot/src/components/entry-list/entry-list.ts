@@ -1,8 +1,7 @@
-import { Component, computed, WritableSignal } from '@angular/core';
+import { Component, computed, WritableSignal, input } from '@angular/core';
 import { Entry } from '@models/entities';
 import { DatePipe, KeyValue, KeyValuePipe } from '@angular/common';
 import { StateService } from '@services/state';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'entry-list',
@@ -12,16 +11,17 @@ import { RouterLink } from '@angular/router';
   imports: [
     KeyValuePipe,
     DatePipe,
-    RouterLink,
   ],
 })
 export class EntryList {
+  entries = input<Entry[]>([]);
+
   readonly expandedYear: WritableSignal<number | null>;
   readonly entriesEmpty = computed(() => {
-    return this.state.entries().length <= 0;
+    return this.entries().length <= 0;
   })
   yearMap = computed(() => {
-    const entries = this.state.entries();
+    const entries = this.entries();
     const yearMap = new Map<number, Map<number, Entry[]>>();
     entries.forEach(entry => {
       const year = entry.time.getFullYear();
