@@ -10,7 +10,7 @@
     <div class="year-group">
         <div class="year-header" (click)="toggleYear(yearKv.key, $event)" [class.expanded]="expandedYears().has(yearKv.key)">
             {{ yearKv.key }}
-            <span class="chevron">›</span>
+            <!-- <span class="chevron">›</span> -->
         </div>
         
         @if (expandedYears().has(yearKv.key)) {

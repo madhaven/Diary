@@ -1,8 +1,8 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
-import { DiaryService } from './diary';
 import { Entry } from '@models/entities';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { DiaryService } from '@services/diary';
 
 export type DiaryPage = 'HOME' | 'ENTRY_RECORD' | '';
 

@@ -76,7 +76,6 @@ export class EntryRecorder implements AfterViewInit {
     this.keyPressTimestamps.push(Date.now());
   }
 
-  // Function to set caret to the end
   setCaretToEnd() {
     const element = this.commandField.nativeElement;
     if (typeof element.selectionStart == "number") {

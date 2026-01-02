@@ -11,8 +11,8 @@ testdiary
 *.sqlite
 
 # Angular
-/Diary.Web/wwwroot/node_modules
-/Diary.Web/wwwroot/dist
-/Diary.Web/wwwroot/.angular
-/Diary.Web/wwwroot/.vscode
+*/node_modules
+*/dist
+*/.angular
+*/.vscode
 *.log
