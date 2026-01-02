@@ -2,6 +2,7 @@ import { Component, computed, WritableSignal } from '@angular/core';
 import { Entry } from '@models/entities';
 import { DatePipe, KeyValue, KeyValuePipe } from '@angular/common';
 import { StateService } from '@services/state';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'entry-list',
@@ -11,6 +12,7 @@ import { StateService } from '@services/state';
   imports: [
     KeyValuePipe,
     DatePipe,
+    RouterLink,
   ],
 })
 export class EntryList {

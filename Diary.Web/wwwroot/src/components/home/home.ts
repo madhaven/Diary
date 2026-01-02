@@ -1,12 +1,11 @@
-import { Component, computed, Signal, WritableSignal } from '@angular/core';
+import { Component, Signal, WritableSignal, signal } from '@angular/core';
 import { EntryList } from '@components/entry-list/entry-list';
 import { RouterLink } from '@angular/router';
 import { Entry } from '@models/entities';
 import { StateService } from '@services/state';
-import { EntryRecorder } from '@components/entry-recorder/entry-recorder';
-import { EntryPlayer } from '@components/entry-player/entry-player';
 import { EntryView } from '@components/entry-view/entry-view';
 import { EmptyState } from '@components/empty-state/empty-state';
+import { EntryPlayer } from '@components/entry-player/entry-player';
 
 @Component({
   selector: 'diary-home',
@@ -19,7 +18,6 @@ import { EmptyState } from '@components/empty-state/empty-state';
     EmptyState,
     EntryView,
     EntryPlayer,
-    EntryRecorder,
   ],
 })
 export class Home {
@@ -29,8 +27,6 @@ export class Home {
   readonly isTransitioning: WritableSignal<boolean>;
   readonly selectedDateEntries: Signal<Entry[]>;
   
-  readonly isRecording = computed(() => this.state.currentPage() === 'ENTRY_RECORD');
-
   constructor(
     private state: StateService,
   ) {
@@ -43,5 +39,9 @@ export class Home {
 
   clearSelection() {
     this.state.clearSelection();
+  }
+
+  createNewEntry() {
+    this.state.startRecording();
   }
 }

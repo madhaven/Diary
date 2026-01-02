@@ -118,4 +118,12 @@ export class StateService {
       this.isTransitioning.set(false);
     }, 500);
   }
+
+  startRecording() {
+    this.isTransitioning.set(true);
+    setTimeout(() => {
+      this.router.navigate(['/newentry']);
+      this.isTransitioning.set(false);
+    }, 500);
+  }
 }
