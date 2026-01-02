@@ -12,40 +12,17 @@
       <h2><a routerLink="/">Diary</a></h2>
     </div>
     <div class="sidebar-content">
-      @if (sidebarMode() === 'ENTRIES') {
-        <entry-list [entries]="this.entries()"/>
-        <div class="new-entry-container">
-          <a class="new-entry-btn" (click)="createNewEntry()">New Entry</a>
-        </div>
-      } @else {
-        <div class="search-container">
-          <div class="search-input-wrapper">
-            <input #searchInput (input)="updateSearchResults()" type="text" class="search-input" placeholder="Search keywords..." tabindex="1">
-            <button class="clear-search-btn" (click)="clearSearch(searchInput)" tabindex="-1" title="Clear Search">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+      @switch (sidebarMode()) {
+        @case ('ENTRIES') {
+          <entry-list [entries]="this.entries()"/>
+          <div class="new-entry-container">
+            <a class="new-entry-btn" (click)="createNewEntry()">New Entry</a>
           </div>
-          
-          <div class="date-range-container">
-            <div class="date-input-group">
-              <label>From</label>
-              <input #dateFrom (change)="updateSearchResults()" type="date" class="date-input" tabindex="2">
-            </div>
-            <div class="date-input-group">
-              <label>To</label>
-              <input #dateTo (change)="updateSearchResults()" type="date" class="date-input" tabindex="3">
-            </div>
-          </div>
-
-          <div class="toggle-container">
-            <span class="toggle-label">Strict Match</span>
-            <label class="switch">
-              <input #strictMatch (change)="updateSearchResults()" type="checkbox" tabindex="4">
-              <span class="slider round"></span>
-            </label>
-          </div>
-        </div>
-        <entry-list [entries]="this.searchResults()" />
+        }
+        @case ('SEARCH') {
+          <diary-search [entries]="this.entries()" (resultsChange)="searchResults.set($event)" />
+          <entry-list [entries]="this.searchResults()" />
+        }
       }
     </div>
   </aside>
