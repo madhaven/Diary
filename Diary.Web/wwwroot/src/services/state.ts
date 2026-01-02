@@ -17,7 +17,7 @@ export class StateService {
 
   // View State
   readonly currentPage = signal<DiaryPage>('HOME');
-  readonly expandedYear = signal<number | null>(null);
+  readonly expandedYears = signal<Set<number>>(new Set());
   readonly isPlaying = signal(false);
   readonly isTransitioning = signal(false);
 

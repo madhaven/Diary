@@ -16,7 +16,7 @@ import { StateService } from '@services/state';
 export class EntryList {
   entries = input<Entry[]>([]);
 
-  readonly expandedYear: WritableSignal<number | null>;
+  readonly expandedYears: WritableSignal<Set<number>>;
   readonly entriesEmpty = computed(() => {
     return this.entries().length <= 0;
   })
@@ -37,12 +37,20 @@ export class EntryList {
   });
 
   constructor(private state: StateService) {
-    this.expandedYear = state.expandedYear;
+    this.expandedYears = state.expandedYears;
   }
 
   toggleYear(year: number, event: Event) {
     event.stopPropagation();
-    this.expandedYear.set(this.expandedYear() === year ? null : year);
+    this.expandedYears.update(years => {
+      const newYears = new Set(years);
+      if (newYears.has(year)) {
+        newYears.delete(year);
+      } else {
+        newYears.add(year);
+      }
+      return newYears;
+    });
   }
 
   selectDate(date: number, event: Event) {

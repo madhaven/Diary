@@ -8,12 +8,12 @@
 
     @for (yearKv of (yearMap() | keyvalue: ascOrder); track yearKv.key) {
     <div class="year-group">
-        <div class="year-header" (click)="toggleYear(yearKv.key, $event)" [class.expanded]="expandedYear() === yearKv.key">
+        <div class="year-header" (click)="toggleYear(yearKv.key, $event)" [class.expanded]="expandedYears().has(yearKv.key)">
             {{ yearKv.key }}
             <span class="chevron">›</span>
         </div>
         
-        @if (expandedYear() === yearKv.key) {
+        @if (expandedYears().has(yearKv.key)) {
         <div class="dates-container">
             @for (dateKv of (yearKv.value | keyvalue: ascOrder); track dateKv.key) {
             <div class="date-item" (click)="selectDate(dateKv.key, $event)" [class.selected]="isSelected(dateKv.key)">
