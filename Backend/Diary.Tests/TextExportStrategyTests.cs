@@ -113,9 +113,9 @@ public class TextExportStrategyTests
     {
         return
         [
-            new() { Time = new(2023, 10, 26, 10, 0, 0, DateTimeKind.Local), Text = "First entry for the day.\n" },
-            new() { Time = new(2023, 10, 26, 14, 30, 0, DateTimeKind.Local), Text = "Second entry, same day.\n" },
-            new() { Time = new(2023, 10, 27, 9, 15, 0, DateTimeKind.Local), Text = "Entry for the next day.\n" }
+            new() { Time = new(2023, 10, 26, 10, 0, 0, new()), Text = "First entry for the day.\n" },
+            new() { Time = new(2023, 10, 26, 14, 30, 0, new()), Text = "Second entry, same day.\n" },
+            new() { Time = new(2023, 10, 27, 9, 15, 0, new()), Text = "Entry for the next day.\n" }
         ];
     }
 

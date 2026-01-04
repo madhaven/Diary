@@ -11,7 +11,7 @@ public class EntryData
     [Key]
     public int Id { get; set; }
     [Required]
-    public DateTime Time { get; set; }
+    public DateTimeOffset Time { get; set; }
     public string? Text { get; set; }
     public string? Intervals { get; set; }
 

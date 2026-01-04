@@ -19,7 +19,7 @@ public class TextExportStrategy : IExportStrategy
         
         using var fileStream = new FileStream(destination, FileMode.Create, FileAccess.Write);
         using var streamWriter = new StreamWriter(fileStream);
-        var lastSeenDate = DateTime.UnixEpoch;
+        var lastSeenDate = DateTimeOffset.UnixEpoch;
         var isFirstEntry = true;
         foreach (var entry in entries.ToList())
         {

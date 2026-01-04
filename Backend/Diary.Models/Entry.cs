@@ -3,11 +3,11 @@
 public class Entry
 {
     public string Text { get; set; }
-    public DateTime Time { get; init; }
+    public DateTimeOffset Time { get; init; }
     public bool PrintDate { get; set; }
     public List<double> Intervals { get; init; }
 
-    public Entry(string text = "", DateTime time = default, IEnumerable<double>? intervals = null, bool printDate = false)
+    public Entry(string text = "", DateTimeOffset time = default, IEnumerable<double>? intervals = null, bool printDate = false)
     {
         Text = text;
         Time = time;

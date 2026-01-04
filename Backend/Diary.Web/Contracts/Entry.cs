@@ -7,7 +7,7 @@ public record Entry : IValidatableObject
     public Guid? Id { get; init; } = Guid.NewGuid();
     public string Text { get; init; } = string.Empty;
     public List<double> Intervals { get; init; } = [];
-    public DateTime Time { get; init; } = DateTime.Now;
+    public DateTimeOffset Time { get; init; } = DateTime.UtcNow;
     public bool PrintDate { get; init; } = false;
 
     public static Entry FromEntity(Diary.Models.Entry entity)

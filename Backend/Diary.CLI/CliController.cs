@@ -118,7 +118,7 @@ public partial class CliController : ICliController
         _console.WriteLine($"{entryList.Count} {(entryList.Count == 1 ? "entry" : "entries")} found");
 
         if (entryList.Count == 0) { return; }
-        var lastDateSeen = DateTime.UnixEpoch;
+        var lastDateSeen = DateTimeOffset.UnixEpoch;
         foreach (var entry in entryList)
         {
             if (entry.Time.Date != lastDateSeen.Date) { entry.PrintDate = true; }
