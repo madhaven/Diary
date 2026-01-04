@@ -23,8 +23,12 @@
   </ItemGroup>
 
   <Target Name="BuildAngular" BeforeTargets="Build">
-    <Exec WorkingDirectory="wwwroot" Command="npm install" />
-    <Exec WorkingDirectory="wwwroot" Command="npm run build" />
+    <Exec WorkingDirectory= "..\..\Frontend" Command="npm install" />
+    <Exec WorkingDirectory="..\..\Frontend" Command="npm run build" />
+    <ItemGroup>
+      <AngularBuildFiles Include="..\..\Frontend\dist\wwwroot\browser\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AngularBuildFiles)" DestinationFolder="wwwroot\%(RecursiveDir)" />
   </Target>
 
 </Project>

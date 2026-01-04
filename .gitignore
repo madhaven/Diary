@@ -4,15 +4,16 @@ diary_config
 diary
 testdiary
 *diaryback*
-/.idea
-*/obj
-*/bin
 *.user
 *.sqlite
-
-# Angular
-/Diary.Web/wwwroot/node_modules
-/Diary.Web/wwwroot/dist
-/Diary.Web/wwwroot/.angular
-/Diary.Web/wwwroot/.vscode
 *.log
+
+.idea
+bin
+obj
+wwwroot
+
+node_modules
+dist
+.angular
+.vscode
