@@ -44,18 +44,10 @@ app.UseCors();
 app.UseAuthorization();
 
 // Static files
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "wwwroot/dist/wwwroot/browser"))
-});
+app.UseStaticFiles();
 
 app.MapControllers();
 
-app.MapFallbackToFile("/index.html", new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "wwwroot/dist/wwwroot/browser"))
-});
+app.MapFallbackToFile("index.html");
 
 await app.RunAsync();

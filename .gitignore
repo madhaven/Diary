@@ -4,9 +4,6 @@ diary_config
 diary
 testdiary
 *diaryback*
-/.idea
-*/obj
-*/bin
 *.user
 *.sqlite
 
@@ -16,3 +13,8 @@ testdiary
 */.angular
 */.vscode
 *.log
+
+.idea
+bin
+obj
+wwwroot
