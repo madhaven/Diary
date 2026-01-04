@@ -19,7 +19,7 @@ internal static class Program
             ContentRootPath = executableDir,
             Args = args
         })
-        .ConfigureDiaryServices();
+        .ConfigureDiaryServices(); // Dependency Injection / Inversion of Control
 
         var host = builder.Build();
 

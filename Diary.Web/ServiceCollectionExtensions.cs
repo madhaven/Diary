@@ -1,3 +1,5 @@
+// Keep DI in this file in sync with Diary.CLI project.
+
 using Diary.Core;
 using Diary.Data;
 using Diary.Implementation;
