@@ -1,3 +1,5 @@
+// Keep DI in this file in sync with Diary.Web project.
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Diary.Core;
