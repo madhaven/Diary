@@ -1,0 +1,38 @@
+<svg
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none">
+
+  <rect
+    width="512"
+    height="512"
+    x="0"
+    y="0"
+    rx="30"
+    fill="#111"/>
+
+  <!-- Left Page Line -->
+  <path
+    d="
+      M158 70
+      L198 61
+      L198 453
+      L158 444
+      Z
+    "
+    fill="#AAAA"/>
+
+  <!-- Vanishing Page (Extreme Perspective) -->
+  <path
+    d="
+      M228 62
+      L386 132
+      L386 380
+      L228 452
+      Z
+    "
+    fill="#AAAA"/>
+
+</svg>
