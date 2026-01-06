@@ -12,4 +12,9 @@
         (keydown)="handleInputKeys($event)"
         (selectionchange)="setCaretToEnd()"
         [(ngModel)]="userInput">
+    <button class="mic-button" [class.recording]="isRecording()" (click)="toggleRecording()" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+            <path d="M480-400q-53 0-90.5-37.5T352-528v-240q0-53 37.5-90.5T480-896q53 0 90.5 37.5T608-768v240q0 53-37.5 90.5T480-400Zm0-56q29 0 50.5-21.5T552-528v-240q0-29-21.5-50.5T480-840q-29 0-50.5 21.5T408-768v240q0 29 21.5 50.5T480-456ZM480-20q-13 0-21.5-8.5T450-50v-93q-134-15-227-113.5T130-466h60q9 104 87.5 175T480-220q109 0 187.5-71T770-466h60q-9 120-102 218.5T501-143v93q0 13-8.5 21.5T471-20h9Z"/>
+        </svg>
+    </button>
 </main>

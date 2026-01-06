@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, NgZone, Output, signal, ViewChild } from '@angular/core';
 import { DiaryService } from '@services/diary';
 import { StateService } from '@services/state';
 import { Entry } from '@models/entities';
@@ -26,11 +26,16 @@ export class EntryRecorder implements AfterViewInit {
   userInput: string = '';
   promptText = signal("");
   isPromptVisible = signal(true);
+  
+  // Speech Recognition
+  recognition: any;
+  isRecording = signal(false);
 
   constructor(
     private diaryService: DiaryService,
     private state: StateService,
-    private router: Router
+    private router: Router,
+    private zone: NgZone
   ) { } 
 
   ngOnInit() {
@@ -38,12 +43,89 @@ export class EntryRecorder implements AfterViewInit {
       this.autoTypePrompt(this.PROMPT_DELAYS);
       this.resetKeys();
     });
+    this.initSpeechRecognition();
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
       this.commandField.nativeElement.focus();
     }, 0);
+  }
+  
+  private initSpeechRecognition() {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    this.recognition = new SpeechRecognition();
+    this.recognition.continuous = true;
+    this.recognition.interimResults = true;
+    this.recognition.lang = 'en-US';
+
+    this.recognition.onresult = (event: any) => {
+      this.zone.run(() => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            const transcript = event.results[i][0].transcript;
+            this.handleSpeechText(transcript);
+          }
+        }
+      });
+    };
+    
+    this.recognition.onend = () => {
+      if (this.isRecording()) {
+        try {
+          this.recognition.start();
+        } catch(e) {
+          // ignore if already started
+        }
+      }
+    };
+  }
+
+  toggleRecording() {
+    if (!this.recognition) return;
+    
+    if (this.isRecording()) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  }
+
+  startRecording() {
+    this.isRecording.set(true);
+    try {
+      this.recognition.start();
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  stopRecording() {
+    this.isRecording.set(false);
+    this.recognition?.stop();
+  }
+
+  handleSpeechText(text: string) {
+    if (this.isPromptVisible()) this.makePromptVanish();
+    
+    let textToAppend = text;
+    if (this.userInput && !this.userInput.endsWith(' ') && textToAppend.trim().length > 0) {
+        textToAppend = ' ' + textToAppend;
+    }
+    
+    this.userInput += textToAppend;
+    for (const char of textToAppend) {
+      this.recordKey(char);
+    }
+
+    this.forceRefresh();
+  }
+
+  private forceRefresh() {
+    this.commandField.nativeElement.blur();
+    setTimeout(() => this.setCaretToEnd(), 10);
   }
 
   private async autoTypePrompt(intervals: number[]) {
